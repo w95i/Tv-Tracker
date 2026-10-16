@@ -1,0 +1,1381 @@
+<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Movie page · App · TVTracker</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&family=Figtree:wght@400;500;600;700;800&display=swap"><style>/* TVTracker · title page (movie + series) — app + website. Same language as the actor page:
+   black page, Archivo headings, Figtree text, amber accent, 12px curved squares, no pills for actions. */
+:root{color-scheme:dark;
+  --bg-page:#08070a;--bg:#000;--bg-rgb:0,0,0;--surface:#15161c;--surface-2:#1f2029;--line:rgba(255,255,255,.08);
+  --text:#f4f5f8;--heading:#f4f6ff;--muted:#9aa3bd;--muted-2:#8790a8;--dim:#c9cedc;--amber:#ffc42e;--ink:#1c1400;--accent-fg:#ffc42e;
+  --glass:255,255,255;--ph:#22232b;--green:#3DDC84;--red:#ff6b6b;--purple:#9B7BFF;
+  --font:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--display:"Archivo","Figtree",system-ui,sans-serif;
+  --maxw:1600px;--gut:clamp(20px,5vw,80px);--ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.2,1.4,.4,1)}
+:root[data-theme="light"]{color-scheme:light;
+  --bg-page:#e4e5ea;--bg:#f5f5f7;--bg-rgb:245,245,247;--surface:#fff;--surface-2:#ececf0;--line:rgba(16,18,27,.09);
+  --text:#15161c;--heading:#0e0f14;--muted:#5e6476;--muted-2:#6b7183;--dim:#4a5063;--accent-fg:#8a5d00;--glass:16,18,27;--ph:#e2e3e9;--green:#10813D;--red:#E5242B}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg-page);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+
+/* ---------- shared pieces ---------- */
+.tp-kick{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.tp-title{margin:0;font-family:var(--display);font-weight:800;letter-spacing:-.015em;line-height:1.05;color:var(--heading);text-wrap:balance}
+.tp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:0;font-size:13.5px;font-weight:600;color:var(--muted)}
+.tp-meta > span + span::before{content:"·";margin:0 7px;opacity:.6}
+.tp-cert{display:inline-flex;align-items:center;height:19px;padding:0 6px;border-radius:5px;font-size:11px;font-weight:800;letter-spacing:.02em;color:var(--dim);box-shadow:inset 0 0 0 1.2px rgba(var(--glass),.32)}
+.tp-genres{font-size:13px;color:var(--muted);font-weight:500}
+
+/* status tags: one chip, the colour carries the meaning */
+.tp-st{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 11px;border-radius:9px;font-size:12.5px;font-weight:700;width:max-content;max-width:100%}
+.tp-st svg{width:15px;height:15px;flex:none}
+.tp-st small{font-size:12px;font-weight:600;opacity:.75}
+.tp-st.soon{color:#ffc42e;background:rgba(255,196,46,.13)}
+.tp-st.ret{color:var(--green);background:rgba(61,220,132,.12)}
+.tp-st.end{color:var(--dim);background:rgba(var(--glass),.08)}
+.tp-st.can{color:var(--red);background:rgba(255,107,107,.12)}
+.tp-st i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+:root[data-theme="light"] .tp-st.soon{color:#8a5d00;background:rgba(255,196,46,.22)}
+
+/* actions: calm curved squares — no loud fills, the icon carries the amber */
+.tp-acts{display:flex;gap:10px}
+.tp-main,.tp-sq{height:50px;border:0;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:15.5px;font-weight:700;white-space:nowrap;cursor:pointer;color:var(--text);background:rgba(var(--glass),.09);transition:background .2s,color .2s,transform .12s}
+.tp-main{flex:1;min-width:0;padding:0 16px}
+.tp-sq{flex:none;width:50px;padding:0}
+.tp-main svg,.tp-sq svg{width:20px;height:20px;flex:none}
+.tp-main:not(.on) svg{color:var(--accent-fg)}
+.tp-main.on,.tp-sq.on{color:#ffc42e;background:rgba(255,196,46,.14)}
+.tp-main:active,.tp-sq:active{transform:scale(.97)}
+:root[data-theme="light"] .tp-main:not(.on),:root[data-theme="light"] .tp-sq:not(.on){background:#fff;box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.08)}
+:root[data-theme="light"] .tp-main.on,:root[data-theme="light"] .tp-sq.on{color:#8a5d00;background:rgba(255,196,46,.22)}
+@media (hover:hover){.tp-main:not(.on):hover,.tp-sq:not(.on):hover{background:rgba(var(--glass),.14)}}
+/* your line: Watched · Mar 23, 2026 › */
+.tp-my{display:flex;align-items:center;gap:4px;margin:14px 0 0;padding:0;border:0;background:none;font-size:15px;font-weight:700;color:var(--text);cursor:pointer;text-align:left}
+.tp-my .st{color:#ffc42e}
+.tp-my .cv{width:17px;height:17px;color:var(--muted)}
+:root[data-theme="light"] .tp-my .st{color:#c58a00}
+
+/* the "…" menu (app sheet + website popover) */
+.tp-menu{display:flex;flex-direction:column;gap:8px}
+.tp-mh{margin:0 4px 6px;font-family:var(--display);font-size:17px;font-weight:800;color:var(--muted)}
+.tp-mi{display:flex;align-items:center;gap:14px;width:100%;height:62px;padding:0 10px;border:0;border-radius:14px;background:rgba(var(--glass),.06);color:var(--text);font:inherit;cursor:pointer;text-align:left}
+.tp-mi .ic{flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:var(--accent-fg);background:rgba(255,196,46,.13)}
+.tp-mi .ic svg{width:21px;height:21px}
+.tp-mi b{font-size:16px;font-weight:700}
+.tp-mi.on .ic{color:#ff4d6a;background:rgba(255,77,106,.14)}
+@media (hover:hover){.tp-mi:hover{background:rgba(var(--glass),.1)}}
+:root[data-theme="light"] .tp-mi{background:#fff;box-shadow:0 0 0 1px rgba(16,18,27,.07)}
+
+/* ratings: one line — logo · score · (votes), like the TVTracker app */
+.tp-rr{display:flex;align-items:center;gap:16px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}
+.tp-rr::-webkit-scrollbar{display:none}
+.rr{flex:none;display:inline-flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums}
+.rr svg{flex:none;height:17px;width:auto}
+.rr .tvtl{flex:none;width:20px;height:20px;border-radius:5px;display:block}
+.rr b{font-size:15px;font-weight:700;color:var(--heading)}
+.rr small{margin-left:-2px;font-size:13.5px;font-weight:500;color:var(--muted)}
+:root[data-theme="light"] .rr .rs{color:#f0b000}
+.tvt{font-family:var(--display);font-size:11.5px;font-weight:800;color:var(--heading);white-space:nowrap}.tvt i{font-style:normal;color:#ffc42e}
+
+/* sections */
+.tp-sec{margin-top:32px}
+.tp-sh{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.tp-sh h2{margin:0;font-family:var(--display);font-size:20px;font-weight:800;color:var(--heading)}
+.tp-sh small{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tp-row{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}
+.tp-row::-webkit-scrollbar{display:none}
+.tp-row > *{scroll-snap-align:start}
+body:has(.w-page){background:var(--bg)}
+
+/* where to watch */
+.tp-lab{margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tp-wt{display:flex;flex-wrap:wrap;gap:8px}
+.tp-pv{border:0;cursor:pointer;color:var(--text);font:inherit;text-align:left;display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 14px 0 6px;border-radius:12px;background:var(--surface);font-size:14px;font-weight:700}
+.tp-pv .pl{flex:none;width:36px;height:36px;border-radius:9px;background:var(--ph) center/cover no-repeat}
+.tp-pv small{display:block;font-size:11.5px;font-weight:600;color:var(--muted)}
+.tp-pv.cine{padding-left:12px}
+.tp-pv.cine svg{width:22px;height:22px;color:var(--accent-fg)}
+.tp-pvl{flex:none;width:52px;height:52px;padding:0;border:0;border-radius:13px;background:var(--ph) center/cover no-repeat;cursor:pointer;box-shadow:0 0 0 1px rgba(var(--glass),.1)}
+.tp-pvl.net{width:88px;background-color:#fff;background-size:72% auto;background-position:center}
+:root[data-theme="light"] .tp-pv{box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.06)}
+
+/* overview: three lines that fade, tap to unfold */
+.tp-ov{display:block;width:100%;padding:0;border:0;background:none;text-align:left;cursor:default;font-size:16px}
+.tp-ov p{margin:0;line-height:1.55;color:var(--dim);text-wrap:pretty}
+.tp-ov.clamp{max-height:calc(1.55em * 3 + 2px);overflow:hidden;cursor:pointer;-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 2.4em),rgba(0,0,0,.35) calc(100% - .9em),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 2.4em),rgba(0,0,0,.35) calc(100% - .9em),transparent)}
+.tp-tag{margin:0 0 6px;font-size:15px;font-weight:700;color:var(--accent-fg)}
+
+/* cast: portrait cards, crew underneath */
+.tp-cast{display:flex;gap:10px}
+.tp-pp{flex:none;width:104px;padding:0;border:0;background:none;display:flex;flex-direction:column;align-items:flex-start;text-align:left;cursor:pointer;color:inherit}
+.tp-pp span{width:100%;aspect-ratio:2/3;border-radius:12px;margin-bottom:9px;background:var(--ph) center 20%/cover no-repeat;box-shadow:inset 0 0 0 1px rgba(var(--glass),.16)}
+.tp-pp b{font-size:13.5px;font-weight:700;line-height:1.25;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-pp small{font-size:12.5px;color:var(--muted);line-height:1.35;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-crew{margin:22px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px}
+.tp-crew dt{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.tp-crew dd{margin:0;font-size:15px;font-weight:600;line-height:1.4;color:var(--heading)}
+.tp-crew dd span{color:var(--muted)}
+
+/* videos + gallery: 16:9 cards */
+.tp-vid{flex:none;width:236px;display:flex;flex-direction:column;gap:7px}
+.tp-vid .th{position:relative;display:block;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--ph) center/cover no-repeat}
+.tp-vid .th::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.45))}
+.tp-vid .pl{position:absolute;z-index:1;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(10,10,14,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.tp-vid .pl svg{width:18px;height:18px;margin-left:2px}
+.tp-vid b{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-ph{flex:none;width:236px;aspect-ratio:16/9;border:0;padding:0;border-radius:12px;background:var(--ph) center/cover no-repeat;cursor:pointer}
+
+/* details: label column + value, like the TVTracker app */
+.tp-facts{margin:22px 0 0;display:flex;flex-direction:column;gap:14px}
+.tp-facts div{display:grid;grid-template-columns:118px minmax(0,1fr);gap:14px;align-items:baseline}
+.tp-facts dt{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tp-facts dd{margin:0;font-size:15.5px;font-weight:700;line-height:1.35;color:var(--heading)}
+
+/* keywords */
+.tp-kw{display:flex;flex-wrap:wrap;gap:8px}
+.tp-kw i{font-style:normal;font-weight:800;color:var(--accent-fg);margin-right:5px}
+.tp-kw button{height:34px;padding:0 13px;border:0;border-radius:10px;font-size:13px;font-weight:600;color:var(--dim);background:rgba(var(--glass),.08);cursor:pointer}
+:root[data-theme="light"] .tp-kw button{background:#fff;box-shadow:0 0 0 1px rgba(16,18,27,.08)}
+
+/* more like this: posters with the title underneath */
+.tp-rec{flex:none;width:112px;padding:0;border:0;background:none;display:flex;flex-direction:column;gap:8px;text-align:left;cursor:pointer;color:inherit}
+.tp-pst{display:block;width:100%;aspect-ratio:2/3;border-radius:12px;background:var(--ph) center/cover no-repeat;box-shadow:inset 0 0 0 1px rgba(var(--glass),.14)}
+.tp-rec b{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* production companies · links · comments */
+.tp-pcs{display:flex;flex-direction:column;gap:10px}
+.tp-pc{display:flex;align-items:center;gap:14px;width:100%;height:68px;padding:0 14px 0 12px;border:0;border-radius:14px;background:var(--surface);color:var(--text);font:inherit;cursor:pointer;text-align:left;box-shadow:inset 0 0 0 1px rgba(var(--glass),.08)}
+.tp-pc .lg{flex:none;width:46px;height:46px;border-radius:11px;display:grid;place-items:center;background:#fff center/76% auto no-repeat;color:#15161c;font-size:14px;font-weight:800}
+.tp-pc b{flex:1;min-width:0;font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-pc .cv{flex:none;width:18px;height:18px;color:var(--muted)}
+:root[data-theme="light"] .tp-pc{background:#fff;box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.07)}
+:root[data-theme="light"] .tp-pc .lg{box-shadow:0 0 0 1px rgba(16,18,27,.08)}
+.tp-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.tp-links a{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-radius:10px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-fg);box-shadow:inset 0 0 0 1px rgba(var(--glass),.12)}
+.tp-links a i{font-style:normal;font-size:11px;opacity:.8}
+:root[data-theme="light"] .tp-links a:not(.pw-lk){background:#fff}
+.tp-cbtn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:52px;padding:0 22px;border:0;border-radius:14px;font:inherit;font-size:16px;font-weight:700;color:#fff;background:#4f6bed;cursor:pointer;box-shadow:0 12px 30px -10px rgba(79,107,237,.6)}
+.tp-cbtn svg{width:20px;height:20px}
+.tp-cbtn i{font-style:normal;min-width:24px;height:24px;padding:0 7px;border-radius:7px;display:grid;place-items:center;font-size:13px;font-weight:800;background:rgba(255,255,255,.22)}
+.tp-cwrap{display:flex;justify-content:center;margin-top:30px}
+.tp-conv{margin-top:36px;display:flex;align-items:center;gap:16px;padding:18px 18px 18px 20px;border-radius:16px;background:rgba(79,107,237,.1);box-shadow:inset 0 0 0 1px rgba(79,107,237,.28)}
+.tp-conv .ic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#fff;background:#4f6bed}
+.tp-conv .ic svg{width:22px;height:22px}
+.tp-conv .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.tp-conv b{font-family:var(--display);font-size:18px;font-weight:800;color:var(--heading)}
+.tp-conv small{font-size:14px;color:var(--muted)}
+.tp-conv .tp-cbtn{height:46px;font-size:15px;box-shadow:none}
+
+/* up next (series you're watching) — the home "Watching now" card */
+.tp-next{margin-top:16px;display:flex;align-items:center;gap:12px;padding:8px;border-radius:16px;background:var(--surface)}
+.tp-next .im{flex:none;width:112px;aspect-ratio:16/9;border-radius:10px;background:var(--ph) center/cover no-repeat}
+.tp-next .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.tp-next small{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tp-next b{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-next em{font-style:normal;color:var(--accent-fg);font-weight:800;margin-right:6px}
+.tp-bar{height:4px;border-radius:2px;background:rgba(var(--glass),.12);overflow:hidden;margin-top:4px}
+.tp-bar i{display:block;height:100%;border-radius:2px;background:var(--amber)}
+.tp-next .pc{font-size:11.5px;font-weight:600;color:var(--muted)}
+:root[data-theme="light"] .tp-next{box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.06)}
+
+/* episodes */
+.tp-tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.tp-tabs::-webkit-scrollbar{display:none}
+.tp-tabs button{position:relative;flex:none;height:40px;padding:0;border:0;background:none;font-size:15px;font-weight:500;color:var(--muted);cursor:pointer}
+.tp-tabs button[aria-selected="true"]{color:var(--accent-fg);font-weight:700}
+.tp-tabs button[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;background:var(--amber)}
+.tp-sm{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;font-weight:600;color:var(--muted)}
+.tp-sm button{margin-left:auto;height:32px;padding:0 12px;border:0;border-radius:10px;font-size:12.5px;font-weight:700;color:var(--text);background:rgba(var(--glass),.09);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.tp-sm button svg{width:15px;height:15px}
+.tp-sm button.on{color:#ffc42e;background:rgba(255,196,46,.14)}
+.tp-eps{display:flex;flex-direction:column;gap:8px}
+.tp-ep{display:flex;align-items:center;gap:12px;padding:8px 10px 8px 8px;border-radius:14px;background:var(--surface)}
+.tp-ep .im{position:relative;flex:none;width:112px;aspect-ratio:16/9;border-radius:9px;background:var(--ph) center/cover no-repeat}
+.tp-ep .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.tp-ep .tx b{font-size:14px;font-weight:700;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tp-ep .tx b em{font-style:normal;color:var(--accent-fg);margin-right:5px}
+.tp-ep .tx small{font-size:12px;color:var(--muted);font-weight:500}
+.tp-ep .tx small i{font-style:normal;color:var(--dim);font-weight:700}
+.tp-ck{flex:none;width:36px;height:36px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;cursor:pointer;color:var(--text);background:rgba(var(--glass),.08);box-shadow:inset 0 0 0 1.5px rgba(var(--glass),.22);transition:background .2s,transform .15s var(--spring)}
+.tp-ck svg{width:17px;height:17px}
+.tp-ck.on{color:var(--ink);background:var(--amber);box-shadow:none}
+.tp-ck:active{transform:scale(.88)}
+.tp-air{flex:none;height:26px;padding:0 9px;border-radius:8px;display:inline-flex;align-items:center;font-size:12px;font-weight:800;color:#ffc42e;background:rgba(255,196,46,.13)}
+.tp-ep.seen .tx b{color:var(--dim)}
+:root[data-theme="light"] .tp-ep{box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.06)}
+:root[data-theme="light"] .tp-air{color:#8a5d00;background:rgba(255,196,46,.22)}
+
+.tp-toast{position:fixed;left:50%;bottom:110px;z-index:90;transform:translate(-50%,14px);opacity:0;padding:11px 16px;border-radius:13px;background:#1f2029;color:#f4f5f8;font-size:13.5px;font-weight:600;white-space:nowrap;transition:all .3s var(--ease);pointer-events:none}
+.tp-toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ======================= TITLE (text or logo artwork) ======================= */
+.tp-logo{display:block;line-height:0}
+.tp-logo img{display:block;max-width:100%;object-fit:contain;object-position:left center}
+
+/* ======================= APP (phone) ======================= */
+.app-stage{display:flex;justify-content:center;padding:24px 16px 40px}
+.phone{position:relative;width:402px;height:874px;max-width:100%;border-radius:48px;overflow:hidden;background:var(--bg);box-shadow:0 0 0 10px #1b1b1f,0 30px 80px rgba(0,0,0,.6);isolation:isolate}
+:root[data-theme="light"] .phone{box-shadow:0 0 0 10px #1b1b1f,0 30px 80px rgba(20,22,30,.25)}
+.sbar{position:absolute;z-index:30;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 48px;font-weight:600;font-size:17px;color:#fff;pointer-events:none;transition:color .2s}
+.sbar .cam{position:absolute;left:50%;top:11px;width:124px;height:36px;margin-left:-62px;border-radius:20px;background:#000}
+.sbar .ic{display:flex;gap:6px;align-items:center}
+:root[data-theme="light"] .phone.solid .sbar{color:#15161c}
+.a-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding-bottom:110px}
+.a-scroll::-webkit-scrollbar{display:none}
+.a-top{position:absolute;z-index:20;top:0;left:0;right:0;height:104px;padding:56px 10px 0;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;transition:background .25s,box-shadow .25s}
+.solid .a-top{background:var(--bg);box-shadow:0 1px 0 var(--line)}
+.a-ib{width:44px;height:44px;border:0;padding:0;background:none;display:grid;place-items:center;color:#fff;cursor:pointer;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55))}
+.a-ib svg{width:24px;height:24px}
+.solid .a-ib{color:var(--heading);filter:none}
+.a-tt{justify-self:center;display:inline-flex;align-items:center;gap:9px;min-width:0;max-width:100%;font-size:16px;font-weight:700;opacity:0;transform:translateY(6px);transition:opacity .2s,transform .25s var(--ease)}
+.a-tt i{flex:none;width:22px;height:33px;border-radius:5px;background:var(--ph) center/cover no-repeat}
+.a-tt span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.solid .a-tt{opacity:1;transform:none}
+/* hero: the backdrop runs under the status bar and melts into the page */
+.a-hero{position:relative;height:330px}
+.a-hero .bd{position:absolute;inset:0;background:var(--ph) center 22%/cover no-repeat}
+.a-hero{cursor:pointer;overflow:hidden}
+.a-hero .yt{position:absolute;left:50%;top:0;height:100%;aspect-ratio:16/9;transform:translateX(-50%) scale(1.35);border:0;pointer-events:none}
+.a-hero .ks{position:absolute;inset:0;overflow:hidden}
+/* opened as a local file YouTube won't play, so the cover runs the trailer's stills instead */
+.a-hero .ks i{position:absolute;inset:0;background:center/cover no-repeat;opacity:0;animation:ks 20s linear infinite}
+.a-hero .ks i:first-child{opacity:1}
+@keyframes ks{0%{opacity:0;transform:scale(1.04)}4%{opacity:1}20%{opacity:1}26%{opacity:0;transform:scale(1.14)}100%{opacity:0}}
+.a-hero .bd,.a-hero .yt,.a-hero .ks{transition:filter .5s var(--ease)}
+.a-hero:not(.play) .ks{filter:blur(14px) saturate(1.1);transform:scale(1.12)}
+.a-hero:not(.play) .bd,.a-hero:not(.play) .yt{filter:blur(14px) saturate(1.1)}
+.a-hero:not(.play) .bd{transform:scale(1.12)}
+.a-trh{position:absolute;z-index:3;left:50%;top:150px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px 0 11px;border-radius:11px;font-size:13px;font-weight:700;color:#fff;background:rgba(10,10,14,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);white-space:nowrap}
+.a-trh svg{width:14px;height:14px}
+.a-hero .sh{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,0) 26%,rgba(var(--bg-rgb),.35) 58%,rgba(var(--bg-rgb),.9) 86%,var(--bg) 100%)}
+/* head: poster left, title + facts right */
+.a-head{position:relative;z-index:2;margin-top:-118px;padding:0 20px;display:flex;align-items:flex-start;gap:18px}
+.a-head .po{flex:none;width:128px;aspect-ratio:2/3;border-radius:14px;background:var(--ph) center/cover no-repeat;box-shadow:0 18px 40px -14px rgba(0,0,0,.75),0 0 0 1px rgba(var(--glass),.14)}
+.a-head .in{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;padding-top:44px}
+.a-head .tp-title{font-size:22px;line-height:1.12;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.a-head .tp-logo{display:block;margin-bottom:2px}
+.h-k{margin:2px 0 0;line-height:1.45;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.h-p{margin:-3px 0 0;font-size:14.5px;font-weight:700;color:var(--dim);line-height:1.3}
+.h-g{margin:0;font-size:13.5px;font-weight:600;color:var(--dim);line-height:1.35}
+.h-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:4px}
+.tp-tr{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px 0 10px;border-radius:10px;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text);background:rgba(var(--glass),.12)}
+.tp-tr svg{width:14px;height:14px}
+:root[data-theme="light"] .tp-tr{background:#fff;box-shadow:0 0 0 1px rgba(16,18,27,.1)}
+.h-rt{font-size:14px;font-weight:600;color:var(--dim)}
+.h-row .tp-st{height:30px}
+.a-body{padding:22px 20px 0}
+.a-body .tp-rr{margin:0 -20px 20px;padding:0 20px}
+.a-body .tp-next{margin-top:18px}
+.a-body .tp-tag + .tp-ov,.a-body .tp-ov{margin-top:0}
+.a-body > .tp-tag{margin-top:18px}
+.a-body > .tp-my + .tp-ov,.a-body > .tp-acts + .tp-ov{margin-top:18px}
+.a-body .tp-my + .tp-tag{margin-top:16px}
+.a-body .tp-next + .tp-tag{margin-top:18px}
+.a-body .tp-row{margin:0 -20px;padding:0 20px 4px;scroll-padding:0 20px}
+.a-body .tp-vid{width:250px}
+.a-body .tp-ph{width:250px}
+.tp-acts.one .tp-main{flex:1}
+/* app "…" sheet */
+.a-sheet{position:absolute;inset:0;z-index:40;pointer-events:none}
+.a-sheet .scrim{position:absolute;inset:0;border:0;padding:0;background:rgba(0,0,0,.5);opacity:0;transition:opacity .25s}
+.a-sheet .sh-in{position:absolute;left:8px;right:8px;bottom:8px;padding:10px 12px 22px;border-radius:30px;background:#141522;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 -20px 60px rgba(0,0,0,.5);transform:translateY(110%);transition:transform .35s var(--ease)}
+:root[data-theme="light"] .a-sheet .sh-in{background:#f5f5f7;box-shadow:0 -20px 60px rgba(20,22,30,.2)}
+.a-sheet .grab{display:block;width:38px;height:5px;margin:0 auto 14px;border-radius:3px;background:rgba(var(--glass),.25)}
+.a-sheet.on{pointer-events:auto}.a-sheet.on .scrim{opacity:1}.a-sheet.on .sh-in{transform:none}
+.a-nav{position:absolute;z-index:25;left:0;right:0;bottom:0;height:84px;padding:0 8px 34px;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;background:var(--bg);border-top:1px solid var(--line)}
+.a-nav button{height:50px;border:0;background:none;display:grid;place-items:center;color:var(--text);cursor:pointer;padding:0}
+.a-nav button svg{width:26px;height:26px}
+.a-nav .av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--ink);background:var(--amber)}
+.a-home{position:absolute;z-index:26;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:var(--text);opacity:.9}
+
+/* ======================= WEBSITE (tvtracker.tv layout) ======================= */
+/* header: clear over the cover, solid once you scroll — same as the actor page */
+.w-site{position:sticky;top:0;z-index:40;height:64px;background:transparent;border-bottom:1px solid transparent;transition:background-color .25s,border-color .25s}
+.w-site.solid{background:var(--bg);border-bottom-color:var(--line)}
+.w-site .in{position:relative;max-width:var(--maxw);height:100%;margin:0 auto;padding:0 var(--gut);display:flex;align-items:center}
+.w-logo{height:22px;width:auto;display:block}
+.w-logo.l{display:none}
+:root[data-theme="light"] .w-logo.d{display:none}
+:root[data-theme="light"] .w-logo.l{display:block}
+.w-nav{position:absolute;left:50%;top:0;height:64px;transform:translateX(-50%);display:flex}
+.w-nav a{position:relative;display:flex;align-items:center;gap:8px;height:64px;padding:0 14px;font-size:15px;font-weight:500;color:var(--muted);cursor:pointer}
+.w-nav a svg{width:21px;height:21px}
+.w-nav a.cur{color:var(--accent-fg);font-weight:700}
+.w-nav a.cur::after{content:"";position:absolute;left:14px;right:14px;bottom:10px;height:2px;border-radius:2px;background:var(--amber)}
+.w-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.w-r .bell{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--glass),.08)}
+.w-r .bell svg{width:20px;height:20px}
+.w-r .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:var(--ink);background:var(--amber);box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--amber)}
+.w-page{position:relative;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut) 110px}
+.w-bd,.w-sh{position:absolute;left:50%;width:100vw;margin-left:-50vw;top:-64px;height:720px;pointer-events:none}
+.w-bd{background:center 22%/cover no-repeat;opacity:.9}
+.w-sh{background:linear-gradient(90deg,rgba(var(--bg-rgb),.97) 0%,rgba(var(--bg-rgb),.82) 28%,rgba(var(--bg-rgb),.3) 62%,rgba(var(--bg-rgb),.15) 100%),linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(var(--bg-rgb),0) 22%,rgba(var(--bg-rgb),.55) 66%,var(--bg) 100%)}
+.w-grid{position:relative;z-index:1;display:grid;grid-template-columns:270px minmax(0,1fr);gap:56px;align-items:start;padding-top:32px}
+.w-side{position:sticky;top:88px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.w-po{width:270px;aspect-ratio:2/3;border-radius:16px;background:var(--ph) center/cover no-repeat;box-shadow:0 22px 50px rgba(0,0,0,.5),0 0 0 1px rgba(var(--glass),.16)}
+.w-cap{margin:0;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-fg);text-align:center}
+.w-cap .st{color:inherit}
+.w-main{min-width:0}
+.w-head{display:flex;flex-direction:column;align-items:flex-start;gap:12px;max-width:760px;padding-top:8px}
+.w-head .tp-kick{color:var(--dim)}
+.w-head .tp-title{font-size:clamp(40px,4.4vw,58px)}
+.w-tag{margin:-2px 0 0;font-size:17px;font-weight:700;color:var(--accent-fg)}
+.w-meta{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 0;font-size:14.5px;font-weight:600;color:var(--dim)}
+.w-meta > span + span::before{content:"·";margin:0 9px;opacity:.6}
+.w-meta .gl{color:var(--accent-fg);cursor:pointer}
+.w-meta .tp-st{margin-left:14px;height:28px}
+.w-head .tp-rr{margin-top:4px;gap:22px}.w-head .rr svg{height:19px}.w-head .rr .rs svg{width:21px;height:21px}.w-head .rr b{font-size:16.5px}.w-head .rr small{font-size:14.5px}
+.w-head .tp-ov{max-width:70ch}
+.w-head .tp-acts{margin-top:6px;flex-wrap:wrap}
+.w-head .tp-main{flex:none;padding:0 20px}
+.w-main .tp-next{max-width:560px;margin-top:8px}
+.w-main .tp-sec{margin-top:40px}
+.w-main .tp-sh h2{font-size:24px}
+
+.w-main .tp-row{overflow:visible}
+.w-main .tp-cast{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:14px}
+.w-main .tp-cast .tp-pp:nth-child(n+10){display:none}
+.w-main .tp-pp{width:auto}
+.w-main .tp-crew{grid-template-columns:repeat(4,minmax(0,1fr))}
+.w-main .tp-gal,.w-main .tp-vids{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.w-main .tp-ph,.w-main .tp-vid{width:auto}
+.w-main .tp-recs{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:14px}
+.w-main .tp-recs .tp-rec:nth-child(n+9){display:none}
+.w-main .tp-rec{width:auto}
+.w-main .tp-rec b{display:none}
+.w-main .tp-pcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-width:1000px}
+.w-main .tp-pc .cv{display:none}
+.w-head .tp-acts{position:relative}
+.tp-mw{position:relative}
+.tp-mw .tp-menu{position:absolute;z-index:30;top:58px;left:0;width:340px;padding:12px;border-radius:20px;background:#141522;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 24px 60px rgba(0,0,0,.55)}
+:root[data-theme="light"] .tp-mw .tp-menu{background:#f5f5f7;box-shadow:0 0 0 1px rgba(16,18,27,.08),0 24px 60px rgba(20,22,30,.2)}
+.w-main .tp-eps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.w-main .tp-ep .im{width:136px}
+.w-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+.w-two .tp-facts{margin:0;gap:0}
+.w-two .tp-facts div{grid-template-columns:150px minmax(0,1fr);padding:11px 0;border-bottom:1px solid var(--line)}
+.w-two .tp-facts dd{font-size:14.5px;text-align:right}
+@media (hover:hover){.w-main .tp-pst,.w-main .tp-ph,.w-main .tp-vid .th,.w-main .tp-pp span{transition:transform .3s var(--spring)}.w-main .tp-pst:hover,.w-main .tp-ph:hover,.w-main .tp-vid:hover .th,.w-main .tp-pp:hover span{transform:translateY(-4px)}}
+@media (max-width:1100px){:root{--gut:24px}.w-main .tp-cast{grid-template-columns:repeat(6,minmax(0,1fr))}.w-main .tp-cast .tp-pp:nth-child(n+7){display:none}.w-main .tp-recs{grid-template-columns:repeat(5,minmax(0,1fr))}.w-main .tp-recs .tp-rec:nth-child(n+6){display:none}.w-main .tp-crew{grid-template-columns:repeat(2,minmax(0,1fr))}.w-two{grid-template-columns:1fr}.w-main .tp-eps{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:860px){:root{--gut:16px}.w-grid{grid-template-columns:1fr;gap:20px}.w-side{position:static;align-items:flex-start}.w-po{width:200px}.w-nav{display:none}.w-main .tp-pcs{grid-template-columns:1fr}.w-main .tp-gal,.w-main .tp-vids{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ======================= preview controls (not part of the design) ======================= */
+.ctl{position:sticky;top:0;z-index:100;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 14px;padding:10px 16px;background:#111216;border-bottom:1px solid rgba(255,255,255,.08);color:#f4f5f8;font-family:var(--font)}
+.ctl.float{position:fixed;top:auto;bottom:16px;left:50%;transform:translateX(-50%);border-radius:16px;border:1px solid rgba(255,255,255,.1);box-shadow:0 20px 50px rgba(0,0,0,.5);width:max-content;max-width:calc(100vw - 32px)}
+.ctl > b{font-family:var(--display);font-size:14px}
+.seg{display:inline-flex;align-items:center;padding:3px;border-radius:11px;background:rgba(255,255,255,.08)}
+.seg small{font-size:10.5px;font-weight:800;color:#8a90a3;margin:0 6px 0 7px;letter-spacing:.07em;text-transform:uppercase}
+.seg button{border:0;background:none;height:28px;padding:0 10px;border-radius:8px;font-size:12.5px;font-weight:700;color:#c9cedc;cursor:pointer}
+.seg button[aria-pressed="true"]{background:#f4f5f8;color:#111}
+.ctl .hide{display:none}
+
+
+/* ===== round 3 fixes ===== */
+/* labels + values: one family, sentence case. The label steps back by colour and size only (no caps, no tracking) */
+.tp-crew dt,.tp-facts dt,.tp-lab{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted)}
+.tp-crew dd{font-size:14.5px;font-weight:600;color:var(--text)}
+.tp-facts dd{font-size:14.5px;font-weight:600;color:var(--text)}
+.tp-facts div{grid-template-columns:120px minmax(0,1fr)}
+.tp-facts{gap:11px}
+.tp-lab{margin:0 0 8px}
+/* website details: a light two-column list, values beside their label */
+.w-two .tp-facts{gap:0}
+.w-two .tp-facts div{grid-template-columns:150px minmax(0,1fr);padding:9px 0;border-bottom:1px solid var(--line)}
+.w-two .tp-facts div:last-child{border-bottom:0}
+.w-two .tp-facts dd{font-size:14px;text-align:left}
+.w-two .tp-facts dt{font-size:13px}
+.w-two{gap:56px}
+/* status sits under the poster on the website */
+.w-side .tp-st{align-self:center;height:30px}
+/* the two state buttons keep one width whatever they say */
+.w-head .tp-main.fx{min-width:196px}
+/* website "…" menu: our dropdown, small */
+.tp-mw .tp-menu{top:58px;left:0;width:auto;min-width:236px;padding:8px;gap:2px;border-radius:16px;background:var(--menu,#111217);box-shadow:0 0 0 1px rgba(var(--glass),.1),0 24px 48px rgba(0,0,0,.55)}
+.tp-mw .tp-mi{height:40px;padding:0 10px;gap:10px;border-radius:10px;background:none}
+.tp-mw .tp-mi .ic{width:auto;height:auto;background:none;color:var(--muted)}
+.tp-mw .tp-mi .ic svg{width:18px;height:18px}
+.tp-mw .tp-mi b{font-size:14px;font-weight:500;color:var(--dim)}
+.tp-mw .tp-mi.on .ic{background:none;color:#ff4d6a}
+@media (hover:hover){.tp-mw .tp-mi:hover{background:rgba(var(--glass),.06)}.tp-mw .tp-mi:hover b{color:var(--text)}}
+:root[data-theme="light"] .tp-mw .tp-mi{box-shadow:none;background:none}
+:root[data-theme="light"] .tp-mw .tp-menu{background:#fff;box-shadow:0 0 0 1px rgba(16,18,27,.08),0 20px 44px rgba(20,22,30,.16)}
+/* website cast: one row you can scroll */
+.w-main .tp-cast{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.w-main .tp-cast::-webkit-scrollbar{display:none}
+.w-main .tp-cast .tp-pp{flex:none;width:128px;display:flex!important}
+
+/* ===== round 4 ===== */
+/* ended = our "completed" purple */
+.tp-st.end{color:#9B7BFF;background:rgba(155,123,255,.14)}
+:root[data-theme="light"] .tp-st.end{color:#6D48E0;background:rgba(109,72,224,.12)}
+/* seasons: one chip each — the colour tells you where you are (purple done · amber watching · grey not started) */
+.tp-seas{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 0 14px;padding:2px 0}
+.tp-seas::-webkit-scrollbar{display:none}
+.tp-seas button{flex:none;display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 13px;border:0;border-radius:11px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;color:var(--dim);background:rgba(var(--glass),.06);box-shadow:inset 0 0 0 1px rgba(var(--glass),.1)}
+.tp-seas i{box-sizing:border-box;width:8px;height:8px;border-radius:50%;flex:none;border:1.6px solid currentColor}
+.tp-seas small{font-size:12.5px;font-weight:600;opacity:.75;font-variant-numeric:tabular-nums}
+.tp-seas .done{color:#9B7BFF;background:rgba(155,123,255,.1);box-shadow:inset 0 0 0 1px rgba(155,123,255,.3)}
+.tp-seas .done i,.tp-seas .prog i{background:currentColor}
+.tp-seas .prog{color:#ffc42e;background:rgba(255,196,46,.1);box-shadow:inset 0 0 0 1px rgba(255,196,46,.3)}
+.tp-seas [aria-selected="true"]{color:#1c1400;background:#ffc42e;box-shadow:none}
+.tp-seas .done[aria-selected="true"]{color:#fff;background:#9B7BFF}
+.tp-seas .none[aria-selected="true"]{color:var(--bg);background:var(--text)}
+.tp-seas [aria-selected="true"] small{opacity:.8}
+:root[data-theme="light"] .tp-seas .done{color:#6D48E0}
+:root[data-theme="light"] .tp-seas .prog{color:#8a5d00;background:rgba(255,196,46,.18)}
+:root[data-theme="light"] .tp-seas .prog[aria-selected="true"]{color:#1c1400;background:#ffc42e}
+:root[data-theme="light"] .tp-seas .done[aria-selected="true"]{color:#fff;background:#7B5CF0}
+/* episode: code line + title only, on our blurred "Watching now" card */
+.tp-ep{position:relative;isolation:isolate;overflow:hidden}
+.tp-ep .bdr{position:absolute;left:-16px;top:-31px;width:calc(100% + 31px);height:147px;z-index:-2;background:center/cover no-repeat;filter:blur(5px);opacity:.28}
+.tp-ep .scr{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(21,22,28,.10) 0%,rgba(21,22,28,.275) 35%,rgba(21,22,28,.45) 100%)}
+:root[data-theme="light"] .tp-ep .bdr{opacity:.6}
+:root[data-theme="light"] .tp-ep .scr{background:linear-gradient(90deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.42) 35%,rgba(255,255,255,.6) 100%)}
+.tp-ep .tx{gap:4px}
+.tp-ep .tx small{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+.tp-ep .tx small em{font-style:normal;font-weight:800;letter-spacing:.02em;color:var(--accent-fg)}
+.tp-ep .tx small i{font-style:normal;opacity:.6;color:var(--muted);font-weight:600}
+.tp-ep .tx b{font-size:15px}
+.w-main .tp-next{margin-top:22px}
+.tp-seas{flex-wrap:wrap;overflow:visible}
+
+/* ===== round 5 ===== */
+/* episode check: the same round mark as the Shows page (dark: glass ring · light: amber tick on frosted white) */
+.tp-ck{width:38px;height:38px;border-radius:50%;border:1px solid rgba(var(--glass),.12);background:rgba(var(--glass),.06);box-shadow:none;color:var(--text);padding:0;line-height:0;transition:transform 120ms var(--ease),background 160ms}
+.tp-ck svg{width:16px;height:12px;display:block}
+.tp-ck:hover{background:rgba(var(--glass),.12)}
+.tp-ck:active{transform:scale(.88)}
+.tp-ck.on{color:var(--ink);background:var(--amber);border-color:var(--amber)}
+:root[data-theme="light"] .tp-ck:not(.on){color:var(--amber);border-color:rgba(16,18,27,.2);background:rgba(255,255,255,.62)}
+:root[data-theme="light"] .tp-ck:not(.on) svg{filter:drop-shadow(0 0 .6px rgba(60,40,0,.85)) drop-shadow(0 1px 1px rgba(0,0,0,.18))}
+.w-page .tp-ck:not(.on){width:40px;height:40px;border-color:rgba(255,255,255,.2);background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff}
+.w-page .tp-ck.on{width:40px;height:40px}
+.w-page .tp-ck:not(.on):hover{background:rgba(255,196,46,.22);border-color:rgba(255,196,46,.6)}
+:root[data-theme="light"] .w-page .tp-ck:not(.on){color:var(--amber);background:rgba(255,255,255,.62);border-color:rgba(16,18,27,.2);-webkit-backdrop-filter:none;backdrop-filter:none}
+/* episode code: "S03 E06", the Shows page size */
+.tp-ep .tx small em{font-size:12.5px;font-weight:700;letter-spacing:0;font-variant-numeric:tabular-nums}
+.w-page .tp-ep .tx small em{font-size:13px}
+/* more like this = the Trending movies poster (app 104 · web 128); gallery + videos share that row height */
+.tp-rec{width:104px}
+.a-body .tp-recs{gap:10px}
+.a-body .tp-ph,.a-body .tp-vid{width:277px}
+.a-body .tp-gal,.a-body .tp-vids{gap:10px}
+.w-main .tp-recs,.w-main .tp-gal,.w-main .tp-vids{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.w-main .tp-recs::-webkit-scrollbar,.w-main .tp-gal::-webkit-scrollbar,.w-main .tp-vids::-webkit-scrollbar{display:none}
+.w-main .tp-rec{flex:none;width:128px;display:flex!important}
+.w-main .tp-ph,.w-main .tp-vid{flex:none;width:341px}
+/* confetti canvas */
+.tp-fx{position:absolute;inset:0;z-index:60;width:100%;height:100%;pointer-events:none}
+body > .tp-fx{position:fixed}
+.tp-mw .tp-mi b{white-space:nowrap}.tp-mw .tp-menu{min-width:250px}
+
+/* ---------- round 6 · app head like the reference: big poster, details beside it, Overview / Episodes tabs ---------- */
+.a-top{grid-template-columns:44px 1fr 88px}
+.a-rt{display:flex;justify-content:flex-end}
+.a-fav.on{color:var(--red)}
+.solid .a-fav.on{color:var(--red)}
+.a-hero{height:262px}
+.a-trh{top:126px}
+.a-mute{position:absolute;z-index:3;right:16px;bottom:62px;width:40px;height:40px;border:0;padding:0;border-radius:12px;display:grid;place-items:center;color:#fff;background:rgba(10,10,14,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);cursor:pointer}
+.a-mute svg{width:20px;height:20px}
+.a-head{margin-top:-62px;gap:16px;align-items:stretch}
+.a-head .po{width:146px;border-radius:14px}
+.a-head .in{justify-content:flex-end;gap:8px;padding:0 0 2px}
+.h-t{display:flex;align-items:flex-start;gap:6px}
+.h-t .tp-title{flex:1;min-width:0}
+.h-i{flex:none;width:30px;height:30px;margin:-3px -6px 0 0;border:0;padding:0;background:none;display:grid;place-items:center;color:var(--muted);cursor:pointer}
+.h-i svg{width:22px;height:22px}
+.a-head .tp-title{font-size:21px}
+.a-head .tp-logo{margin:0}
+.h-m{margin:2px 0 0;display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:13.5px;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums}
+.h-m .tp-cert{height:21px;font-size:11.5px}
+.h-g{margin:0;font-size:13px;font-weight:600;color:var(--muted)}
+.h-aw{margin:0;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;font-size:13px;font-weight:600;color:var(--muted)}
+.h-aw svg{width:16px;height:16px;flex:none;margin-right:-5px;color:var(--amber)}
+.h-aw b{font-weight:700;color:var(--amber)}
+:root[data-theme="light"] .h-aw svg,:root[data-theme="light"] .h-aw b{color:#8a5d00}
+.a-head .h-row{margin-top:2px}
+.a-head .h-row .tp-st{height:28px}
+/* the tabs: our segmented control — glass track, the chosen one in amber */
+.a-seg{display:flex;gap:2px;margin:20px 20px 0;padding:3px;border-radius:12px;background:rgba(var(--glass),.07)}
+.a-seg button{flex:1;min-width:0;height:38px;border:0;padding:0 10px;border-radius:9px;background:none;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:14.5px;font-weight:700;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+.a-seg button small{font-size:12px;font-weight:700;opacity:.7;font-variant-numeric:tabular-nums}
+.a-seg button[aria-selected="true"]{background:var(--amber);color:var(--ink);font-weight:800}
+.a-body{padding-top:20px}
+.a-body > .tp-rr{margin:18px -20px 0}
+.a-body > .tp-my + .tp-rr{margin-top:16px}
+.a-body > .tp-rr + .tp-next,.a-body > .tp-rr + .tp-tag,.a-body > .tp-rr + .tp-ov{margin-top:20px}
+.a-epv .tp-sec:first-child{margin-top:0}
+.a-epv .tp-sh{display:none}
+.a-head .tp-st{white-space:nowrap}
+.a-head .tp-st small{display:none}
+/* round 7 · episodes not out yet: the same countdown as the Upcoming cards — big number, "days" under it */
+.tp-cd{flex:none;min-width:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.tp-cd b{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--heading)}
+.tp-cd small{margin-top:3px;font-size:10px;font-weight:600;color:var(--muted)}
+.tp-cd.today small{margin:0 0 3px}
+.tp-cd.today b,.tp-cd.tba b{font-size:20px;color:var(--accent-fg)}
+.tp-cd.tba b{color:var(--muted)}
+.w-page .tp-cd{min-width:52px}
+.w-page .tp-cd b{font-size:32px}
+.w-page .tp-cd small{font-size:11.4px}
+.w-page .tp-cd.today b,.w-page .tp-cd.tba b{font-size:24px}
+
+/* ---------- round 8 · app: watchlist + where you are, our tabs, season cards that open, details in "…" ---------- */
+.tp-wst{flex:none;display:inline-flex;align-items:center;gap:7px;padding:0 4px 0 2px;font-size:14.5px;font-weight:800;white-space:nowrap}
+.tp-wst i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.tp-wst.prog{color:var(--accent-fg)}
+.tp-wst.done{color:#9B7BFF}
+:root[data-theme="light"] .tp-wst.done{color:#6D48E0}
+.tp-acts .tp-wst + .tp-main{flex:1}
+/* tabs: the Shows page tabs — text, amber underline */
+.a-tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;margin:20px 20px 0;border-bottom:1px solid var(--line)}
+.a-tabs .tab{height:40px;border:0;padding:0;background:none;font-size:15px;font-weight:500;color:var(--muted);cursor:pointer;transition:color .2s}
+.a-tabs .tab[aria-selected="true"]{color:var(--accent-fg);font-weight:700}
+.a-tabs .ind{position:absolute;left:0;bottom:-1px;width:50%;height:2px;border-radius:2px;background:var(--amber);transition:transform .25s var(--ease)}
+.a-tabs .ind.r{transform:translateX(100%)}
+/* episodes tab */
+.a-eh{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}
+.a-eh span{font-size:13.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.a-hide{flex:none;display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:0;border-radius:10px;font-size:13px;font-weight:700;color:var(--text);background:rgba(var(--glass),.08);cursor:pointer}
+.a-hide svg{width:17px;height:17px}
+.a-hide.on{color:var(--accent-fg);background:rgba(255,196,46,.13)}
+:root[data-theme="light"] .a-hide.on{background:rgba(255,196,46,.22)}
+.a-ssns{display:flex;flex-direction:column;gap:10px}
+.a-ssn{position:relative;overflow:hidden;display:flex;align-items:center;border-radius:14px;background:var(--surface);box-shadow:inset 0 0 0 1px rgba(var(--glass),.06)}
+:root[data-theme="light"] .a-ssn{box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.06)}
+.a-ssn .hd{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:16px 0 18px 16px;border:0;background:none;text-align:left;cursor:pointer}
+.a-ssn .t{display:inline-flex;align-items:center;gap:6px}
+.a-ssn .t b{font-family:var(--display);font-size:20px;font-weight:800;color:var(--heading);letter-spacing:-.01em}
+.a-ssn .t .cv{width:17px;height:17px;color:var(--muted);transition:transform .25s var(--ease)}
+.a-ssn.open .t .cv{transform:rotate(90deg)}
+.a-ssn .hd small{font-size:13.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.a-ssn > .tp-ck{margin-right:14px}
+.a-ssn .bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(var(--glass),.08)}
+.a-ssn .bar i{display:block;height:100%;background:var(--amber)}
+.a-ssn.done .bar i{background:#9B7BFF}
+:root[data-theme="light"] .a-ssn.done .bar i{background:#7B5CF0}
+.a-ssns > .tp-eps{margin:2px 0 6px}
+/* the app episode card = the website card */
+.a-body .tp-ep .im{width:136px}
+.tp-ep.hid .im{filter:blur(8px)}
+.tp-ep.hid .tx b{color:var(--muted)}
+/* "…" sheet carries the details and links now */
+.a-sheet .sh-in{max-height:calc(100% - 64px);overflow-y:auto;scrollbar-width:none}
+.a-sheet .sh-in::-webkit-scrollbar{display:none}
+.tp-mdet{margin-top:10px;padding:14px 6px 0}
+.tp-mdet .tp-mh{margin:0 0 12px}
+.tp-mdet .tp-facts{margin:0;gap:0}
+.tp-mdet .tp-facts div{grid-template-columns:118px minmax(0,1fr);padding:10px 0;border-bottom:1px solid var(--line)}
+.tp-mdet .tp-facts div:last-child{border-bottom:0}
+.tp-mdet .tp-links{margin-top:16px}
+
+/* ---------- round 9 · the "…" sheet in our system: bottom sheet, grouped cards of 50px rows ---------- */
+:root{--sheet:#111217}
+:root[data-theme="light"]{--sheet:#f5f5f7}
+.a-sheet .sh-in{left:0;right:0;bottom:0;max-height:86%;padding:8px 20px 38px;border-radius:22px 22px 0 0;background:var(--sheet);box-shadow:0 -1px 0 var(--line),0 -20px 60px rgba(0,0,0,.45)}
+:root[data-theme="light"] .a-sheet .sh-in{background:var(--sheet);box-shadow:0 -1px 0 var(--line),0 -20px 60px rgba(20,22,30,.18)}
+.a-sheet .grab{width:36px;height:5px;margin:0 auto 12px;background:rgba(var(--glass),.22)}
+.a-sheet .scrim{background:rgba(0,0,0,.6)}
+:root[data-theme="light"] .a-sheet .scrim{background:rgba(20,22,30,.35)}
+.tp-sheet{display:flex;flex-direction:column;gap:22px}
+.tp-sheet h3{margin:4px 2px -10px;font-family:var(--display);font-size:15.6px;font-weight:800;letter-spacing:.2px;color:var(--heading)}
+.tp-sheet .sgrp{display:flex;flex-direction:column;gap:7px}
+.tp-sheet .sgrp h2{margin:0 4px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tp-sheet .scard{background:var(--surface);border-radius:14px;overflow:hidden}
+:root[data-theme="light"] .tp-sheet .scard{box-shadow:0 0 0 1px rgba(16,18,27,.06)}
+.tp-sheet .scard > * + *{box-shadow:inset 0 1px 0 var(--line)}
+.tp-sheet .srow{position:relative;display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:9px 14px;border:0;background:none;color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.tp-sheet .srow:active{background:var(--surface-2)}
+.tp-sheet .sic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--accent-fg);background:rgba(255,196,46,.14)}
+:root[data-theme="light"] .tp-sheet .sic{background:rgba(255,196,46,.3)}
+.tp-sheet .sic svg{width:17px;height:17px}
+.tp-sheet .sic.red{color:#FF453A;background:rgba(255,69,58,.14)}
+:root[data-theme="light"] .tp-sheet .sic.red{color:#E5242B}
+.tp-sheet .stx{flex:1;min-width:0}
+.tp-sheet .stx b{font-size:14.5px;font-weight:700}
+.tp-sheet .fr{align-items:baseline;cursor:default;gap:16px}
+.tp-sheet .fr:active{background:none}
+.tp-sheet .fr .k{flex:none;font-size:13.5px;font-weight:500;color:var(--muted)}
+.tp-sheet .fr .v{flex:1;min-width:0;text-align:right;font-size:14.5px;font-weight:600;color:var(--text);line-height:1.35}
+.tp-sheet .ext{flex:none;font-size:15px;color:var(--accent-fg)}
+
+/* ---------- round 10 · links = the actor page's brand squares; heart = the profile heart; all caught up in green ---------- */
+.tp-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.tp-links .pw-lk{width:40px;height:40px;padding:0;border-radius:12px;display:grid;place-items:center;letter-spacing:0;text-transform:none;transition:transform .12s,filter .2s;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset}
+.tp-links .pw-lk:active{transform:scale(.94)}
+@media (hover:hover){.tp-links .pw-lk:hover{filter:brightness(1.08)}}
+.pw-lk.imdb{background:#F5C518}
+.pw-lk.ig{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%)}
+.pw-lk.x{background:#000;box-shadow:0 0 0 1px rgba(255,255,255,.18) inset}
+.pw-lk.web{background:#2b2d36;box-shadow:0 0 0 1px rgba(255,255,255,.14) inset}
+.pw-lk.fb{background:#1877F2}
+.pw-lk.wd{background:#fff;box-shadow:0 0 0 1px rgba(16,18,27,.1) inset}
+.a-body .tp-links .pw-lk,.tp-sheet .tp-links .pw-lk{width:38px;height:38px;border-radius:11px}
+.tp-sheet .tp-links{margin:0;padding:0 2px}
+.a-fav.on,.solid .a-fav.on{color:#FF3040}
+.tp-wst.ret{color:var(--green)}
+/* round 12 · website backdrop: a little soft, so the page reads on top of it */
+.w-bd{filter:blur(6px) saturate(1.05)}
+/* round 13 · backdrop guard: a veil in the page colour, as strong as the still is bright (dark theme) or dark (light theme) */
+.w-bd{clip-path:inset(0)}
+.w-dim{position:absolute;left:50%;width:100vw;margin-left:-50vw;top:-64px;height:720px;pointer-events:none;background:linear-gradient(180deg,rgba(var(--bg-rgb),var(--dim,0)) 0%,rgba(var(--bg-rgb),var(--dim,0)) 70%,rgba(var(--bg-rgb),0) 100%);transition:background .4s}
+
+/* round 14 · app: "Details ›" under the overview, opening crew + facts in place */
+.tp-dt{display:inline-flex;align-items:center;gap:3px;margin-top:8px;min-height:36px;padding:0;border:0;background:none;color:var(--accent-fg);font-size:15px;font-weight:700;cursor:pointer}
+.tp-dt .cv{width:17px;height:17px;transition:transform .25s var(--ease)}
+.tp-dt[aria-expanded="true"] .cv{transform:rotate(90deg)}
+.tp-inl{margin-top:10px;gap:18px}
+.tp-inl .scard{background:var(--surface)}
+:root[data-theme="dark"] .tp-inl .scard{background:#121319}
+
+/* round 15 · details open as a plain list (label column + value), seasons redesigned */
+.tp-dl{margin:6px 0 0;padding:0}
+.tp-dl > div{display:grid;grid-template-columns:118px minmax(0,1fr);gap:14px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line)}
+.tp-dl > div:last-child{border-bottom:0}
+.tp-dl dt{font-size:14.5px;font-weight:500;color:var(--muted)}
+.tp-dl dd{margin:0;font-size:15.5px;font-weight:600;color:var(--heading);line-height:1.4}
+/* season card: artwork-first, progress inside, mark on the right */
+.a-ssns{gap:10px}
+.a-ssn{display:flex;align-items:center;gap:6px;padding:10px 14px 10px 10px;border-radius:16px;background:var(--surface);box-shadow:inset 0 0 0 1px rgba(var(--glass),.06);overflow:visible}
+.a-ssn .hd{flex:1;min-width:0;display:flex;flex-direction:row;align-items:center;gap:14px;padding:0;border:0;background:none;text-align:left;cursor:pointer}
+.a-ssn .po{flex:none;width:52px;aspect-ratio:2/3;border-radius:9px;display:grid;place-items:center;font-family:var(--display);font-size:14px;font-weight:800;color:var(--muted);background:var(--ph) center/cover no-repeat;box-shadow:inset 0 0 0 1px rgba(var(--glass),.1)}
+.a-ssn .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.a-ssn .t{display:inline-flex;align-items:center;gap:4px}
+.a-ssn .t b{font-family:var(--display);font-size:17px;font-weight:800;color:var(--heading);letter-spacing:-.01em}
+.a-ssn .t .cv{width:16px;height:16px;color:var(--muted);transition:transform .25s var(--ease)}
+.a-ssn.open .t .cv{transform:rotate(90deg)}
+.a-ssn .tx > small{font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.a-ssn .pg{display:flex;align-items:center;gap:10px;margin-top:5px}
+.a-ssn .bar{position:static;flex:1;height:4px;border-radius:2px;background:rgba(var(--glass),.1);overflow:hidden}
+.a-ssn .bar i{display:block;height:100%;border-radius:2px;background:var(--amber)}
+.a-ssn .pg em{flex:none;font-style:normal;font-size:12.5px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
+.a-ssn.prog .pg em{color:var(--accent-fg)}
+.a-ssn.done .bar i{background:#9B7BFF}
+.a-ssn.done .pg em{color:#9B7BFF}
+:root[data-theme="light"] .a-ssn.done .bar i{background:#7B5CF0}
+:root[data-theme="light"] .a-ssn.done .pg em{color:#6D48E0}
+.a-ssn > .tp-ck{margin:0 0 0 8px}
+.tp-dl + .a-eh{margin-top:26px}
+
+/* round 16 · season cards: the poster, blurred behind the card (our episode-card treatment); links live in Details */
+.a-ssn{position:relative;isolation:isolate;overflow:hidden}
+.a-ssn .bdr{position:absolute;inset:-30px;z-index:-2;background:center/cover no-repeat;filter:blur(18px) saturate(1.2);opacity:.38}
+.a-ssn .scr{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(21,22,28,.35) 0%,rgba(21,22,28,.6) 45%,rgba(21,22,28,.78) 100%)}
+:root[data-theme="light"] .a-ssn .bdr{opacity:.55}
+:root[data-theme="light"] .a-ssn .scr{background:linear-gradient(90deg,rgba(255,255,255,.3) 0%,rgba(255,255,255,.6) 45%,rgba(255,255,255,.78) 100%)}
+.a-ssn .pg{margin-top:7px}
+.a-ssn .bar{background:rgba(var(--glass),.14)}
+.tp-dl .lk{align-items:center}
+.tp-dl .lk .tp-links{margin:0;gap:8px}
+.tp-dl .lk .tp-links .pw-lk{width:36px;height:36px;border-radius:10px}
+
+/* ---------- round 17 · comments (simple, TV Time-style) ---------- */
+.tp-cm .tp-sh small{letter-spacing:0;font-size:13px;font-weight:700;text-transform:none}
+.cm-add{display:flex;align-items:center;gap:12px;width:100%;height:54px;padding:0 14px 0 10px;border:0;border-radius:14px;background:var(--surface);box-shadow:inset 0 0 0 1px rgba(var(--glass),.08);cursor:text;text-align:left}
+.cm-add .ph{flex:1;min-width:0;font-size:15px;color:var(--muted)}
+.cm-add .ic{display:flex;gap:12px;color:var(--muted)}
+.cm-add .ic svg{width:21px;height:21px}
+:root[data-theme="light"] .cm-add{background:#fff;box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.08)}
+.cm-av{flex:none;width:38px;height:38px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--ph)}
+.cm-av img{width:100%;height:100%;object-fit:cover;display:block}
+.cm-av.me{width:34px;height:34px}
+.cm-av.sm{width:28px;height:28px}
+.cm-av.ini{background:hsl(var(--h) 42% 34%);color:#fff;font-size:15px;font-weight:800}
+.cm-av.sm.ini{font-size:12px}
+.cm-list{margin-top:6px}
+.cm{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;padding:16px 0}
+.cm + .cm{border-top:1px solid var(--line)}
+.cm-h{display:flex;align-items:center;gap:8px;min-height:22px}
+.cm-h b{min-width:0;font-size:14.5px;font-weight:700;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-t{flex:none;font-size:12.5px;font-weight:500;color:var(--muted)}
+.cm-dots{flex:none;margin-inline-start:auto;width:28px;height:24px;border:0;padding:0;border-radius:8px;display:grid;place-items:center;background:none;color:var(--muted);cursor:pointer}
+.cm-dots svg{width:17px;height:17px}
+.cm-x{margin:3px 0 0;font-size:15px;line-height:1.45;color:var(--text);white-space:pre-line;overflow-wrap:anywhere;text-align:start}
+.cm-x.clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+.cm-x.sp{filter:blur(6px);user-select:none;pointer-events:none}
+.cm-at{color:var(--accent-fg);font-weight:600}
+.cm-mo{display:inline-block;margin-top:4px;padding:0;border:0;background:none;font-size:13.5px;font-weight:700;color:var(--dim);cursor:pointer}
+.cm-spb{display:inline-flex;margin-top:6px;height:28px;align-items:center;padding:0 10px;border:0;border-radius:8px;background:rgba(var(--glass),.08);font-size:12.5px;font-weight:700;color:var(--text);cursor:pointer}
+.cm-m{position:relative;margin-top:10px;width:min(100%,260px);max-height:240px;border-radius:12px;overflow:hidden;background:var(--ph);box-shadow:inset 0 0 0 1px rgba(var(--glass),.06)}
+.cm-m img{display:block;width:100%;height:100%;object-fit:cover}
+.cm-m i{position:absolute;left:8px;bottom:8px;height:18px;padding:0 5px;border-radius:5px;display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:800;letter-spacing:.04em;color:#fff;background:rgba(0,0,0,.62)}
+.cm-a{display:flex;align-items:center;gap:18px;margin-top:8px}
+.cm-a button{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0;border:0;background:none;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.cm-a svg{width:18px;height:18px}
+.cm-lk.on{color:#FF3040}
+.cm-vr{display:inline-flex;align-items:center;gap:10px;margin-top:8px;height:26px;padding:0;border:0;background:none;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.cm-vr i{width:22px;height:1px;background:currentColor;opacity:.6}
+.cm-reps{margin-top:4px}
+.cm.rp{grid-template-columns:28px minmax(0,1fr);gap:10px;padding:10px 0 2px;border:0}
+.cm.rp .cm-h b{font-size:13.5px}.cm.rp .cm-x{font-size:14.5px}
+.cm-all{display:flex;align-items:center;justify-content:center;width:100%;height:48px;margin-top:6px;border:0;border-radius:12px;background:rgba(var(--glass),.07);font-size:15px;font-weight:700;color:var(--text);cursor:pointer}
+:root[data-theme="light"] .cm-all{background:#fff;box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.08)}
+.cm-empty{margin:14px 0 0;font-size:14px;color:var(--muted)}
+.cm-empty:empty{display:none}
+@media (hover:hover){.cm-all:hover{background:rgba(var(--glass),.11)}.cm-a button:hover,.cm-vr:hover,.cm-dots:hover{color:var(--text)}.cm-lk.on:hover{color:#FF3040}}
+.w-main .tp-cm{max-width:760px}
+.w-main .cm-m{width:min(100%,360px);max-height:380px}
+.w-main .cm-all{width:auto;padding:0 22px;display:inline-flex}
+
+/* ---------- round 18 · Comments page ---------- */
+.cm-hd{width:100%;border:0;padding:0;background:none;cursor:pointer;text-align:left;align-items:center}
+.cm-hd .cv{width:20px;height:20px;margin-inline-start:auto;color:var(--muted)}
+.cm-all{gap:6px}.cm-all .cv{width:17px;height:17px;color:var(--muted)}
+/* app page */
+.phone.cp .a-nav{display:none}
+.cp-top{position:absolute;z-index:20;top:0;left:0;right:0;height:104px;padding:56px 10px 0;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;background:var(--bg);box-shadow:0 1px 0 var(--line)}
+.cp-top .a-ib{color:var(--text);filter:none}
+.cp-tt{display:flex;flex-direction:column;align-items:center;line-height:1.2;min-width:0}
+.cp-tt b{font-family:var(--display);font-size:17px;font-weight:800;color:var(--heading)}
+.cp-tt small{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+:root[data-theme="light"] .phone.cp .sbar{color:#15161c}
+.cp-scroll{padding:104px 20px 150px}
+.cp-sort{position:relative;display:flex;gap:26px;margin:14px 0 2px;border-bottom:1px solid var(--line)}
+.cp-sort button{position:relative;height:42px;padding:0;border:0;background:none;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer}
+.cp-sort button[aria-selected="true"]{color:var(--accent-fg);font-weight:800}
+.cp-sort button[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;background:var(--amber)}
+.cp-end{margin:18px 0 0;text-align:center;font-size:13px;color:var(--muted)}
+.cp-empty{display:flex;flex-direction:column;align-items:center;gap:6px;padding:70px 20px;text-align:center;color:var(--muted)}
+.cp-empty svg{width:34px;height:34px;margin-bottom:6px}.cp-empty b{font-size:16px;color:var(--heading)}.cp-empty span{font-size:14px}
+/* writing bar */
+.cp-box{display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:10px;row-gap:6px;align-items:start}
+.cp-box textarea{width:100%;min-height:40px;max-height:120px;padding:9px 0;border:0;outline:0;resize:none;background:none;font:inherit;font-size:15px;line-height:1.45;color:var(--text)}
+.cp-box textarea::placeholder{color:var(--muted)}
+.cp-box .cm-av{margin-top:3px}
+.cp-tools{grid-column:2;display:flex;align-items:center;gap:4px}
+.cp-tools > button{height:32px;min-width:32px;padding:0 6px;border:0;border-radius:9px;background:none;display:inline-grid;place-items:center;color:var(--muted);cursor:pointer;font-size:12.5px;font-weight:700}
+.cp-tools svg{width:21px;height:21px}
+.cp-spt{box-shadow:inset 0 0 0 1.2px rgba(var(--glass),.2);padding:0 9px!important}
+.cp-spt.on{color:var(--accent-fg)!important;box-shadow:inset 0 0 0 1.2px var(--amber)}
+.cp-tools .cp-send{margin-inline-start:auto;width:36px;height:36px;border-radius:11px;background:var(--amber);color:var(--ink)}
+.cp-send svg{width:18px;height:18px}
+.cp-send:disabled{background:rgba(var(--glass),.1);color:var(--muted);cursor:default}
+.phone .cp-box{position:absolute;z-index:25;left:0;right:0;bottom:0;padding:12px 16px 30px;background:var(--bg);border-top:1px solid var(--line)}
+/* website page */
+.cp-wg{padding-top:40px}
+.cp-side{gap:18px}
+.cp-st{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:270px}
+.cp-st b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1;color:var(--heading)}
+.cp-back{display:inline-flex;align-items:center;gap:4px;margin-top:6px;height:36px;padding:0 12px 0 6px;border:0;border-radius:10px;background:rgba(var(--glass),.07);font-size:14px;font-weight:700;color:var(--text);cursor:pointer}
+.cp-back svg{width:18px;height:18px}
+.cp-main{max-width:760px}
+.cp-box.big{padding:16px 16px 12px;border-radius:16px;background:var(--surface);box-shadow:inset 0 0 0 1px rgba(var(--glass),.08);grid-template-columns:38px minmax(0,1fr)}
+.cp-box.big .cm-av{width:38px;height:38px}
+.cp-box.big textarea{min-height:64px}
+.cp-box.big .cp-send{width:auto;padding:0 18px;font-size:14px;font-weight:800}
+:root[data-theme="light"] .cp-box.big{background:#fff;box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.08)}
+.cp-main .cp-sort{margin-top:22px}
+body.cp .w-bd,body.cp .w-sh,body.cp .w-dim{display:none}
+@media (hover:hover){.cp-tools > button:not(:disabled):hover{color:var(--text)}.cp-tools .cp-send:not(:disabled):hover{color:var(--ink);filter:brightness(1.06)}.cp-back:hover{background:rgba(var(--glass),.12)}}
+@media (max-width:860px){.cp-st{width:auto}}
+/* app writing bar: one row at rest; Spoiler appears once you type */
+.phone .cp-box{display:flex;align-items:flex-end;gap:8px;padding:10px 12px 30px 14px}
+.phone .cp-box .cm-av{margin:0 2px 3px 0}
+.phone .cp-box textarea{flex:1;min-width:0;min-height:40px;padding:9px 12px;border-radius:12px;background:var(--surface);box-shadow:inset 0 0 0 1px rgba(var(--glass),.08)}
+:root[data-theme="light"] .phone .cp-box textarea{background:#fff;box-shadow:0 0 0 1px rgba(16,18,27,.1)}
+.phone .cp-tools{display:contents}
+.phone .cp-tools > button{margin-bottom:4px}
+.phone .cp-tools .cp-send{margin:0 0 2px}
+.phone .cp-spt{display:none!important}
+.phone .cp-box.typing{flex-wrap:wrap}
+.phone .cp-box.typing .cp-spt{display:inline-grid!important}
+.phone .cp-box.typing{flex-wrap:nowrap}
+.phone .cp-box.typing .cp-tools > button:not(.cp-spt):not(.cp-send){display:none}
+
+/* r19: horizontal rails clip the hover lift (overflow-x:auto forces overflow-y to clip) — give them room above and below */
+.w-main .tp-cast,.w-main .tp-recs,.w-main .tp-gal,.w-main .tp-vids{padding-top:10px;margin-top:-10px;padding-bottom:12px;margin-bottom:-8px}
+/* r19 · season cards without posters: a number tile coloured by where you are, title, progress, check */
+.a-ssn{padding:14px;align-items:center;border-radius:18px;overflow:hidden;background:var(--surface);box-shadow:inset 0 0 0 1px rgba(var(--glass),.07)}
+:root[data-theme="light"] .a-ssn{background:#fff;box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.07)}
+.a-ssn .bdr,.a-ssn .scr{display:none}
+.a-ssn .hd{align-items:center;gap:14px}
+.a-ssn .no{flex:none;width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--muted);background:rgba(var(--glass),.06);box-shadow:inset 0 0 0 1px rgba(var(--glass),.08);font-variant-numeric:tabular-nums}
+.a-ssn.prog .no{color:#ffc42e;background:rgba(255,196,46,.13);box-shadow:inset 0 0 0 1px rgba(255,196,46,.28)}
+.a-ssn.done .no{color:#B7A0FF;background:rgba(155,123,255,.15);box-shadow:inset 0 0 0 1px rgba(155,123,255,.3)}
+:root[data-theme="light"] .a-ssn.prog .no{color:#8a5d00;background:rgba(255,196,46,.2);box-shadow:inset 0 0 0 1px rgba(200,140,0,.25)}
+:root[data-theme="light"] .a-ssn.done .no{color:#6D48E0;background:rgba(109,72,224,.1);box-shadow:inset 0 0 0 1px rgba(109,72,224,.22)}
+.a-ssn .tx{justify-content:center;padding:0;gap:3px}
+.a-ssn .t b{font-size:17px}
+.a-ssn .tx > small{font-size:13px}
+.a-ssn .pg{margin-top:8px;gap:10px}
+.a-ssn .bar{height:4px}
+.a-ssn .pg em{min-width:34px;text-align:right}
+.a-ssn > .tp-ck{align-self:center;margin:0 0 0 12px}
+/* r19 · selected "done" season chip: our completed-purple tint (like the Ended badge), not a solid lilac block */
+.tp-seas .done[aria-selected="true"]{color:#B7A0FF;background:rgba(155,123,255,.22);box-shadow:inset 0 0 0 1.5px #9B7BFF}
+.tp-seas .done[aria-selected="true"] i{background:#9B7BFF}
+:root[data-theme="light"] .tp-seas .done[aria-selected="true"]{color:#5B36D6;background:rgba(109,72,224,.14);box-shadow:inset 0 0 0 1.5px #6D48E0}
+:root[data-theme="light"] .tp-seas .done[aria-selected="true"] i{background:#6D48E0}
+/* r19 · web: the same "Hide titles" switch as the app, beside Mark season */
+.tp-sm .tp-hide{margin-left:auto;color:var(--text);background:rgba(var(--glass),.09)}
+.tp-sm .tp-hide + button{margin-left:0}
+.tp-sm .tp-hide.on{color:var(--accent-fg);background:rgba(255,196,46,.13)}
+:root[data-theme="light"] .tp-sm .tp-hide.on{background:rgba(255,196,46,.22)}
+</style></head>
+<body><div class="ctl" id="ctl"></div><div class="app-stage"><div class="phone"><div class="sbar"><span>9:41</span><i class="cam"></i><span class="ic">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.1-1.1A10 10 0 0 0 8 .6 10 10 0 0 0 .9 3.5L2 4.6a8.4 8.4 0 0 1 6-2.4zm0 3.2c1.4 0 2.7.5 3.7 1.4l1.1-1.1A7 7 0 0 0 8 3.8a7 7 0 0 0-4.8 1.9l1.1 1.1c1-.9 2.3-1.4 3.7-1.4zm0 3.2c.6 0 1.1.2 1.5.6L8 10.7 6.5 9.2c.4-.4.9-.6 1.5-.6z"/></svg>
+        <svg class="batt" width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="currentColor"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" opacity=".45"/></svg>
+      </span></div>
+<div id="tp" style="position:absolute;inset:0"></div><nav class="a-nav"><button type="button" aria-label="Shows" data-soon="Shows"><svg viewBox="26.6 0 24 24" width="24" height="24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor" stroke-width="1.7"><path d="M46.6 7H30.6C29.5 7 28.6 7.9 28.6 9V20C28.6 21.1 29.5 22 30.6 22H46.6C47.7 22 48.6 21.1 48.6 20V9C48.6 7.9 47.7 7 46.6 7Z"/><path d="M43.6 2L38.6 7L33.6 2"/></svg></button><button type="button" aria-label="Movies" data-soon="Movies"><svg viewBox="26.6 0 24 24" width="24" height="24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor" stroke-width="1.7"><path d="M45.6 3H31.6C30.5 3 29.6 3.9 29.6 5V19C29.6 20.1 30.5 21 31.6 21H45.6C46.7 21 47.6 20.1 47.6 19V5C47.6 3.9 46.7 3 45.6 3Z"/><path d="M33.6 3V21"/><path d="M29.6 7.5H33.6"/><path d="M29.6 12H47.6"/><path d="M29.6 16.5H33.6"/><path d="M43.6 3V21"/><path d="M43.6 7.5H47.6"/><path d="M43.6 16.5H47.6"/></svg></button><button type="button" aria-label="Search" data-soon="Search"><svg viewBox="26.6 0 24 24" width="24" height="24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor" stroke-width="1.7"><path d="M37.6 19C42.02 19 45.6 15.42 45.6 11C45.6 6.58 42.02 3 37.6 3C33.18 3 29.6 6.58 29.6 11C29.6 15.42 33.18 19 37.6 19Z"/><path d="M47.6 21L43.3 16.7"/></svg></button><button type="button" aria-label="Profile" data-soon="Profile"><span class="av">K</span></button></nav><div class="a-home"></div></div></div><div class="tp-toast" id="toast" role="status"></div>
+<script>window.TP={kind:"movie",mode:"app"};</script><script>/* TVTracker titles — read from tvtracker.tv /api/v1/media (movies/shows + seasons), Oct 7 2026. Image ids are TMDB paths. */
+window.TT_DATA = {
+movies: {
+ ody: {"id": 1368337, "t": "The Odyssey", "lg": "kX6ZX4GL7km04332caiOVapR2lb.png", "la": 3.311, "tag": "Defy the gods.", "ov": "Odysseus, the legendary King of Ithaca, embarks on a long and perilous journey home following the Trojan War. Throughout his voyage, he is forced to confront the whims of gods, mythological monsters, and trials that stretch both his cunning and his humanity to the breaking point.", "po": "5rhTDKUhPYvpdQIijFIs5VoWsON", "bd": "bulFtfy3oBQtCnAMSi7g6DSSds3", "rel": "2026-07-15", "rt": 173, "cert": "R", "g": ["Adventure", "Action", "Fantasy"], "kw": ["ship", "trojan war", "greek mythology", "historical fiction", "ancient world", "period drama", "based on song, poem or rhyme", "greek history", "voyage", "peplum"], "r": {"imdb": 8.4, "imdb_votes": 477953, "rt": 93, "mc": 88, "app": 9.1, "app_count": 61}, "aw": "3 wins total", "dir": "Christopher Nolan", "wr": "Christopher Nolan, Homer", "lang": "English", "bud": 250000000, "rev": 1767464000, "cast": [["Matt Damon", "Odysseus", "aCvBXTAR9B1qRjIRzMBYhhbm1fR"], ["Tom Holland", "Telemachus", "xKBAaPIa1c7tzZD3Y0MhBLv4hPE"], ["Anne Hathaway", "Penelope", "nbccV2pMoyLTCeg5DQip24Eq0Jp"], ["Robert Pattinson", "Antinous", "3qZ09UE7lN6AtorfXFRYpEtSY93"], ["Himesh Patel", "Eurylochus", "icqsXLmU0FxBGTv63kkA0GcrecO"], ["Charlize Theron", "Calypso", "gd7ShD0yt4bsR2STeQ19KQ6hvXL"], ["John Leguizamo", "Eumaeus", "kwYCdxTlDh9zauUCg4mp2XTCQTw"], ["Travis Scott", "Bard", "eBdm7HQS6lLGg4BocgfoJ5qB9yp"], ["Corey Hawkins", "Polybus", "wRt0Bc0chN5BSjvYzmg2evgqNzp"], ["Jarreth J. Merz", "Leodes", "ze8WDEujZmTXdCLcUy0IaymwlcS"]], "vid": [["AyIZ9tiiN8I", "Official Countdown Trailer"], ["f_bKjZeJBBI", "Official New Trailer"], ["Mzw2ttJD2qQ", "Official Trailer"], ["aUWTVfwdm-c", "The EPIC journey of The Odyssey will be back in IMAX this FRIDAY"], ["uZR0s1THqg0", "The Odyssey has officially reached $1B worldwide"], ["p6W3EWqpvZ4", "See it to believe it."]], "imgs": ["bulFtfy3oBQtCnAMSi7g6DSSds3", "twiVn9oFXOVR0uoYgawyEBlnFu8", "r57L2UBLPKcHdZQYg8tagv9XqK2", "n3D2Lmwomtbc4SZFO8hLtLL0b5q", "kGCOfQpITTI0rKzrVMRGOFteszf", "iuylzRSllrGn7YB322kwKoOVMcq", "qaWgqQdJwohmc4XK4iXAiZiPOKH", "wkEZ7YmWdn7GeFBoNz2RAiLlwDB"], "prov": [], "rec": [["Troy", "a07wLy4ONfpsjnBqMwhlWTJTcm"], ["Conan the Barbarian", "qw2A587Ee61IwcSOLNFRhuOACZZ"], ["Immortals", "4SPPX5KIyaQ9O8n5rLvvUIiIhpF"], ["Dragonheart: Vengeance", "qs6gz6atyQcAvqC6qZaslOjliUG"], ["The Legion", "6ssoBXQOxNhrsGJoM6Tcvm57V79"], ["Mythica: The Iron Crown", "8y3G8g7E7SXZ74XDt6gaxyfELse"], ["Game of Thrones The IMAX Experience", "f2FAIM29opSocIEvNvT7Muinga0"], ["Hercules", "sKNIwY6UENCJ36FvYvnBW3Vdzt7"], ["Alexander", "jrwQu72sGwGqwE8Ijne89PSIvhp"], ["The Golden Voyage of Sinbad", "2DQPnuAjD7H4ae6BeBAVhu9RLWa"]], "my": {"watched": "2026-08-12", "rating": 10}},
+ phm: {id:687163,t:"Project Hail Mary",lg:"jvqIELbZctv3Jqtcc7Ic5of8vY7.png",la:2.294,lgl:"jd78iUDLmzE7E4kdmODfNDkl6Uz.png",tag:"Believe in the Hail Mary.",ov:"Science teacher Ryland Grace wakes up on a spaceship light years from home with no recollection of who he is or how he got there. As his memory returns, he begins to uncover his mission: solve the riddle of the mysterious substance causing the sun to die out. He must call on his scientific knowledge and unorthodox ideas to save everything on Earth from extinction.",
+  po:"iOb2fjXLbpJgyQXe46n1WtGCnaa",bd:"8Tfys3mDZVp4tNoH2ktm06a0Tau",rel:"2026-03-20",rt:157,cert:"PG-13",g:["Science Fiction","Adventure"],
+  kw:["space mission","interspecies friendship","based on novel or book","memory loss","astronaut","science teacher","save the planet","alien","language barrier","spaceship"],
+  r:{imdb:8.2,imdb_votes:433769,rt:95,mc:77,app:7.9,app_count:39},aw:"7 wins & 11 nominations",dir:"Phil Lord, Christopher Miller",wr:"Drew Goddard, Andy Weir",lang:"English",bud:200000000,rev:684586806,
+  cast:[["Ryan Gosling","Ryland Grace","lyUyVARQKhGxaxy0FbPJCQRpiaW"],["Sandra Hüller","Eva Stratt","jQfKXVCPTH9KEnzHHU4QemCnlMe"],["James Ortiz","Rocky (voice)","unzBwVsoq8rAH8BAYlPR1zsWQ4E"],["Lionel Boyce","Carl","hpIxX5nkfA3pWCW8rYkEUCSBVyS"],["Milana Vayntrub","Olesya Ilyukhina","i5Cou9ExwTZvRRtl79V75CsI7oC"],["Ken Leung","Yao","hpatUP6u74gkpDRmn9voNY9V43O"],["Priya Kansara","Mary (voice)","zv9kpaQ8AVBfjI2LAAZV58NeVQg"],["Mia Soteriou","Dr. Browne","bU4Twfk4as290gPFouByj7Wjd2"],["Annelle Olaleye","Olivia","V0UqW30EQaHjGhwDnb6dT0AWmz"],["Maya Eva Hosein","Rekha","lDHbsnyUoBzmtbMevNl4F2n8B8B"]],
+  vid:[["P0XN3-n-2Lo","Final Trailer"],["m08TxIsFTRI","Official Trailer"],["5VYsnngkS_U","Official Trailer 2"],["tvd7UUHzdhA","International Trailer"],["eSGTui-T-4Q","Time Go"],["d6CvWul8YCc","We Got Range"]],
+  imgs:["wLWvHcQz7N13DvSOTV7bHgwGXpT","afHAM9qOTmrVDeaLIU7zfssotUY","2I1OFQJ0L9T0dpU6FobKFWV2PxX","qL4dBGLkWOVP5vImN7EEoqJQYd8","fFyLcR22R4ynrecqjMniKXm0UTp","o2xLxY1LdwBMsrGD9hjIaOrIQm6","ckgitpsGKUFVO8yHinQdKSSyrFC","xQRNN12LePQqqIbhP6xP5X212HG"],
+  prov:[["Prime Video","gMZdpavHmxFNnLpMHwVxfqeux2g.png"]],
+  rec:[["Interstellar","yQvGrMoipbRoddT0ZR8tPoR7NfX"],["Gravity","kZ2nZw8D681aphje8NJi8EfbL1U"],["Solaris","drdrB1hEZmzFlK1xtW5HMxK3LUJ"],["Stowaway","eFyRjhJfhNgM565U2mwEp5YUUOv"],["Guardians of the Galaxy","r7vmZjiyZw9rpJMQJdXpjgiCOk9"],["The Adam Project","wFjboE0aFZNbVOF05fzrka9Fqyx"],["Star Trek Beyond","wI5VghYNYLktDRPUa5rrVcVA1h7"],["John Carter","lCxz1Yus07QCQQCb6I0Dr3Lmqpx"],["Enemy Mine","a3dr9L8VIjhEvivzQ2M12VQDere"],["The Dead Zone","9yTVaeS8eIkOpbwIycVFm7EQrgF"]],
+  my:{watched:"2026-03-23",rating:6}},
+ doom: {id:1003596,t:"Avengers: Doomsday",lg:"ggTGX5lMwzoSbm2WmlAFBK0EQdO.png",la:2.508,tag:"",ov:"Beloved heroes from three distinct universes are set on a deadly collision course and face an existential threat unlike anything they've ever encountered.",
+  po:"jzPwsojjFStf5lR5Nm07w2hH56G",bd:"s4v0UX1anfXm0UvloLsTTJ4v222",rel:"2026-12-18",rt:165,cert:"",g:["Science Fiction","Action","Adventure"],
+  kw:["superhero","based on comic","sequel","superhero team","marvel cinematic universe (mcu)","team up","multiverse"],
+  r:null,aw:"",dir:"Anthony Russo, Joe Russo",wr:"Stephen McFeely, Michael Waldron",lang:"English",bud:0,rev:0,col:"The Avengers Collection",
+  cast:[["Robert Downey Jr.","Victor von Doom / Doctor Doom","5qHNjhtjMD4YWH3UP0rm4tKwxCL"],["Chris Evans","Steve Rogers","3bOGNsHlrswhyW79uvIHH1V43JI"],["Chris Hemsworth","Thor","piQGdoIQOF3C1EI5cbYZLAW1gfj"],["Pedro Pascal","Reed Richards / Mister Fantastic","oKcMbVn0NJTNzQt0ClKKvVXkm60"],["Paul Rudd","Scott Lang / Ant-Man","6jtwNOLKy0LdsRAKwZqgYMAfd5n"],["Anthony Mackie","Sam Wilson / Captain America","vecvTm7SimizluJkyIwBxeLbvRm"],["Florence Pugh","Yelena Belova","2URrZb95t3kY6pLroKny3Enmabp"],["Vanessa Kirby","Sue Storm / Invisible Woman","a8a9U00KL2JJkkekzhNnueIGKKF"],["Channing Tatum","Gambit","4TpgnS6l8YUXSne9Av9nda6mjxY"],["Ian McKellen","Magneto","5cnnnpnJG6TiYUSS7qgJheUZgnv"]],
+  vid:[["irVNGjRFZGk","Official Trailer"],["X1aFkAkFASk","Special Look"],["lqBdGDi3akg","Get ready for Doomsday."],["nxDMRvDr4AQ","Silence Your Phones"],["1clWprLC5Ak","Thor Will Return"],["UiMg566PREA","Steve Rogers Will Return"]],
+  imgs:["6KDDoTq8Vq3HuQHULzuvPiCJbMI","uttJRcb0wwlrH71w7PQNr8AktD2","4NxnrRmI7goXMsRASwSegf50MC8","yCYr9M2kkqkTOQWEf9pftNUpuhW","5ZjwGeiGGq11UpxhmZlOtGEO3Zt","nigNaieYLG1tvEbsXFU4BJeo8EU","1jcDh8qBFzInFjTO5pdYZfDeh7a","eMhwKEmBXtJ8eJx7Xx8M4mb9emI"],
+  prov:[],
+  rec:[["Avengers: Endgame","ulzhLuWrPK07P1YkdWQLZnQh1JL"],["Avengers: Infinity War","7WsyChQLEftFiDOVTGkv3hFpyyt"],["Captain America: Civil War","rAGiXaUfPzY7CDEyNKUofk3Kw2e"],["Guardians of the Galaxy Vol. 3","r2J02Z2OpNTctfOSN1Ydgii51I3"],["Guardians of the Galaxy Vol. 2","y4MBh0EjBlMuOzv9axM4qJlmhzz"],["Iron Man 2","6WBeq4fCfn7AN0o21W9qNcRF2l9"],["Dark Phoenix","cCTJPelKGLhALq3r51A9uMonxKj"],["Justice League","eifGNCSDuxJeS1loAXil5bIGgvC"]],
+  my:{}}
+},
+shows: {
+ sev: {id:95396,t:"Severance",lg:"yyS1tALk7t3YdTNMOvR5gsnXINA.png",la:6.024,lgl:"ygo4s437axWFO04ksOX0kAexi2n.png",tag:"There's more to work than life.",ov:"Mark leads a team of office workers whose memories have been surgically divided between their work and personal lives. When a mysterious colleague appears outside of work, it begins a journey to discover the truth about their jobs.",
+  po:"pPHpeI2X1qEd1CS1SeyrdhZ4qnT",bd:"ixgFmf1X59PUZam2qbAfskx2gQr",first:"2022-02-17",last:"2025-03-20",st:"Returning Series",ns:2,ne:19,cert:"TV-MA",g:["Drama","Mystery","Sci-Fi & Fantasy"],
+  kw:["office","workplace","memory","office politics","brain surgery","thriller"],r:{imdb:8.6,imdb_votes:385489,rt:null,mc:null,app:7.3,app_count:170},net:"Apple TV",by:"Dan Erickson",
+  cast:[["Adam Scott","Mark Scout","b82C29R6fGiPoqIglQ4lzS6q2YX",19],["Britt Lower","Helly Riggs","5XIcTMDSyj7hRICQAcnY9U83ujF",19],["Tramell Tillman","Seth Milchick","bEA15zMnkcXlRroYjKrFUWiiK7y",19],["Zach Cherry","Dylan George","fT3Wv8ef0Vn0daHWAObCp2Bd4Y",19],["Patricia Arquette","Harmony Cobel","jeThSouMatiuRiLkjDvSBLHpmq0",19],["John Turturro","Irving Bailiff","6O9W9cJW0kCqMzYeLupV9oH0ftn",19],["Christopher Walken","Burt Goodman","ApgDL7nudR9T2GpjCG4vESgymO2",19],["Dichen Lachman","Ms. Casey","yLrpMHBNtuUAu3M9EjaYHnn5EEY",19],["Jen Tullock","Devon Scout-Hale","91vck8hZ1VZGV6PTcwFWEEdzGE0",19],["Michael Chernus","Ricken Hale","tqtVxv36oQf4LlHpR3nlfUCm6M4",13]],
+  vid:[["xEQP4VVuyrY","Official Trailer"],["dTqlZkvbNVg","Official Teaser"],["ufaAnhgiERE","Mark and Helly: A Love Story"],["NmS3m0OG-Ug","Opening Title Sequence"],["h61VI_62KYA","Britt Lower's Casting Tape"]],
+  imgs:["9xDCTGhEWpz206PCiimRGmK67rV","r9KaBE7i4ovg8uSppQrCp6ZdPD9","npD65vPa4vvn1ZHpp3o05A5vdKT","8MtMFngDWvIdRo34rz3ao0BGBAe","5OsiT39OiZNdD0v2LiAcI2TpSYj","nNt41AqlnyLMgtiyfiVuS2O8ES9","nFWN7E5n170YN8SdxekuDEv0qTE"],
+  prov:[],
+  rec:[["Mr. Mercedes","zZm3LidCf6Edv6yX3WMKo6KwICg"],["The Capture","6keUrgntgKt299a39UJCDYldb8b"],["Rabbit Hole","zb5MArsrMxK4mSSLzUmbfcXAc60"],["Behind Her Eyes","sfd90NIf778KoBFmpdBTow4xTm7"],["Emergence","xqquBr7LURe9CWTbCkMnvXtsilu"],["The Rook","wwAy8PF5fx1ttY5T4pltL2vxNgs"],["Stitchers","wriOiQ3rdPhoMe1NofcLJRx9fns"],["XIII: The Series","jGr9iZFXCl8XOnHOAj17AYz85fr"]],
+  seasons:[[1,"2022-02-17","lFf6LLrQjYldcZItzOkGmMMigP7"],[2,"2025-01-16","Rb7sga832Cyqvafd7CqOzbwdK4"]],
+  eps:{1:[[1,"Good News About Hell","2022-02-17",59,8.1,"sP3GZe9j7BY3CAyZGFuZxxnGpN1"],[2,"Half Loop","2022-02-17",57,8,"wIQP0P2tyE7VRIN3xR8Efq7UgKt"],[3,"In Perpetuity","2022-02-24",60,7.7,"yezUFOqLt0U3haSYc5gIBzfsPvo"],[4,"The You You Are","2022-03-03",50,8.2,"dzQJeDznS0I4spAqTImiLH9p252"],[5,"The Grim Barbarity of Optics and Design","2022-03-10",47,7.7,"oy4BZotFbNX5YoPkWuWF3kcdMVw"],[6,"Hide and Seek","2022-03-17",44,7.9,"3fQp0pUtgDkqqyEbXY8KKCZPMU7"],[7,"Defiant Jazz","2022-03-24",53,8.9,"gHoKlbC2esqq3SXm0ZCcl3bzpFZ"],[8,"What's for Dinner?","2022-03-31",50,8.9,"8Gv9ELume0jo7gz7R2h4tPmVLsD"],[9,"The We We Are","2022-04-07",44,9.7,"dzx8D2B0ELncXuCNwtPCags43Q"]],
+   2:[[1,"Hello, Ms. Cobel","2025-01-16",54,8,"a97vNY8Knu45FLQib0uQZ2VReLy"],[2,"Goodbye, Mrs. Selvig","2025-01-23",49,8.2,"wjlSkqMoLngSO6fv2Ajt2CIeCSi"],[3,"Who Is Alive?","2025-01-30",57,8.5,"j4AUAq1XJOBmfXsLphZzsCz6pZs"],[4,"Woe's Hollow","2025-02-06",54,8.9,"mioOOhTaShLd1MPKsmfirbe9AwI"],[5,"Trojan's Horse","2025-02-13",50,8.1,"7Gw2DWAbhsBREKFbM2S0h5sD0tL"],[6,"Attila","2025-02-20",52,8.3,"l9CC3onLMDBDKxs6Ie0yIWI8VmC"],[7,"Chikhai Bardo","2025-02-27",53,9.1,"dmzBzYcEtjOYJO46p7kyRmYrHZu"],[8,"Sweet Vitriol","2025-03-06",41,6.6,"piWjCKARsSkmr9kMKHZ5ynengj3"],[9,"The After Hours","2025-03-13",48,8.1,"2RJaWjY4dD5s7jpdo2aGeSLmtI3"],[10,"Cold Harbor","2025-03-20",80,9.4,"gXUvGwpZxrpqMRouxM7yI28lgNa"]]}},
+ bb: {id:1396,t:"Breaking Bad",lg:"chw44B2VnLha8iiTdyZcIW0ZELC.png",la:1.678,lgl:"ojzKpMUAcA91P6wF0TfCyAvvYLw.png",tag:"Change the equation.",ov:"Walter White, a New Mexico chemistry teacher, is diagnosed with Stage III cancer and given a prognosis of only two years left to live. He becomes filled with a sense of fearlessness and an unrelenting desire to secure his family's financial future at any cost as he enters the dangerous world of drugs and crime.",
+  po:"anFx9aTOOYqgS3v7x3R84Kz67ly",bd:"tsRy63Mu5cu8etL1X7ZLyf7UP1M",first:"2008-01-20",last:"2013-09-29",st:"Ended",ns:5,ne:62,cert:"TV-MA",g:["Drama","Crime"],
+  kw:["new mexico","drug dealer","high school teacher","meth lab","drug lord","terminal illness","dark comedy","tragedy","crime"],r:{imdb:9.5,imdb_votes:2671962,rt:96,mc:null,app:7.6,app_count:555},net:"AMC",by:"Vince Gilligan",
+  cast:[["Bryan Cranston","Walter White","7Jahy5LZX2Fo8fGJltMreAI49hC",62],["Aaron Paul","Jesse Pinkman","8Ac9uuoYwZoYVAIJfRLzzLsGGJn",62],["Anna Gunn","Skyler White","adppyeu1a4REN3khtgmXusrapFi",62],["Dean Norris","Hank Schrader","mKRrEbsxAX3ro700HsViFArRM7l",62],["RJ Mitte","Walter White Jr.","sNPA92ZrssYhlaB1UA2pWcLD9db",62],["Betsy Brandt","Marie Schrader","xAnuzyjdMbQq9L1c4JNwXL52Wm4",62],["Bob Odenkirk","Saul Goodman","rF0Lb6SBhGSTvjRffmlKRSeI3jE",43],["Jonathan Banks","Mike Ehrmantraut","bswk26L13PvY4iMTwUTAsepXCLv",36],["Giancarlo Esposito","Gustavo Fring","MJOo4QZgMAb3y8QzOUDVFQusQZ",28],["Steven Michael Quezada","Steven Gomez","pVYrDkwI6GWvCNL2kJhpDJfBFyd",33]],
+  vid:[["VFkjBy2b50Q","Full Series Trailer"]],
+  imgs:["q4js3LcDAYXyK8lLYggfCGecOOO","wbfg0y8Ptk472rLa9e3TTO9XVNh","sp1RSDvoVsbvDouQx1A75ebU35e","wSztOsbdspDi0E6dWU1cxNmYDV9","n3u3kgNttY1F5Ixi5bMY9BwZImQ","84XPpjGvxNyExjSuLQe0SzioErt","63FA8vwSZnXkGxedrDQwni4JuZN"],
+  prov:[["Netflix","rK1KljqmbvO9HQa1PBFLILWah72.png"]],
+  rec:[["Better Call Saul","fC2HDm5t0kHl7mTm7jxMR31b7by"],["Narcos","rTmal9fDbwh5F0waol2hq35U4ah"],["Narcos: Mexico","aXwMx8OvRFMfI1RmkbJm6Bq1jVg"],["Snowfall","y7ntzl7msiaS6o7dvDbNG7XFYcR"],["Dark Winds","kDlrMN0P9ByrEH2GoRbBFeZHbcf"],["Animal Kingdom","rzvdKrnSRKPFI0pgqMQknDPpRC9"],["Hannibal","pbV2eLnKSIm1epSZt473UYfqaeZ"],["The Penguin","vOWcqC4oDQws1doDWLO7d3dh5qc"]],
+  seasons:[[1,"2008-01-20","1BP4xYv9ZG4ZVHkL7ocOziBbSYH"],[2,"2009-03-08","e3oGYpoTUhOFK0BJfloru5ZmGV"],[3,"2010-03-21","ffP8Q8ew048YofHRnFVM18B2fPG"],[4,"2011-07-17","5ewrnKp4TboU4hTLT5cWO350mHj"],[5,"2012-07-15","r3z70vunihrAkjILQKWHX0G2xzO"]],
+  eps:{1:[[1,"Pilot","2008-01-20",59,9,"ydlY3iPfeOAvu8gVqrxPoMvzNCn"],[2,"Cat's in the Bag...","2008-01-27",49,8.6,"AbMoecO0ZZio0LcgeLxlzdyGs6X"],[3,"...And the Bag's in the River","2008-02-10",49,8.7,"vlgGfjtuO2WSLT7qYDVlvTpSVW"],[4,"Cancer Man","2008-02-17",49,8.2,"i5BAJVhuIWfkoSqDID6FnQNCTVc"],[5,"Gray Matter","2008-02-24",49,8.3,"82G3wZgEvZLKcte6yoZJahUWBtx"],[6,"Crazy Handful of Nothin'","2008-03-02",49,9.3,"rCCLuycNPL30W3BtuB8HafxEMYz"],[7,"A No Rough Stuff Type Deal","2008-03-09",48,8.8,"1dgFAsajUpUT7DLXgAxHb9GyXHH"]],
+   2:[[1,"Seven Thirty-Seven","2009-03-08",48,8.6,"6Uo1z56uKnX60JXvYYFWACHR31u"],[2,"Grilled","2009-03-15",48,9.3,"th3SNe0gNgRguv8VveLd4f2JcaH"],[3,"Bit by a Dead Bee","2009-03-22",47,8.3,"abgJTOWYPdZGxAWhsg6lmtM8qcU"],[4,"Down","2009-03-29",48,8.2,"gMXeL0qcQZi5Tfd4UhnkRJeI9oa"],[5,"Breakage","2009-04-05",48,8.2,"bPQxF63jhfT5eNYjhzuGEO7oMQg"],[6,"Peekaboo","2009-04-12",48,8.8,"tfCuh20gNHGGF6A1te3NmiqML6D"],[7,"Negro y Azul","2009-04-19",48,8.6,"1IOnhCCeru1BZUPeppu7tMmtxvL"],[8,"Better Call Saul","2009-04-26",48,9.2,"KmFdF23FtbPwwz3FJF2T885r2Z"],[9,"4 Days Out","2009-05-03",48,9.2,"etUWlVbdQ7PzbGeUOBNpmFRm1Z9"],[10,"Over","2009-05-10",48,8.4,"wGobAJ0h54788xCMkRKaJTQMMtq"],[11,"Mandala","2009-05-17",48,8.9,"yeQAQsV4WPTmKWTyuDhF3DAna1x"],[12,"Phoenix","2009-05-24",48,9.3,"zxFfozd55eJ6Aa4J0pd3SRqJl5l"],[13,"ABQ","2009-05-31",48,9.3,"xdSWJjptnLAvFnh5Is6iJPlH1ds"]],
+   3:[[1,"No Más","2010-03-21",48,8.5,"g4taqxGFx9z8ovHhiaa2jvQFd0Z"],[2,"Caballo sin Nombre","2010-03-28",48,8.6,"eQYTr6cH834QyF3cE1VQymwolE1"],[3,"I.F.T.","2010-04-04",48,8.4,"jH2nkMFxuX5tXc832jyDNU4AjKq"],[4,"Green Light","2010-04-11",48,8.2,"1Se5PpvIgUey9MgXmrKkgO8HVye"],[5,"Más","2010-04-18",48,8.3,"m2cipfAKEdLR4MIZKA3EiOcTYiZ"],[6,"Sunset","2010-04-25",48,9.3,"sl5zRr0u0kYcIyCdQjOTsexq4bL"],[7,"One Minute","2010-05-02",48,9.6,"4yyVAkAQhzc5URhJJiy21biH3FJ"],[8,"I See You","2010-05-09",48,8.7,"vTP1Z3Ysmj7BCudHKOh4zHiSyPf"],[9,"Kafkaesque","2010-05-16",48,8.4,"ztG7AnGy4YKs1vxLbpK9euPwjaK"],[10,"Fly","2010-05-23",48,7.9,"vpXc5zctIc2N0PQif3fG0TGypaX"],[11,"Abiquiu","2010-05-30",48,8.4,"llw7fwOmOMs6OSqwK96XrPPQZD3"],[12,"Half Measures","2010-06-06",48,9,"mOvMekI0YKm20I42XK93mPCQ4ru"],[13,"Full Measure","2010-06-13",48,9.7,"mDUs18asTVVfqd56scRQ7W9r781"]],
+   4:[[1,"Box Cutter","2011-07-17",48,9.2,"1voCxDEPeYXcKAaoDvdGUMyAjps"],[2,"Thirty-Eight Snub","2011-07-24",46,8.2,"ra0R3q9jEOObo6gspjYcbqPmIM"],[3,"Open House","2011-07-31",47,7.9,"Ac0wu93r4LaZk07wa7PiWpNOOru"],[4,"Bullet Points","2011-08-07",46,8.5,"gzHp77NjrkDOu9sgkLB5PYmwArK"],[5,"Shotgun","2011-08-14",48,8.2,"wbCdpu4qlciRQMyKmcstoadcFak"],[6,"Cornered","2011-08-21",48,8.1,"3tuFJVKzlWRqstoAOxwWF6lPzJY"],[7,"Problem Dog","2011-08-28",48,8.8,"gXYKZO4nTsDrAc2AjJOhjJkwu1V"],[8,"Hermanos","2011-09-04",48,9.3,"vf9uFwIaZRLKv8npuz3eJJnjd99"],[9,"Bug","2011-09-11",48,8.9,"bIU8FJxe1yXvMm7yREwj138Z6x8"],[10,"Salud","2011-09-18",48,9.1,"dBrs0Npmn76g81yel2mjK7mTaOj"],[11,"Crawl Space","2011-09-25",47,9.3,"mySdUn0ab1rrWUuoribRZilCqAF"],[12,"End Times","2011-10-02",46,9.5,"ffIjlpJndsel3FkPMpHCnpJ71lw"],[13,"Face Off","2011-10-09",51,9.9,"Apl61kYZF2zQlUMh13t8zmUD7Vr"]],
+   5:[[1,"Live Free or Die","2012-07-15",43,9.2,"uShB5dWoA3xIivZ9jvwWnGCVvt4"],[2,"Madrigal","2012-07-22",48,8.4,"9WIzJqqUthdASBRE1Ts8ymrDhIv"],[3,"Hazard Pay","2012-07-29",48,8.8,"l84H1dZVkQGgFVomKHc67RKaEC2"],[4,"Fifty-One","2012-08-05",48,8.8,"zxcf3ER2rzU9IxCxJEhCCw1MyT"],[5,"Dead Freight","2012-08-12",49,9.7,"ay9uj9CMQJezaB407JCPMDYSptK"],[6,"Buyout","2012-08-19",48,9,"6SHawaVRg4Iw3Ry2adH29TjHYhK"],[7,"Say My Name","2012-08-26",48,9.6,"2NA7ti9jsWnG4xreMEFwbq4DH1f"],[8,"Gliding Over All","2012-09-02",48,9.6,"uTAPBgAah14jQbV98Sw7iqJD4W7"],[9,"Blood Money","2013-08-11",48,9.4,"uvxl7TMG4dZG9D5bzzQzKqfUdnD"],[10,"Buried","2013-08-18",48,9.2,"b0aRvTXslQgJpCmmcmoYqS9MsIB"],[11,"Confessions","2013-08-25",48,9.6,"75lrTEzbUh4iZlMs0aN4mKisD4C"],[12,"Rabid Dog","2013-09-01",48,9.1,"5VkI8lm7Xcmlxk92pWRyW341d70"],[13,"To'hajiilee","2013-09-08",47,9.8,"lunoCRprYl0jEJEkGTS8v6eFq1n"],[14,"Ozymandias","2013-09-15",48,10,"k80r5JYO4LLrPJbWDXmlg7IxRMI"],[15,"Granite State","2013-09-22",54,9.7,"pkAdPUHvRlvTnz2uA0gAQiGXpos"],[16,"Felina","2013-09-29",56,9.9,"pA0YwyhvdDXP3BEGL2grrIhq8aM"]]}},
+ n99: {id:90669,t:"1899",lg:"3YwGvXVF7ChuRLEJml7a11pZced.png",la:2.632,tag:"What is lost will be found.",ov:"When mysterious events change the course of an immigrant ship headed for New York in 1899, a mind-bending riddle unfolds for its bewildered passengers.",
+  po:"gZleGu1MQVBArH2dlpZ9CGi0hhy",bd:"s1xnjbOIQtwGObPnydTebp74G2c",first:"2022-11-17",last:"2022-11-17",st:"Canceled",ns:1,ne:8,cert:"TV-MA",g:["Mystery","Drama","Sci-Fi & Fantasy"],
+  kw:["ship","atlantic ocean","immigration","bermuda triangle","mind game","19th century","psychological","dystopia"],r:{imdb:7.3,imdb_votes:121809,rt:null,mc:null,app:6.9,app_count:53},net:"Netflix",by:"Jantje Friese, Baran bo Odar",
+  cast:[["Emily Beecham","Maura Franklin","u3Jgk4v7L23lKRQ9qxGJYmRkY4m",8],["Andreas Pietschmann","Eyk Larsen","72Srjd11dwvovxe1tyUKU0ml04u",8],["Aneurin Barnard","Daniel Solace","oTMljk89o91IXbHjxW6evuH146J",8],["Isabella Wei","Ling Yi","863I3NEUFweCkN6Ck9dYnMcZAkx",8],["Maciej Musiał","Olek","3KmxHoayvqeHcgDaz7lSVLRDYED",8],["Yann Gaël","Jérôme","605oiV6iBp2aOa2SdqaoASVvmtz",8],["Miguel Bernardeau","Ángel","aPyvMBnGaTeWkMStdHvdiiWxpBQ",8],["Clara Rosager","Tove","aHV34ftsFREjRNaQtG23mqJP2Ae",8]],
+  vid:[["ulOOON_KYHs","Official Teaser"],["soj6bA35ABk","Teaser"],["NMuXoFboAok","Opening Credits"],["5vWt49oXINg","Behind the Scenes"]],
+  imgs:["oZMEWCcnFWGdp4W4ICdJgkw1RYf","17ochH0jVxpyTiw4ltOhx9ffcef","7J2mdNKT9QD0krlkeWtPTJL9Gu3","e4ZaAO0FcxQ0ZkhVP4k93c5NgNC","7nx66dfu5y2Gba7IZaUum9pjjoC","v0dGVocmMDrsfgyueGV1lpm7WJJ"],
+  prov:[["Netflix","rK1KljqmbvO9HQa1PBFLILWah72.png"]],
+  rec:[["Lost","og6S0aTZU6YUJAbqxeKjCa3kY1E"],["The Terror","fUVn5mScv83FfwrRUUR694yA7bd"],["Tales from the Loop","56D0QFyLhrRp1ZTBz8Gw10qtZas"],["Travelers","aUVeyeyTrQrSFuUkqLCT8FtV7pp"],["The Institute","7JXZdWifaa6wL0XLRi0GJOlOA8y"],["Outcast","x6ZCpAPDTAHuNxBGq5nU4nqpfYA"],["Emergence","xqquBr7LURe9CWTbCkMnvXtsilu"],["The Changeling","cLUeNjCHs8q4crMTyywflohSD8w"]],
+  seasons:[[1,"2022-11-17","AwEiWloKPoDKpX0U6Bxme2kRef0"]],
+  eps:{1:[[1,"The Ship","2022-11-17",61,7.9,"wIzaoG6G66bnKwIRG8l3ON4Y7XP"],[2,"The Boy","2022-11-17",58,6.9,"2ffk4q6vDJPmfu7eDL861FUPhN1"],[3,"The Fog","2022-11-17",63,7,"5eQz3JrVjgIxBdx8Xzz7FuSnaQo"],[4,"The Fight","2022-11-17",51,7.9,"r0S2PJuCKigFPANObm6RHbdAwIw"],[5,"The Calling","2022-11-17",51,8.4,"zBEozE5hfYS3NV4TWu3A38f3zYQ"],[6,"The Pyramid","2022-11-17",55,7.2,"aRS9YNYnzZk84sbUCYHzSfu17FB"],[7,"The Storm","2022-11-17",54,8.1,"r7RVWXNtymGzSZW6cFsQdqWqDcq"],[8,"The Key","2022-11-17",51,8.4,"eXwaOsyUN6QxtlzG4Edni1uZ5Wq"]]}},
+ hp: {id:224377,t:"Harry Potter",lg:"3qI4kiM8oasvuQhr7cslPzbuLno.png",la:2.439,tag:"",ov:"There is nothing special about Harry Potter — at least that's what his Aunt Petunia always says. On his 11th birthday, a letter of admittance to Hogwarts School of Witchcraft and Wizardry opens up a hidden world for Harry: one of fun, friendship and magic. But with this new adventure comes great risk as Harry is forced to face a dangerous enemy from his past.",
+  po:"SJCnXVBJZh7X7ePLt6XMp6TZAj",bd:"g0VmjKGMyipJSlPwlQvlLBvXTAQ",first:"2026-12-25",last:null,st:"In Production",ns:1,ne:1,cert:"TV-14",g:["Sci-Fi & Fantasy","Action & Adventure","Family"],
+  kw:["based on novel or book","wizard","magic","boarding school"],r:null,net:"HBO",by:"",
+  cast:[["Dominic McLaughlin","Harry Potter","bwowrScWZtW7L3gDMFHxdOPEcsc"],["Arabella Stanton","Hermione Granger","xbX7L0K6tRMoJmUx7Bbk6ffpGSH"],["Alastair Stout","Ron Weasley","eqznoIiN7AkDUW683dTMjZaJtq9"],["John Lithgow","Albus Dumbledore","ajfuBSm1HuVqFJlbTmAlza62Xxr"],["Janet McTeer","Minerva McGonagall","qOKAI6aunD4J5MXiwwomAhI3jI2"],["Paapa Essiedu","Severus Snape","qOPbY9zD3DHXzLnu0U9aNKT6Y7t"],["Nick Frost","Rubeus Hagrid","2CHS4t6miNGLgMQAjhFqb4fFuKS"],["Lox Pratt","Draco Malfoy","7emX09ZcVBJ91TsS9qYy8EayoFU"]],
+  vid:[["SJVmeJaS44s","Official Teaser Trailer"],["RIu4sFKGi6E","Official Teaser"],["cGtI2MuCfTw","Announcement"],["Yp320m3O0io","Back To Hogwarts"]],
+  imgs:["tmIRaZtKBlqFbvFFLSIzy7E75Ju","4tEUXihJT4nIHj6V41UUZzdXzGZ","sYRC6gXSNHBeTkda5xTKHXBAVfp","5Dyl2vj73s7S6NhIBtNbBLlZPmH","liHWCTCi3PK56P7fUJrxhu4OuJZ","lqezKRfI8g8Fnjn6N2g918HDFI6"],
+  prov:[],
+  rec:[["Game of Thrones","1XS1oqL89opfnbLl8WnZY1O1uJx"],["The Witcher","AoGsDM02UVt0npBA8OvpDcZbaMi"],["The Witcher: Blood Origin","vpfJK9F0UJNcAIIeC42oJyKMnZQ"],["Legend of the Seeker","ibclBUwEjsvfi8hpdO2i9jdOMUI"],["Emerald City","xjJSsAMd1kQrIslv4qHSMyGx9UT"],["Cursed","wrLC5kx0nEq9U0MyJD7dnOT6m5F"]],
+  seasons:[[1,"2026-12-25","qQotjS5zzzqoc7jjxMdsKXN9DGu"]],
+  eps:{1:[[1,"Episode 1","2026-12-25",null,0,null]]}}
+}};
+
+/* TVTracker titles — production companies, networks, crew, links, comment counts. Read from tvtracker.tv /api/v1/media, Oct 7 2026. */
+window.TT_EXTRA = {"ody":{"pc": [["Universal Pictures", "8lvHyhjr8oUKOOy2dKXoALWKdp0.png"], ["Syncopy", "3tvBqYsBhxWeHlu62SIJ1el93O7.png"]], "nets": [], "crew": [["Director", "Christopher Nolan"], ["Writer", "Christopher Nolan"], ["Producer", "Christopher Nolan"], ["Producer", "Emma Thomas"], ["Director of Photography", "Hoyte van Hoytema"]], "ex": {"home": "https://www.universalpictures.com/movies/the-odyssey", "imdb": "tt33764258", "fb": "OdysseyMovie", "ig": "theodysseymovie", "x": "odysseymovie", "wd": "Q131547207"}, "cc": 11, "country": ["United Kingdom", "United States of America"]},"phm":{"pc":[["Lord Miller","fAajboa3w8LNvweN0hNZ4K0z03L.png"],["Amazon MGM Studios","g5oRCNCi8kNVb8gEoSoIcqkhjmR.png"],["Pascal Pictures","nw4kyc29QRpNtFbdsBHkRSFavvt.png"],["Open Invite Entertainment","87yLRX32cLqxEhNy1fWkDrPL72v.png"],["Waypoint Entertainment","buyfiDYTfPVTHxvYZ4yHu69zFPs.png"]],"nets":[],"crew":[["Producer","Rachel O'Connor"],["Director of Photography","Greig Fraser"],["Producer","Ryan Gosling"],["Director","Phil Lord"],["Director","Christopher Miller"],["Producer","Amy Pascal"],["Producer","Christopher Miller"],["Producer","Phil Lord"],["Producer","Andy Weir"],["Producer","Aditya Sood"],["Screenplay","Drew Goddard"]],"ex":{"home":"https://www.amazon.com/salp/projecthailmary?hhf","imdb":"tt12042730","fb":"ProjectHailMary","ig":"projecthailmary","x":"projecthailmary","wd":"Q107105860"},"cc":4,"country":["United States of America"]},"doom":{"pc":[["Marvel Studios","hUzeosd33nzE5MCNsZxCGEKTXaQ.png"],["Kevin Feige Productions",""],["AGBO","psd84iF7PTGrKf4yFOStKj8JbAh.png"]],"nets":[],"crew":[["Producer","Kevin Feige"],["Director","Joe Russo"],["Writer","Stephen McFeely"],["Director","Anthony Russo"],["Director of Photography","Newton Thomas Sigel"],["Writer","Michael Waldron"],["Producer","Jonathan Schwartz"],["Producer","Louis D'Esposito"],["Writer","Chris McKenna"],["Writer","Erik Sommers"]],"ex":{"home":"https://www.marvel.com/movies/avengers-doomsday","imdb":"tt21357150","fb":"avengers","ig":"avengers","x":"Avengers","wd":"Q113244839"},"cc":0,"country":["United States of America"]},"sev":{"pc":[["Endeavor Content","5BR67T28TVm2UMH8GCRDftafsaJ.png"],["Red Hour","4uLKLjGivVg2YnAIhAn8k7ZuVFj.png"],["Fifth Season","crrgXvLhDO9c57HYrbO4H58Vxmb.png"],["Animals & People",""],["Westward","rvmwTPf8K4tMFCSqzS4rKs9K0Eo.png"]],"nets":[["Apple TV","bngHRFi794mnMq34gfVcm9nDxN1.png"]],"crew":[["Producer","Jessica Lee Gagné"],["Producer","Sean Fogel"],["Producer","Wei-Ning Yu"]],"ex":{"home":"https://tv.apple.com/show/umc.cmc.1srk2goyh2q2zdxcx605w8vtx","imdb":"tt11280740","fb":"","ig":"","x":"","wd":"Q101096725"},"cc":0,"country":["United States of America"]},"bb":{"pc":[["Sony Pictures Television","wHs44fktdoj6c378ZbSWfzKsM2Z.png"],["High Bridge Productions","2jdh2sEa0R6y6uT0F7g0IgA2WO8.png"],["Gran Via Productions",""]],"nets":[["AMC","pmvRmATOCaDykE6JrVoeYxlFHw3.png"]],"crew":[["Producer","Bryan Cranston"],["Producer","Diane Mercer"],["Producer","Stewart Lyons"]],"ex":{"home":"https://www.sonypictures.com/tv/breakingbad","imdb":"tt0903747","fb":"BreakingBad","ig":"breakingbad","x":"BreakingBad","wd":"Q1079"},"cc":0,"country":["United States of America"]},"n99":{"pc":[["Dark Ways","gTvqcnjV4g53GJ0Txyq7AqwJy3E.png"]],"nets":[["Netflix","wwemzKWzjKYJFfCeiB57q3r4Bcm.png"]],"crew":[["Producer","Pat Tookey-Dickson"],["Director of Photography","Nikolaus Summerer"]],"ex":{"home":"https://www.netflix.com/title/80214497","imdb":"tt9319668","fb":"","ig":"netflix1899","x":"","wd":"Q98446867"},"cc":0,"country":["Germany"]},"hp":{"pc":[["Brontë Film & TV",""],["Warner Bros. Television","pJJw98MtNFC9cHn3o15G7vaUnnX.png"],["Heyday Films","nu20mtwbEIhUNnQ5NXVhHsNknZj.png"],["HBO","tuomPhY2UtuPTqqFnKMVHvSb724.png"]],"nets":[["HBO","tuomPhY2UtuPTqqFnKMVHvSb724.png"],["HBO Max","gqWI9y0owo9sxgzZD7TXOeILYI9.png"]],"crew":[],"ex":{"home":"https://www.harrypotter.com/series","imdb":"tt13918446","fb":"harrypotter","ig":"harrypotter","x":"","wd":"Q117662601"},"cc":0,"country":["United Kingdom","United States of America"]}};
+
+window.TVT_LOGO="data:image/png;base64,[STRIPPED 3KB]";</script><script>/* Real comments on The Odyssey, read from tvtracker.tv /api/v1/media/movie/1368337/comments (sort=top), Oct 8 2026. Avatars, photos and GIFs inlined. */
+window.TT_CM = {"ody": {"n": 11, "list": [{"id": 737, "u": "kazm", "n": "KAZM", "b": "masterpiece", "sp": false, "l": 1, "d": "2026-08-12T19:59", "rep": [], "at": [["gif", "data:image/gif;base64,[STRIPPED 472KB]", 200, 152]]}, {"id": 920, "u": "kazm", "n": "KAZM", "b": "", "sp": false, "l": 0, "d": "2026-08-19T19:43", "rep": [{"id": 950, "u": "zas", "n": "𝐸 = 𝑚𝑐²", "b": "🤣🤣🤣🤣🤣😂😂😂😂😂🤣🤣🤣🤣🤣🤣🤣🤣@kazm", "sp": false, "l": 0, "d": "2026-08-21T10:10", "rep": []}, {"id": 924, "u": "mohamedzahra384", "n": "Denera", "b": "اختصرت الفلم @kazm", "sp": false, "l": 1, "d": "2026-08-19T20:12", "rep": []}], "at": [["photo", "data:image/jpeg;base64,[STRIPPED 24KB]", 720, 588]]}, {"id": 798, "u": "6b_bq", "n": "B Q", "b": "العمل بكل صدق يستاهل 10/10 \nاداء صوتيات شخصيات تركيز على شخصيه اغممينون لجذب انتباه المشاهد بالاستايل الروماني الشهير و ضخامه بنيته الجسديه استغلال \nتم بصوره فوق الناجحه ومعانى شخصيه اوديسيوس نتيجه اخطا التي ارتكبها و نتاج افعاله و ندمه على قراراته نتيجه تعرضه وتعرض جنوده للمخاطر بكل صفاتها وابدا لن ننسى العبقري بكل شي \nكريستوفر نولان \n\nتقيم \nالفلم 10 \nصوتيات 10 \nشخصيات 10 \nاداء تمثيلي 10 \nتصوير 10", "sp": false, "l": 3, "d": "2026-08-15T14:40", "rep": [{"id": 834, "u": "zas", "n": "𝐸 = 𝑚𝑐²", "b": "@6b_bq  تتوقع يفوز بلاوسكار الفلم؟", "sp": false, "l": 0, "d": "2026-08-16T11:16", "rep": []}]}, {"id": 774, "u": "mohamedzahra384", "n": "Denera", "b": "Robert act was so convincing", "sp": false, "l": 3, "d": "2026-08-13T20:10", "rep": [{"id": 776, "u": "zas", "n": "𝐸 = 𝑚𝑐²", "b": "@mohamedzahra384 The main evil character🫦🤣", "sp": false, "l": 0, "d": "2026-08-13T20:13", "rep": []}], "at": [["photo", "data:image/jpeg;base64,[STRIPPED 30KB]", 720, 360]]}, {"id": 415, "u": "zas", "n": "𝐸 = 𝑚𝑐²", "b": "My fov movie", "sp": false, "l": 3, "d": "2026-08-08T18:03", "rep": [], "at": [["gif", "data:image/gif;base64,[STRIPPED 1190KB]", 200, 134]]}, {"id": 800, "u": "ea980000", "n": "Enas 𓇼", "b": "عالمي🔥🔥🔥", "sp": false, "l": 2, "d": "2026-08-15T17:59", "rep": []}, {"id": 793, "u": "cy8tgnpr98", "n": "F", "b": "Damn, now i want to watch more about greek mythology 😒", "sp": false, "l": 2, "d": "2026-08-15T13:15", "rep": [{"id": 833, "u": "zas", "n": "𝐸 = 𝑚𝑐²", "b": "@cy8tgnpr98 watch  troy", "sp": false, "l": 0, "d": "2026-08-16T11:15", "rep": []}]}, {"id": 772, "u": "mohamedzahra384", "n": "Denera", "b": "It was thrilling and inspiring the music was very good and very mesmerizing specially when i saw Zendaya in the scenes of athica and the act of anne was amazing , i hoped i have seen more of the real story scenes  in the movie", "sp": false, "l": 2, "d": "2026-08-13T20:07", "rep": [{"id": 777, "u": "zas", "n": "𝐸 = 𝑚𝑐²", "b": "@mohamedzahra384  i wanna watch  the movie  again 😞😞😞😞😞❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥", "sp": false, "l": 0, "d": "2026-08-13T20:16", "rep": []}, {"id": 775, "u": "zas", "n": "𝐸 = 𝑚𝑐²", "b": "صدك جذب ماكو اطول من هيج  تعليق🤣🤣🤣🤣🤣@mohamedzahra384", "sp": false, "l": 0, "d": "2026-08-13T20:12", "rep": []}]}, {"id": 1218, "u": "msasuke", "n": "MOUAFAQ", "b": "Watching The Odyssey on imax was the most hoo lee shit experience I’ve ever had", "sp": false, "l": 1, "d": "2026-07-31T00:00", "rep": []}, {"id": 909, "u": "haiderfadel.work", "n": "Haider Fadel", "b": "Ohhhhhhh", "sp": false, "l": 0, "d": "2026-08-17T19:21", "rep": []}, {"id": 7123, "u": "katpearson", "n": "Kat Pearson", "b": "Pray for forgiveness", "sp": false, "l": 0, "d": "2026-07-26T00:00", "rep": []}]}, "av": {"kazm": "data:image/jpeg;base64,[STRIPPED 3KB]", "zas": "data:image/jpeg;base64,[STRIPPED 3KB]", "mohamedzahra384": "data:image/jpeg;base64,[STRIPPED 4KB]", "6b_bq": "data:image/jpeg;base64,[STRIPPED 4KB]", "ea980000": "data:image/jpeg;base64,[STRIPPED 3KB]"}};
+</script><script>/* TVTracker · title page renderer (movie + series, app + website). Preview controls live outside the design. */
+(function () {
+  const CFG = window.TP, D = window.TT_DATA, WEB = CFG.mode === "web", MOVIE = CFG.kind === "movie";
+  const LIST = MOVIE ? D.movies : D.shows, KEYS = Object.keys(LIST);
+  const TODAY = new Date("2026-10-07T12:00:00");
+  const T = (p, s) => p ? `https://image.tmdb.org/t/p/${s || "w342"}/${p}${/\.png$/.test(p) ? "" : ".jpg"}` : "";
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const dt = s => { const d = new Date(s + "T12:00:00"); return `${MON[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; };
+  const dshort = s => { const d = new Date(s + "T12:00:00"); return `${MON[d.getMonth()]} ${d.getDate()}`; };
+  const days = s => Math.round((new Date(s + "T12:00:00") - TODAY) / 864e5);
+  const hm = m => m ? (m >= 60 ? `${Math.floor(m / 60)}h ${m % 60 ? (m % 60) + "m" : ""}`.trim() : `${m}m`) : "";
+  const money = n => n >= 1e9 ? `$${(n / 1e9).toFixed(2).replace(/0$/, "")}B` : `$${Math.round(n / 1e6)}M`;
+  const kfmt = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M" : n >= 1e3 ? Math.round(n / 1e3) + "K" : String(n);
+  const I = {
+    back: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5V19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6.5"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8.5a6 6 0 0 1 12 0c0 4.6 1.6 6.6 2.5 7.5h-17c.9-.9 2.5-2.9 2.5-7.5z"/><path d="M10 19.5a2 2 0 0 0 4 0"/></svg>',
+    bellOn: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M6 8.5a6 6 0 0 1 12 0c0 4.6 1.6 6.6 2.5 7.5h-17c.9-.9 2.5-2.9 2.5-7.5z"/><path d="M10 19.5a2 2 0 0 0 4 0" fill="none" stroke-linecap="round"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.8v14.4L19 12z"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z"/></svg>',
+    starO: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-2.9-5.4 2.9 1.1-6-4.5-4.2 6.1-.8z"/></svg>',
+    cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+    ticket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5V6.5a1.5 1.5 0 0 1 1.5-1.5h14a1.5 1.5 0 0 1 1.5 1.5v2a3.5 3.5 0 0 0 0 7v2a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5v-2a3.5 3.5 0 0 0 0-7z"/><path d="M14 5v14" stroke-dasharray="2 2.6"/></svg>',
+    tv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3l5 4 5-4"/><rect x="2.5" y="7" width="19" height="14" rx="3"/></svg>',
+    more: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="18.5" cy="12" r="1.9"/></svg>',
+    down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="dd"><path d="M6.5 9.5 12 15l5.5-5.5"/></svg>',
+    chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="cv"><path d="M9.5 6l6 6-6 6"/></svg>',
+    listAdd: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h12M4 12h12M4 17.5h7M18 14.5v6M15 17.5h6"/></svg>',
+    mark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 3.5h11v17L12 16.6 6.5 20.5z"/></svg>',
+    markOn: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 3.5h11v17L12 16.6 6.5 20.5z"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+    mk: '<svg viewBox="0 0 16 12" fill="none" aria-hidden="true"><path d="M1.5 6.3L5.7 10.5L14.5 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>',
+    heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M16.8 2.9c-1.9 0-3.6.9-4.8 2.4-1.2-1.5-2.9-2.4-4.8-2.4C3.9 2.9 1.5 5.6 1.5 9c0 3.9 3.1 6.6 6.4 9.5.6.5 1.2 1 1.7 1.5l1.1.9c.8.6 1.8.6 2.6 0 1.1-.9 2.1-1.7 2.9-2.5 3.2-2.8 6.3-5.5 6.3-9.4 0-3.4-2.4-6.1-5.7-6.1z"/></svg>',
+    heartOn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF3040" d="M16.8 2.9c-1.9 0-3.6.9-4.8 2.4-1.2-1.5-2.9-2.4-4.8-2.4C3.9 2.9 1.5 5.6 1.5 9c0 3.9 3.1 6.6 6.4 9.5.6.5 1.2 1 1.7 1.5l1.1.9c.8.6 1.8.6 2.6 0 1.1-.9 2.1-1.7 2.9-2.5 3.2-2.8 6.3-5.5 6.3-9.4 0-3.4-2.4-6.1-5.7-6.1z"/></svg>',
+    share2: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="17.5" cy="5.5" r="2.5"/><circle cx="6.5" cy="12" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/><path d="M8.7 10.8l6.6-4M8.7 13.2l6.6 4"/></svg>',
+    replay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 4.8v14.4L19 12z"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.8c4.8 0 8.4 3.3 8.4 7.6S16.8 19 12 19c-1.1 0-2.2-.2-3.1-.5L4.5 20l1.2-3.6A7.2 7.2 0 0 1 3.6 11.4C3.6 7.1 7.2 3.8 12 3.8z"/></svg>',
+    award: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.6 13.3 7.5 21l4.5-2.6 4.5 2.6-1.1-7.7"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg>',
+    mute: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>',
+    sound: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/></svg>',
+    eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 5.6A10 10 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-2.6 3.4M6.3 7.1C3.8 8.8 2.5 12 2.5 12S6 18.5 12 18.5c1.6 0 3-.4 4.2-1M9.9 9.9a3 3 0 0 0 4.2 4.2M3.5 3.5l17 17"/></svg>',
+    checks: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12.5l4 4L15 8M10.5 16.5l1 1L21.5 7.5"/></svg>'
+  };
+  /* rating logos */
+  const LG = {
+    app: '<span class="tvt" aria-label="TVTracker"><i>TV</i>Tracker</span>',
+    imdb: '<svg width="38" height="18" viewBox="0 0 38 18" aria-label="IMDb"><rect width="38" height="18" rx="4" fill="#F5C518"/><text x="19" y="13.4" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="11.5" fill="#000">IMDb</text></svg>',
+    rtF: '<svg width="18" height="18" viewBox="0 0 24 24" aria-label="Rotten Tomatoes"><circle cx="12" cy="13.6" r="8.6" fill="#FA320A"/><path d="M8.2 4.4c1.6.2 2.6 1 3.1 2 .6-1.3 1.8-2 3.6-2-.7 1.1-1.5 1.8-2.6 2.2 1.4-.2 2.6.1 3.6.9-1.5.5-3 .6-4.4.1-.8 1-2 1.5-3.6 1.2.8-.7 1.3-1.4 1.6-2.2-1-.4-1.6-1.2-1.3-2.2z" fill="#00912D"/></svg>',
+    rtR: '<svg width="18" height="18" viewBox="0 0 24 24" aria-label="Rotten Tomatoes"><path d="M12 3.5l2.2 4.4 4.8-1.6-1.8 4.6 4.3 2.6-4.9 1.2.6 5-4.1-2.9-3.4 3.7-.8-5-5 .2 3.4-3.7-3.8-3.2 4.9-.4z" fill="#0AC855"/></svg>',
+    mc: '<svg width="18" height="18" viewBox="0 0 24 24" aria-label="Metacritic"><circle cx="12" cy="12" r="10.2" fill="#000" stroke="#ffcc34" stroke-width="1.8"/><text x="12" y="16.4" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="12" fill="#fff">m</text></svg>'
+  };
+
+  const store = { get(k, d) { try { const v = localStorage.getItem(`tvt-tp-${CFG.kind}-${CFG.mode}-${k}`); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(`tvt-tp-${CFG.kind}-${CFG.mode}-${k}`, JSON.stringify(v)); } catch (e) {} } };
+  const st = { key: store.get("key", KEYS[0]), theme: store.get("theme", "dark"), tstyle: store.get("tstyle", "logo"), fav: {}, wl: {}, more: false, tr: false, mute: false, tab: {}, hide: false, open: {}, det: {}, my: {}, season: {}, ov: false, eps: {} };
+  const X = () => LIST[st.key];
+  const upcoming = x => MOVIE ? days(x.rel) > 0 : (x.first && days(x.first) > 0);
+  /* default "you" state per title, from your TVTracker account */
+  const DEF = { ody: "watched", phm: "watched", doom: "fol", sev: "wl", bb: "watching", n99: "none", hp: "fol" };
+  const myOf = k => st.my[k] || store.get("my-" + k, DEF[k] || "none");
+  /* episodes you've seen — seeded from the state so "Watching" has real progress */
+  function seedEps(k, s) {
+    const x = LIST[k], set = {};
+    const aired = (sn, e) => e[2] && days(e[2]) <= 0;
+    if (s === "completed") Object.entries(x.eps).forEach(([sn, L]) => L.forEach(e => { if (aired(sn, e)) set[sn + "-" + e[0]] = 1; }));
+    if (s === "watching") { const seed = { sev: [[1, 4]], bb: [[1, 7], [2, 13], [3, 5]], n99: [[1, 3]] }[k] || [[1, 1]];
+      seed.forEach(([sn, n]) => (x.eps[sn] || []).slice(0, n).forEach(e => set[sn + "-" + e[0]] = 1)); }
+    return set;
+  }
+  const epsOf = k => st.eps[k] || (st.eps[k] = seedEps(k, myOf(k)));
+  const allAired = x => Object.entries(x.eps).flatMap(([sn, L]) => L.filter(e => e[2] && days(e[2]) <= 0).map(e => [+sn, e]));
+
+  /* ---------- the title: logo artwork or plain text (switch in the preview controls) ---------- */
+  /* the logo box is sized from the artwork's own proportions, small enough to sit with the rest of the head */
+  const logoBox = x => { const H = WEB ? 84 : 54, W = WEB ? 340 : 148, r = x.la || 2.5, w = Math.min(W, H * r); return `width:${Math.round(w)}px;height:${Math.round(w / r)}px`; };
+  const titleEl = (x, cls) => st.tstyle === "logo" && x.lg
+    ? `<h1 class="tp-title tp-logo ${cls || ""}"><img src="${T(st.theme === "light" && x.lgl ? x.lgl : x.lg, "w500")}" alt="${esc(x.t)}" style="${logoBox(x)}"></h1>`
+    : `<h1 class="tp-title ${cls || ""}">${esc(x.t)}</h1>`;
+  const yrs = x => MOVIE ? x.rel.slice(0, 4) : x.first ? (upcoming(x) ? x.first.slice(0, 4) : `${x.first.slice(0, 4)}${x.last && x.last.slice(0, 4) !== x.first.slice(0, 4) ? "–" + (/Returning/.test(x.st) ? "" : x.last.slice(0, 4)) : /Returning/.test(x.st) ? "–" : ""}`) : "";
+  const runLine = x => MOVIE ? hm(x.rt) : upcoming(x) ? "" : `${x.ns} season${x.ns > 1 ? "s" : ""}`;
+  const XT = () => (window.TT_EXTRA || {})[st.key] || {};
+
+  /* ---------- ratings: one quiet line — logo, score, (votes). The first one is ours: the TVTracker T ---------- */
+  function rateRow(x) {
+    if (!x.r) return "";
+    const R = x.r, a = [];
+    if (R.app) a.push(`<span class="rr" title="TVTracker"><img class="tvtl" src="${window.TVT_LOGO}" alt="TVTracker"><b>${R.app.toFixed(1)}</b><small>(${kfmt(R.app_count)})</small></span>`);
+    if (R.imdb) a.push(`<span class="rr" title="IMDb">${LG.imdb}<b>${R.imdb.toFixed(1)}</b><small>(${kfmt(R.imdb_votes)})</small></span>`);
+    if (R.rt != null) a.push(`<span class="rr" title="Rotten Tomatoes">${R.rt >= 60 ? LG.rtF : LG.rtR}<b>${R.rt}%</b></span>`);
+    if (R.mc != null) a.push(`<span class="rr" title="Metacritic">${LG.mc}<b>${R.mc}</b></span>`);
+    return `<div class="tp-rr">${a.join("")}</div>`;
+  }
+
+  /* ---------- actions: two calm buttons (left = watched, right = watchlist / follow / rate) ---------- */
+  function pair(x) {
+    const s = myOf(st.key), up = upcoming(x), rated = MOVIE && x.my && x.my.rating;
+    const B = (cls, act, ic, label) => `<button type="button" class="tp-main fx ${cls}" data-act="${act}">${ic}<span>${label}</span></button>`;
+    const WL = s === "wl" ? B("on", "unwl", I.markOn, "On watchlist") : B("", "wl", I.mark, "Add to watchlist");
+    const RATE = rated ? B("on", "rate", I.star, `${x.my.rating}/10`) : B("", "rate", I.starO, "Rate");
+    const FOL = s === "fol" ? B("on", "unfollow", I.bellOn, "Following") : B("", "follow", I.bell, "Follow");
+    /* the right button is always the watchlist (Follow while it isn't out yet) — it only changes when you tap it */
+    const inWl = !!st.wl[st.key] || s === "wl";
+    const WL2 = inWl ? B("on", "unwl", I.markOn, "On watchlist") : B("", "wl", I.mark, "Add to watchlist");
+    if (MOVIE) return [s === "watched" ? B("on", "unwatch", I.eye, "Watched") : B("", "watch", I.eye, "Mark as watched"), up ? FOL : WL2];
+    if (up) return [FOL];
+    /* app: no start/stop buttons — the watchlist button, with where you are beside it */
+    if (!WEB) return s === "watching" ? [`<span class="tp-wst prog"><i></i>Watching</span>`, WL2] : s === "completed" ? [/Returning/.test(x.st) ? `<span class="tp-wst ret"><i></i>All caught up</span>` : `<span class="tp-wst done"><i></i>Finished</span>`, WL2] : [WL2];
+    if (s === "watching") return [B("on", "stop", I.eye, "Watching"), WL2];
+    if (s === "completed") return [B("on", "stop", I.checks, /Returning/.test(x.st) ? "All caught up" : "Completed"), WL2];
+    return [B("", "start", I.play, "Start watching"), WL2];
+  }
+  /* the "…" menu — same four rows in the app sheet and the website menu */
+  function moreMenu(x) {
+    if (!WEB) return appSheet(x);
+    const s = myOf(st.key), fav = st.fav[st.key], seen = s === "watched" || s === "completed";
+    const R = (act, ic, label, on) => `<button type="button" class="tp-mi${on ? " on" : ""}" data-act="${act}"><span class="ic">${ic}</span><b>${label}</b></button>`;
+    return `<div class="tp-menu" role="menu" aria-label="${esc(x.t)}">${WEB ? "" : `<p class="tp-mh">${esc(x.t)}</p>`}
+      ${R("fav", fav ? I.heartOn : I.heart, fav ? "In your favourites" : "Add to favourites", fav)}${R("share", I.share2, "Share")}${R("list", I.mark, "Add to list")}${!MOVIE && !upcoming(x) && s !== "completed" ? R("allwatched", I.checks, "Mark the whole show as watched") : ""}${seen ? R("rewatch", I.replay, MOVIE ? "Rewatch this movie" : "Rewatch this show") : ""}${WEB ? "" : `<div class="tp-mdet"><p class="tp-mh">Details</p>${facts(x)}${links()}</div>`}</div>`;
+  }
+  /* app "…" sheet — our system's sheet: grouped cards of rows, like Settings */
+  function appSheet(x) {
+    const s = myOf(st.key), fav = st.fav[st.key], seen = s === "watched" || s === "completed";
+    const R = (act, ic, label, cls) => `<button type="button" class="srow" data-act="${act}" role="menuitem"><span class="sic${cls ? " " + cls : ""}">${ic}</span><span class="stx"><b>${label}</b></span></button>`;
+    const acts = [!MOVIE && !upcoming(x) && s !== "completed" ? R("allwatched", I.checks, "Mark the whole series as watched") : "", R("fav", fav ? I.heartOn : I.heart, fav ? "In your favourites" : "Add to favourites", fav ? "red" : ""), R("share", I.share2, "Share"), R("list", I.mark, "Add to list"), seen ? R("rewatch", I.replay, MOVIE ? "Rewatch this movie" : "Rewatch this show") : ""].join("");
+    return `<div class="tp-sheet" role="menu" aria-label="${esc(x.t)}"><h3>${esc(x.t)}</h3><div class="scard">${acts}</div></div>`;
+  }
+  /* what you've done with it, in one line */
+  function myLine(x) {
+    const s = myOf(st.key);
+    if (s === "watched") return `Watched · ${x.my && x.my.watched ? dt(x.my.watched) : "today"}`;
+    if (s === "fol") return "Following";
+    if (s === "wl") return "On your watchlist";
+    if (s === "watching" || s === "completed") { const all = allAired(x), seen = epsOf(st.key), d = all.filter(([sn, e]) => seen[sn + "-" + e[0]]).length; return `${s === "watching" ? "Watching" : /Returning/.test(x.st) ? "All caught up" : "Completed"} · ${d} of ${all.length} episodes`; }
+    return "";
+  }
+
+  function status(x) {
+    if (MOVIE) { if (!upcoming(x)) return ""; const n = days(x.rel); return `<span class="tp-st soon">${I.cal}In cinemas ${dshort(x.rel)}<small>${n === 1 ? "tomorrow" : `in ${n} days`}</small></span>`; }
+    if (upcoming(x)) { const n = days(x.first); return `<span class="tp-st soon">${I.cal}Premieres ${dshort(x.first)}<small>in ${n} days</small></span>`; }
+    if (/Returning/.test(x.st)) return `<span class="tp-st ret"><i></i>Returning</span>`;
+    if (/Canceled/.test(x.st)) return `<span class="tp-st can"><i></i>Canceled</span>`;
+    return `<span class="tp-st end"><i></i>Ended</span>`;
+  }
+
+  function upNext(x) {
+    if (MOVIE || upcoming(x) || myOf(st.key) !== "watching") return "";
+    const seen = epsOf(st.key), all = allAired(x), done = all.filter(([sn, e]) => seen[sn + "-" + e[0]]).length;
+    const nx = all.find(([sn, e]) => !seen[sn + "-" + e[0]]); if (!nx) return "";
+    const [sn, e] = nx, pct = Math.round(done / all.length * 100);
+    return `<div class="tp-next"><span class="im" style="background-image:url('${T(e[5], "w300")}')"></span><span class="tx"><small>Up next</small><b><em>S${String(sn).padStart(2, "0")} E${String(e[0]).padStart(2, "0")}</em>${esc(e[1])}</b>
+      <span class="tp-bar"><i style="width:${Math.max(3, pct)}%"></i></span><span class="pc">${done} of ${all.length} episodes · ${all.length - done} left</span></span>
+      <button type="button" class="tp-ck" data-ep="${sn}-${e[0]}" aria-label="Mark S${sn} E${e[0]} watched">${I.mk}</button></div>`;
+  }
+
+  const sec = (h, body, aside, cls) => `<section class="tp-sec ${cls || ""}"><div class="tp-sh"><h2>${h}</h2>${aside ? `<small>${aside}</small>` : ""}</div>${body}</section>`;
+  /* where to watch: the service's own logo, nothing else */
+  function watchWhere(x) {
+    const nets = XT().nets || [];
+    if (x.prov && x.prov.length) return sec("Where to watch", `<p class="tp-lab">Stream</p><div class="tp-wt">${x.prov.map(([n, l]) => `<button type="button" class="tp-pvl" data-soon="${esc(n)}" aria-label="${esc(n)}" title="${esc(n)}" style="background-image:url('${T(l, "w92")}')"></button>`).join("")}</div>`);
+    if (MOVIE && upcoming(x)) return sec("Where to watch", `<p class="tp-lab">Cinemas</p><div class="tp-wt"><span class="tp-pv cine">${I.ticket}<span>In cinemas<small>${dt(x.rel)}</small></span></span></div>`);
+    if (!MOVIE && nets.length) return sec("Where to watch", `<p class="tp-lab">${upcoming(x) ? "Premieres on" : "Network"}</p><div class="tp-wt">${nets.map(([n, l]) => l ? `<button type="button" class="tp-pvl net" data-soon="${esc(n)}" aria-label="${esc(n)}" title="${esc(n)}" style="background-image:url('${T(l, "w154")}')"></button>` : `<span class="tp-pv cine">${I.tv}<span>${esc(n)}</span></span>`).join("")}</div>`);
+    return "";
+  }
+  /* app: "Details ›" under the overview — always there; opens the crew and the facts right here on the page */
+  function appDetails(x) {
+    const open = !!st.det[st.key], row = (k, v) => `<div class="srow fr"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`;
+    const btn = `<button type="button" class="tp-dt" data-act="det" aria-expanded="${open}" aria-controls="tp-dtl"><span>Details</span>${I.chev}</button>`;
+    if (!open) return btn;
+    const rows = [...crewRows(x).map(([k, v]) => [k, v.join(", ")]), ...factsList(x).filter(([k]) => !/^(Director|Writer|Created by)$/.test(k))];
+    const LK = links();
+    return btn + `<dl class="tp-dl" id="tp-dtl">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}${LK ? `<div class="lk"><dt>Links</dt><dd>${LK}</dd></div>` : ""}</dl>`;
+  }
+  function overview(x) {
+    const long = !WEB && x.ov.length > 170, open = !long || st.ov;
+    return `<button type="button" lang="en" class="tp-ov${open ? "" : " clamp"}"${long && !open ? ' data-ov aria-label="Overview, tap to read all"' : ""}><p>${esc(x.ov)}</p></button>`;
+  }
+  function episodes(x) {
+    if (MOVIE) return "";
+    if (!WEB) return appEpisodes(x);
+    const seen = epsOf(st.key), sns = x.seasons.map(s => s[0]);
+    const cur = st.season[st.key] || (myOf(st.key) === "watching" ? (allAired(x).find(([sn, e]) => !seen[sn + "-" + e[0]]) || [sns[0]])[0] : sns[0]);
+    const L = x.eps[cur] || [], aired = L.filter(e => e[2] && days(e[2]) <= 0), sd = x.seasons.find(s => s[0] === cur);
+    const allSeen = aired.length && aired.every(e => seen[cur + "-" + e[0]]);
+    const row = e => { const k = cur + "-" + e[0], on = !!seen[k], isAired = e[2] && days(e[2]) <= 0, hid = st.hide && !on;
+      const im = T(e[5], "w300"), code = `S${String(cur).padStart(2, "0")} E${String(e[0]).padStart(2, "0")}`;
+      return `<div class="tp-ep${on ? " seen" : ""}${hid ? " hid" : ""}"><span class="bdr" style="background-image:url('${im}')"></span><span class="scr"></span><span class="im" style="background-image:url('${im}')"></span><span class="tx"><small><em>${code}</em>${e[3] ? `<i>·</i>${hm(e[3])}` : ""}</small><b>${hid ? `Episode ${e[0]}` : esc(e[1])}</b></span>
+        ${isAired ? `<button type="button" class="tp-ck${on ? " on" : ""}" data-ep="${k}" aria-pressed="${on}" aria-label="${on ? "Watched" : "Mark watched"}: episode ${e[0]}">${I.mk}</button>` : (() => { if (!e[2]) return `<span class="tp-cd tba"><b>TBA</b></span>`; const n = days(e[2]);
+          return n <= 0 ? `<span class="tp-cd today" title="${dt(e[2])}"><small>Airs</small><b>Today</b></span>` : `<span class="tp-cd" title="Airs ${dt(e[2])}" aria-label="Airs in ${n} day${n === 1 ? "" : "s"}, ${dt(e[2])}"><b>${n}</b><small>${n === 1 ? "day" : "days"}</small></span>`; })()}</div>`; };
+    const sInfo = n => { const A = (x.eps[n] || []).filter(e => e[2] && days(e[2]) <= 0), d = A.filter(e => seen[n + "-" + e[0]]).length; return { d, t: (x.eps[n] || []).length, a: A.length, st: A.length && d === A.length ? "done" : d ? "prog" : "none" }; };
+    const tabs = `<div class="tp-seas" role="tablist">${sns.map(n => { const s = sInfo(n); return `<button type="button" role="tab" class="${s.st}" data-sn="${n}" aria-selected="${n === cur}"><i></i>${n === 0 ? "Specials" : `Season ${n}`}<small>${s.d}/${s.a || s.t}</small></button>`; }).join("")}</div>`;
+    return sec("Episodes", `${tabs}<div class="tp-sm"><span>${L.length} episode${L.length > 1 ? "s" : ""}${sd && sd[1] ? ` · ${sd[1].slice(0, 4)}` : ""}</span><button type="button" class="tp-hide${st.hide ? "" : " on"}" data-act="hide" aria-pressed="${!st.hide}">${st.hide ? I.eye : I.eyeOff}${st.hide ? "Reveal titles" : "Hide titles"}</button>${aired.length ? `<button type="button" class="${allSeen ? "on" : ""}" data-season="${cur}">${I.checks}${allSeen ? "Season watched" : "Mark season"}</button>` : ""}</div><div class="tp-eps">${L.map(row).join("")}</div>`, `${x.ne} episodes`);
+  }
+  /* app: a count line with the spoiler switch, then season cards that open to show their episodes */
+  function appEpisodes(x) {
+    const seen = epsOf(st.key), sns = x.seasons.map(s => s[0]), all = allAired(x);
+    const cur = (all.find(([sn, e]) => !seen[sn + "-" + e[0]]) || [sns.find(n => n > 0) || sns[0]])[0];
+    const open = st.open[st.key] || (st.open[st.key] = { [cur]: true });
+    const pad = n => String(n).padStart(2, "0"), ns = sns.filter(n => n > 0).length;
+    const row = (e, sn) => { const k = sn + "-" + e[0], on = !!seen[k], isAired = e[2] && days(e[2]) <= 0, hid = st.hide && !on;
+      const im = T(e[5], "w300");
+      return `<div class="tp-ep${on ? " seen" : ""}${hid ? " hid" : ""}"><span class="bdr" style="background-image:url('${im}')"></span><span class="scr"></span><span class="im" style="background-image:url('${im}')"></span><span class="tx"><small><em>S${pad(sn)} E${pad(e[0])}</em>${e[3] ? `<i>·</i>${hm(e[3])}` : ""}</small><b>${hid ? `Episode ${e[0]}` : esc(e[1])}</b></span>
+        ${isAired ? `<button type="button" class="tp-ck${on ? " on" : ""}" data-ep="${k}" aria-pressed="${on}" aria-label="${on ? "Watched" : "Mark watched"}: episode ${e[0]}">${I.mk}</button>` : (() => { if (!e[2]) return `<span class="tp-cd tba"><b>TBA</b></span>`; const n = days(e[2]);
+          return n <= 0 ? `<span class="tp-cd today"><small>Airs</small><b>Today</b></span>` : `<span class="tp-cd" aria-label="Airs in ${n} day${n === 1 ? "" : "s"}, ${dt(e[2])}"><b>${n}</b><small>${n === 1 ? "day" : "days"}</small></span>`; })()}</div>`; };
+    const card = n => { const L = x.eps[n] || [], A = L.filter(e => e[2] && days(e[2]) <= 0), d = A.filter(e => seen[n + "-" + e[0]]).length;
+      const done = A.length && d === A.length, o = !!open[n], sd = x.seasons.find(s => s[0] === n), yr = sd && sd[1] ? sd[1].slice(0, 4) : "";
+      const tot = A.length || L.length, pct = A.length ? Math.round(d / A.length * 100) : 0, po = sd && sd[2] ? T(sd[2], "w185") : "";
+      const stt = done ? "Watched" : d ? `${d} of ${tot}` : A.length ? `0 of ${tot}` : "Not out yet";
+      return `<div class="a-ssn${done ? " done" : d ? " prog" : ""}${o ? " open" : ""}"><button type="button" class="hd" data-open="${n}" aria-expanded="${o}"><span class="no" aria-hidden="true">${n === 0 ? "SP" : n}</span><span class="tx"><span class="t"><b>${n === 0 ? "Specials" : "Season " + n}</b>${I.chev}</span><small>${[yr, `${L.length} episode${L.length === 1 ? "" : "s"}`].filter(Boolean).join(" · ")}</small><span class="pg"><span class="bar"><i style="width:${pct}%"></i></span>${A.length ? `<em>${d}/${tot}</em>` : ""}</span></span></button>${A.length ? `<button type="button" class="tp-ck${done ? " on" : ""}" data-season="${n}" aria-pressed="${!!done}" aria-label="${done ? "Season watched" : "Mark the season watched"}">${I.mk}</button>` : ""}</div>${o ? `<div class="tp-eps">${L.map(e => row(e, n)).join("")}</div>` : ""}`; };
+    return `<div class="a-eh"><span>${ns} season${ns === 1 ? "" : "s"} · ${x.ne} episode${x.ne === 1 ? "" : "s"}</span><button type="button" class="a-hide${st.hide ? "" : " on"}" data-act="hide" aria-pressed="${!st.hide}">${st.hide ? I.eye : I.eyeOff}${st.hide ? "Reveal titles" : "Hide titles"}</button></div><div class="a-ssns">${[...sns.filter(n => n > 0), ...sns.filter(n => n === 0)].map(card).join("")}</div>`;
+  }
+  /* crew under the cast: Director · Screenplay · Producer · Cinematography */
+  function crewRows(x) {
+    const C = XT().crew || [], by = j => [...new Set(C.filter(c => j.test(c[0])).map(c => c[1]))];
+    const L = MOVIE ? [["Director", by(/^Director$/)], ["Screenplay", by(/Screenplay|Writer/)], ["Producer", by(/^Producer$/)], ["Cinematography", by(/Photography/)]]
+      : [["Created by", x.by ? x.by.split(/,\s*/) : []], ["Producer", by(/^Producer$/)], ["Cinematography", by(/Photography/)]];
+    if (MOVIE && !L[0][1].length && x.dir) L[0][1] = x.dir.split(/,\s*/);
+    if (MOVIE && !L[1][1].length && x.wr) L[1][1] = x.wr.split(/,\s*/);
+    return L.filter(r => r[1].length);
+  }
+  function crewList(x) {
+    const R = crewRows(x);
+    return R.length ? `<dl class="tp-crew">${R.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v.slice(0, 3).join(", "))}${v.length > 3 ? ` <span>+${v.length - 3} more</span>` : ""}</dd></div>`).join("")}</dl>` : "";
+  }
+  const cast = x => sec("Cast", `<div class="tp-cast tp-row">${x.cast.map(c => `<button type="button" class="tp-pp" data-soon="${esc(c[0])}"><span style="background-image:url('${T(c[2], "w185")}')"></span><b>${esc(c[0])}</b><small>${esc(c[1])}</small></button>`).join("")}</div>${WEB ? crewList(x) : ""}`);
+  const videos = x => x.vid && x.vid.length ? sec("Videos", `<div class="tp-vids tp-row">${x.vid.map(([k, n]) => `<a class="tp-vid" href="https://www.youtube.com/watch?v=${k}" target="_blank" rel="noopener"><span class="th" style="background-image:url('https://i.ytimg.com/vi/${k}/hqdefault.jpg')"><span class="pl">${I.play}</span></span><b>${esc(n)}</b></a>`).join("")}</div>`) : "";
+  const gallery = x => x.imgs && x.imgs.length ? sec("Gallery", `<div class="tp-gal tp-row">${x.imgs.map((g, i) => `<button type="button" class="tp-ph" data-soon="Photo viewer" aria-label="Image ${i + 1}" style="background-image:url('${T(g, "w780")}')"></button>`).join("")}</div>`) : "";
+  function factsList(x) {
+    const ctry = (XT().country || []).join(", ");
+    return (MOVIE ? [["Original title", x.t], ["Rated", x.cert], ["Director", x.dir], ["Writer", x.wr], [upcoming(x) ? "In cinemas" : "Release date", dt(x.rel)], ["Runtime", hm(x.rt)], ["Language", x.lang], ["Country", ctry], ["Budget", x.bud ? money(x.bud) : ""], ["Revenue", x.rev ? money(x.rev) : ""], ["Awards", x.aw], ["Collection", x.col]]
+      : [["Original title", x.t], ["Rated", x.cert], ["Created by", x.by], ["Network", x.net], [upcoming(x) ? "Premieres" : "First aired", x.first ? dt(x.first) : ""], ["Last aired", !upcoming(x) && x.last && !/Returning/.test(x.st) ? dt(x.last) : ""], ["Seasons", upcoming(x) ? "" : String(x.ns)], ["Episodes", upcoming(x) ? "" : String(x.ne)], ["Country", ctry], ["Status", x.st === "In Production" ? "In production" : x.st === "Returning Series" ? "Returning" : x.st]]).filter(f => f[1]);
+  }
+  const facts = x => `<dl class="tp-facts">${factsList(x).map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>`;
+  const keywords = x => x.kw && x.kw.length ? sec("Keywords", `<div class="tp-kw">${x.kw.map(k => `<button type="button" data-soon="#${esc(k)}"><i>#</i>${esc(k)}</button>`).join("")}</div>`) : "";
+  const recs = x => x.rec && x.rec.length ? sec("More like this", `<div class="tp-recs tp-row">${x.rec.map(([t, p]) => `<button type="button" class="tp-rec" data-soon="${esc(t)}" aria-label="${esc(t)}"><span class="tp-pst" style="background-image:url('${T(p)}')"></span><b>${esc(t)}</b></button>`).join("")}</div>`) : "";
+  /* production companies: the studio's logo on a white tile, as on tvtracker.tv */
+  function companies() {
+    const P = XT().pc || []; if (!P.length) return "";
+    const ini = n => n.split(/\s+/).filter(w => /^[A-Za-z]/.test(w)).slice(0, 2).map(w => w[0]).join("");
+    return sec("Production companies", `<div class="tp-pcs">${P.map(([n, l]) => `<button type="button" class="tp-pc" data-soon="${esc(n)}"><span class="lg"${l ? ` style="background-image:url('${T(l, "w154")}')"` : ""}>${l ? "" : esc(ini(n))}</span><b>${esc(n)}</b>${I.chev}</button>`).join("")}</div>`);
+  }
+  /* links: the actor page's shape — a curved square in each brand's own colours */
+  const BR = {
+    web: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z"/></svg>',
+    imdb: '<svg width="30" height="15" viewBox="0 0 34 17" aria-hidden="true"><text x="17" y="13.2" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="13" fill="#000">IMDb</text></svg>',
+    fb: '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6V21z"/></svg>',
+    ig: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="#fff" stroke="none"/></svg>',
+    x: '<svg width="17" height="17" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg>',
+    wd: '<svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path fill="#990000" d="M0 0h1.6v16H0zM2.6 0h1.6v16H2.6z"/><path fill="#339966" d="M6 0h2.6v16H6zM9.6 0h1v16h-1z"/><path fill="#006699" d="M12.4 0h3v16h-3zM16.4 0h1v16h-1zM18.4 0h3.6v16h-3.6z"/></svg>' };
+  function links() {
+    const E = XT().ex || {}, L = [["web", "Official site", E.home], ["imdb", "IMDb", E.imdb && `https://www.imdb.com/title/${E.imdb}/`], ["ig", "Instagram", E.ig && `https://www.instagram.com/${E.ig}/`], ["x", "X", E.x && `https://x.com/${E.x}`], ["fb", "Facebook", E.fb && `https://www.facebook.com/${E.fb}`], ["wd", "Wikidata", E.wd && `https://www.wikidata.org/wiki/${E.wd}`]].filter(l => l[2]);
+    return L.length ? `<div class="tp-links">${L.map(([k, n, u]) => `<a class="pw-lk ${k}" href="${esc(u)}" target="_blank" rel="noopener" title="${n}" aria-label="${n}">${BR[k]}</a>`).join("")}</div>` : "";
+  }
+  /* comments — simple, like TV Time: write box, a few top comments, "See all" */
+  const CMI = { reply: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.2c4.6 0 8.2 3.1 8.2 7.2s-3.6 7.2-8.2 7.2c-1 0-2-.2-2.9-.5L4.6 19.6l1.2-3.4a7 7 0 0 1-2-4.8c0-4.1 3.6-7.2 8.2-7.2z"/></svg>',
+    gif: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3.5"/><path d="M10 10.2H8.6a1.6 1.6 0 0 0-1.6 1.6v.4a1.6 1.6 0 0 0 1.6 1.6H10v-1.6H9M12.5 10v4M15.2 14v-4h2.3M15.2 12h1.8" stroke-linecap="round"/></svg>',
+    photo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="3.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 17.5l5-4.5 4 3.5 3-2.5 4.5 3.5" stroke-linecap="round"/></svg>' };
+  st.cmall = {}; st.cp = false; st.cpSort = "top"; st.cpNew = {}; st.cpDraft = ""; st.cpSp = false; st.cmx = {}; st.cmr = {}; st.cml = {}; st.cms = {};
+  const ago = s => { const d = (TODAY - new Date(s + ":00Z")) / 864e5; return d < 1 / 24 ? "now" : d < 1 ? Math.max(1, Math.round(d * 24)) + "h" : d < 7 ? Math.floor(d) + "d" : d < 30 ? Math.floor(d / 7) + "w" : d < 365 ? Math.floor(d / 30.4) + "mo" : Math.floor(d / 365) + "y"; };
+  const cmAv = (u, n, cls) => { const A = (window.TT_CM || {}).av || {}; let h = 0; for (const c of u) h = (h * 31 + c.charCodeAt(0)) % 360;
+    return A[u] ? `<span class="cm-av ${cls || ""}"><img src="${A[u]}" alt="" loading="lazy"></span>` : `<span class="cm-av ${cls || ""} ini" style="--h:${h}">${esc(([...(n || u).replace(/[^\p{L}\p{N}]/gu, "")][0] || u[0]).toUpperCase())}</span>`; };
+  const cmText = t => esc(t).replace(/@([\w.]+)/g, '<span class="cm-at">@$1</span>').replace(/\n{2,}/g, "\n");
+  function cmItem(c, reply) {
+    const long = c.b.length > 180 || (c.b.match(/\n/g) || []).length > 3, open = st.cmx[c.id], liked = st.cml[c.id], hid = c.sp && !st.cms[c.id];
+    const txt = c.b ? `<p class="cm-x${long && !open ? " clamp" : ""}${hid ? " sp" : ""}" dir="auto">${cmText(c.b)}</p>${hid ? `<button type="button" class="cm-spb" data-act="cmspoil" data-id="${c.id}">Spoiler · tap to reveal</button>` : ""}${long && !hid ? `<button type="button" class="cm-mo" data-act="cmmore" data-id="${c.id}">${open ? "Show less" : "Read more"}</button>` : ""}` : "";
+    const med = (c.at || []).map(([t, src, w, h]) => `<div class="cm-m${t === "gif" ? " gif" : ""}" style="aspect-ratio:${w}/${h}"><img src="${src}" alt="${t === "gif" ? "GIF" : "Photo"}" loading="lazy">${t === "gif" ? "<i>GIF</i>" : ""}</div>`).join("");
+    const n = (c.rep || []).length, ro = st.cmr[c.id];
+    const reps = n ? (ro ? `<div class="cm-reps">${c.rep.map(r => cmItem(r, true)).join("")}</div>` : "") + `<button type="button" class="cm-vr" data-act="cmrep" data-id="${c.id}"><i></i>${ro ? "Hide replies" : `View ${n} repl${n === 1 ? "y" : "ies"}`}</button>` : "";
+    return `<article class="cm${reply ? " rp" : ""}">${cmAv(c.u, c.n, reply ? "sm" : "")}<div class="cm-b">
+      <div class="cm-h"><b dir="auto">${esc(c.n || c.u)}</b><span class="cm-t">${ago(c.d)}</span><button type="button" class="cm-dots" data-soon="Comment options" aria-label="Comment options">${I.more}</button></div>
+      ${txt}${med}
+      <div class="cm-a"><button type="button" class="cm-lk${liked ? " on" : ""}" data-act="cmlike" data-id="${c.id}" aria-pressed="${!!liked}" aria-label="Like">${liked ? I.heartOn : I.heart}${c.l + (liked ? 1 : 0) ? `<span>${c.l + (liked ? 1 : 0)}</span>` : ""}</button><button type="button" class="cm-rb" data-soon="Reply">${CMI.reply}<span>Reply</span></button></div>
+      ${reps}</div></article>`;
+  }
+  const cmAll = () => { const D2 = (window.TT_CM || {})[st.key]; return [...(st.cpNew[st.key] || []), ...(D2 ? D2.list : [])]; };
+  const cmCount = () => { const D2 = (window.TT_CM || {})[st.key]; return (D2 ? D2.n : (XT().cc || 0)) + (st.cpNew[st.key] || []).length; };
+  /* on the title page: the blue Comments button — tapping it opens the Comments page */
+  function comments() {
+    const n = cmCount();
+    return WEB ? `<div class="tp-conv" id="tp-cm"><span class="ic">${I.chat}</span><span class="tx"><b>Join the conversation</b></span><button type="button" class="tp-cbtn" data-act="cpopen">Open comments${n ? `<i>${n}</i>` : ""}</button></div>`
+      : `<div class="tp-cwrap" id="tp-cm"><button type="button" class="tp-cbtn" data-act="cpopen">${I.chat}<span>Comments</span>${n ? `<i>${n}</i>` : ""}</button></div>`;
+  }
+  /* the Comments page: sort, every comment, a writing bar that stays at the bottom */
+  function cpList() {
+    const L = cmAll(); const S = st.cpSort === "new" ? [...L].sort((a, b) => b.d < a.d ? -1 : 1) : L;
+    return S.length ? `<div class="cm-list">${S.map(c => cmItem(c)).join("")}</div><p class="cp-end">You've reached the end</p>` : `<div class="cp-empty">${CMI.reply}<b>No comments yet</b><span>Be the first to say what you thought.</span></div>`;
+  }
+  const cpSortEl = () => `<div class="cp-sort" role="tablist"><button type="button" role="tab" data-act="cpsort" data-v="top" aria-selected="${st.cpSort === "top"}">Top</button><button type="button" role="tab" data-act="cpsort" data-v="new" aria-selected="${st.cpSort === "new"}">Newest</button></div>`;
+  const cpBox = big => `<div class="cp-box${big ? " big" : ""}${st.cpDraft.trim() ? " typing" : ""}">${cmAv("kazm", "KAZM", "me")}<textarea id="cp-in" rows="1" dir="auto" placeholder="Add a comment…" aria-label="Add a comment">${esc(st.cpDraft)}</textarea>
+      <div class="cp-tools"><button type="button" data-soon="Photo" aria-label="Add a photo">${CMI.photo}</button><button type="button" data-soon="GIF" aria-label="Add a GIF">${CMI.gif}</button><button type="button" class="cp-spt${st.cpSp ? " on" : ""}" data-act="cpspoil" aria-pressed="${st.cpSp}">Spoiler</button>
+      <button type="button" class="cp-send" data-act="cpsend" aria-label="Post"${st.cpDraft.trim() ? "" : " disabled"}>${big ? "Post" : `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 20.4 21 12 3.4 3.6l.1 6.5L15 12l-11.5 1.9z"/></svg>`}</button></div></div>`;
+  function cpApp(x) {
+    return `<div class="cp-top"><button type="button" class="a-ib" data-act="cpclose" aria-label="Back">${I.back}</button><span class="cp-tt"><b>Comments</b><small>${esc(x.t)} · ${cmCount()}</small></span><span></span></div>
+      <div class="a-scroll cp-scroll" id="scr">${cpSortEl()}${cpList()}</div>${cpBox(false)}`;
+  }
+  function cpWeb(x) {
+    return `<div class="w-grid cp-wg"><aside class="w-side cp-side"><span class="w-po" style="background-image:url('${T(x.po, "w500")}')"></span><div class="cp-st"><span class="tp-kick">Comments</span><b>${esc(x.t)}</b><button type="button" class="cp-back" data-act="cpclose">${I.back}Back to ${MOVIE ? "the movie" : "the show"}</button></div></aside>
+      <div class="w-main cp-main"><div class="tp-sh"><h2>Comments</h2><small>${cmCount()}</small></div>${cpBox(true)}${cpSortEl()}${cpList()}</div></div>`;
+  }
+
+
+  /* ---------- page ---------- */
+  function renderApp(x) {
+    const ml = myLine(x), tr = x.vid && x.vid.length ? x.vid[0][0] : "", P = pair(x), fav = st.fav[st.key];
+    /* series get two tabs under the poster: Overview and Episodes */
+    const hasEps = !MOVIE && !upcoming(x) && x.seasons && x.seasons.length, tab = hasEps ? (st.tab[st.key] || "ov") : "ov";
+    /* beside the poster: title, rating + year (+ runtime), genres, awards, status — nothing else */
+    const aw = x.aw || "", wins = (aw.match(/(\d+)\s+wins?/i) || [])[1], noms = (aw.match(/(\d+)\s+nominations?/i) || [])[1];
+    const awards = wins || noms ? `<p class="h-aw">${I.award}${wins ? `<b>${wins} win${wins === "1" ? "" : "s"}</b>` : ""}${noms ? `<span>${noms} nomination${noms === "1" ? "" : "s"}</span>` : ""}</p>` : "";
+    const meta = [yrs(x), MOVIE ? hm(x.rt) : ""].filter(Boolean).map(esc).join(" · ");
+    const hero = `<div class="a-hero${st.tr ? " play" : ""}"${tr ? ` data-tr role="button" aria-label="${st.tr ? "Pause trailer" : "Play the trailer"}"` : ""}><div class="bd" style="background-image:url('${T(x.bd, "w780")}')"></div>${tr ? (/^https?:$/.test(location.protocol) ? `<iframe class="yt" tabindex="-1" title="Trailer" allow="autoplay; encrypted-media" src="https://www.youtube-nocookie.com/embed/${tr}?autoplay=1&mute=${st.tr && !st.mute ? 0 : 1}&controls=0&loop=1&playlist=${tr}&playsinline=1&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1"></iframe>` : `<div class="ks">${(x.imgs || []).slice(0, 5).map((g, n) => `<i style="background-image:url('${T(g, "w780")}');animation-delay:${n * 4}s"></i>`).join("")}</div>`) : ""}<div class="sh"></div>${tr && !st.tr ? `<span class="a-trh">${I.play}Tap to watch the trailer</span>` : ""}${tr && st.tr ? `<button type="button" class="a-mute" data-act="mute" aria-label="${st.mute ? "Sound on" : "Mute"}">${st.mute ? I.mute : I.sound}</button>` : ""}</div>`;
+    const head = `<div class="a-head"><span class="po" style="background-image:url('${T(x.po)}')"></span><div class="in">
+          ${titleEl(x)}
+          <p class="h-m">${x.cert ? `<span class="tp-cert">${esc(x.cert)}</span>` : ""}${meta ? `<span>${meta}</span>` : ""}</p>
+          <p class="h-g">${x.g.map(esc).join(" · ")}</p>${awards}${status(x) ? `<div class="h-row">${status(x)}</div>` : ""}</div></div>`;
+    const tabs = hasEps ? `<div class="a-tabs" role="tablist"><button type="button" role="tab" class="tab" data-tab="ov" aria-selected="${tab === "ov"}">Overview</button><button type="button" role="tab" class="tab" data-tab="ep" aria-selected="${tab === "ep"}">Episodes</button><i class="ind${tab === "ep" ? " r" : ""}"></i></div>` : "";
+    const body = tab === "ep" ? `<div class="a-body a-epv">${episodes(x)}</div>`
+      : `<div class="a-body"><div class="tp-acts${P.length === 1 ? " one" : ""}">${P.join("")}</div>${rateRow(x)}
+          ${upNext(x)}${x.tag ? `<p class="tp-tag">${esc(x.tag)}</p>` : ""}${overview(x)}${appDetails(x)}
+          ${hasEps ? "" : episodes(x)}${cast(x)}${watchWhere(x)}${gallery(x)}${videos(x)}${recs(x)}${keywords(x)}${companies()}${comments()}</div>`;
+    return `<div class="a-top"><button type="button" class="a-ib" data-soon="Back" aria-label="Back">${I.back}</button><span class="a-tt"><i style="background-image:url('${T(x.po, "w92")}')"></i><span>${esc(x.t)}</span></span><span class="a-rt"><button type="button" class="a-ib a-fav${fav ? " on" : ""}" data-act="fav" aria-pressed="${!!fav}" aria-label="${fav ? "In your favourites" : "Add to favourites"}">${fav ? I.heartOn : I.heart}</button><button type="button" class="a-ib" data-act="more" aria-label="More" aria-haspopup="menu">${I.more}</button></span></div>
+      <div class="a-scroll" id="scr">${hero}${head}${tabs}${body}</div>
+      <div class="a-sheet${st.more ? " on" : ""}"><button type="button" class="scrim" data-act="close" aria-label="Close"></button><div class="sh-in"><i class="grab"></i>${moreMenu(x)}</div></div>`;
+  }
+  function wActs(x) {
+    const P = pair(x), tr = x.vid && x.vid.length ? `<a class="tp-main" href="https://www.youtube.com/watch?v=${x.vid[0][0]}" target="_blank" rel="noopener">${I.play}<span>Trailer</span></a>` : "";
+    return P[0] + tr + (P[1] || "") + `<span class="tp-mw"><button type="button" class="tp-sq${st.more ? " on" : ""}" data-act="more" aria-label="More" aria-haspopup="menu" aria-expanded="${!!st.more}">${I.more}</button>${st.more ? moreMenu(x) : ""}</span>`;
+  }
+  /* backdrop guard: a bright still behind dark-theme text (or a dark one behind light-theme text) gets an extra veil in the page colour.
+     The amount comes from the still's own brightness where the text sits — measured once per title, with a stored value until then. */
+  const BL = { phm: .121, doom: .079, sev: .201, bb: .268, n99: .219, hp: .02 }, lum = {};
+  const dimFor = x => { const L = lum[st.key] != null ? lum[st.key] : BL[st.key] != null ? BL[st.key] : .25;
+    const v = st.theme === "light" ? (.4 - L) * 1.1 : (L - .1) * 1.15; return Math.max(0, Math.min(.62, v)).toFixed(3); };
+  function measure(x) {
+    const k = st.key; if (lum[k] != null || !x.bd || typeof OffscreenCanvas === "undefined") return;
+    fetch(T(x.bd, "w300")).then(r => r.blob()).then(createImageBitmap).then(im => {
+      const c = new OffscreenCanvas(64, 36), g = c.getContext("2d"); g.drawImage(im, 0, 0, 64, 36); const d = g.getImageData(0, 0, 64, 36).data; let s = 0, n = 0;
+      for (let y = 0; y < 27; y++) for (let X = 16; X < 51; X++) { const i = (y * 64 + X) * 4; s += .2126 * (d[i] / 255) ** 2.2 + .7152 * (d[i + 1] / 255) ** 2.2 + .0722 * (d[i + 2] / 255) ** 2.2; n++; }
+      lum[k] = s / n; const el = document.querySelector(".w-dim"); if (el && st.key === k) el.style.setProperty("--dim", dimFor(x));
+    }).catch(() => {});
+  }
+  function renderWeb(x) {
+    const ml = myLine(x);
+    const meta = MOVIE ? [x.cert ? `<i class="tp-cert">${esc(x.cert)}</i>` : "", yrs(x), hm(x.rt), ...x.g.map(g => `<a class="gl" data-soon="${esc(g)}">${esc(g)}</a>`)]
+      : [x.cert ? `<i class="tp-cert">${esc(x.cert)}</i>` : "", yrs(x), upcoming(x) ? "" : `${x.ns} season${x.ns > 1 ? "s" : ""}`, upcoming(x) ? "" : `${x.ne} episodes`, ...x.g.map(g => `<a class="gl" data-soon="${esc(g)}">${esc(g)}</a>`)];
+    return `<div class="w-bd" style="background-image:url('${T(x.bd, "w1280")}')"></div><div class="w-sh"></div><div class="w-dim" style="--dim:${dimFor(x)}"></div>
+      <div class="w-grid"><aside class="w-side"><span class="w-po" style="background-image:url('${T(x.po, "w500")}')"></span>${status(x)}${ml ? `<p class="w-cap">${ml}</p>` : ""}</aside>
+        <div class="w-main"><header class="w-head"><span class="tp-kick">${MOVIE ? "Movie" : esc(x.net || "Series")}</span>${titleEl(x)}${x.tag ? `<p class="w-tag">${esc(x.tag)}</p>` : ""}
+          <p class="w-meta">${meta.filter(Boolean).map(m => `<span>${m}</span>`).join("")}</p>
+          ${rateRow(x)}${overview(x)}
+          <div class="tp-acts">${wActs(x)}</div></header>
+          ${upNext(x)}${episodes(x)}${cast(x)}${watchWhere(x)}${gallery(x)}${videos(x)}${recs(x)}
+          <div class="w-two">${sec("Details", facts(x))}${keywords(x)}</div>${companies()}${links()}${comments()}</div></div>`;
+  }
+
+
+  /* ---------- Series complete: the paper confetti from the Shows page (two cannons, then ~2.5s of rain) ---------- */
+  const CONF = ["#FFC42E", "#FF5C8A", "#4DA3FF", "#3DDC97", "#A66BFF", "#FF8A3D", "#FFFFFF"];
+  const shade = (hex, k) => { const n = parseInt(hex.slice(1), 16), f = c => Math.round(c * k); return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`; };
+  let bits = [], fxRaf = 0, fxT = 0, rainUntil = 0, fx, cfx;
+  const rnd = (a, z) => a + Math.random() * (z - a);
+  const piece = (x, y, vx, vy) => { const kind = Math.random() < .55 ? "rect" : Math.random() < .5 ? "ribbon" : Math.random() < .6 ? "square" : "circle", c = CONF[Math.floor(Math.random() * CONF.length)];
+    return { x, y, vx, vy, kind, c, back: shade(c, .62), w: kind === "ribbon" ? rnd(12, 16) : kind === "rect" ? rnd(8, 11) : rnd(6, 8), h: kind === "ribbon" ? rnd(2.4, 3.2) : kind === "rect" ? rnd(4, 5.5) : 0, rot: rnd(0, 6.28), vr: rnd(-7, 7), flip: rnd(0, 6.28), vf: rnd(6, 14), sway: rnd(0, 6.28), vs: rnd(2, 4.5), amp: rnd(18, 46), age: 0 }; };
+  function fxTick(t) {
+    const dt = Math.min(.033, (t - fxT) / 1000); fxT = t; const w = fx.clientWidth, h = fx.clientHeight, now = performance.now();
+    if (now < rainUntil) { let n = 70 * dt; while (n > 0) { if (Math.random() < n) bits.push(piece(rnd(-10, w + 10), rnd(-40, -10), rnd(-30, 30), rnd(80, 190))); n -= 1; } }
+    cfx.clearRect(0, 0, w, h); bits = bits.filter(p => p.y < h + 30 && p.age < 7);
+    for (const p of bits) { p.age += dt; p.vy += 980 * dt; p.vx *= Math.pow(.25, dt); p.vy *= Math.pow(p.vy > 0 ? .12 : .7, dt); p.vy = Math.min(p.vy, 150 + p.w * 6);
+      p.sway += p.vs * dt; p.rot += p.vr * dt; p.flip += p.vf * dt; p.x += (p.vx + Math.sin(p.sway) * p.amp) * dt; p.y += p.vy * dt;
+      cfx.globalAlpha = p.age > 5.5 ? Math.max(0, 1 - (p.age - 5.5) / 1.5) : 1; cfx.save(); cfx.translate(p.x, p.y); cfx.rotate(p.rot); const f = Math.cos(p.flip); cfx.scale(1, Math.max(.08, Math.abs(f))); cfx.fillStyle = f >= 0 ? p.c : p.back;
+      if (p.kind === "circle") { cfx.beginPath(); cfx.arc(0, 0, p.w / 2, 0, 6.29); cfx.fill(); } else if (p.kind === "square") cfx.fillRect(-p.w / 2, -p.w / 2, p.w, p.w); else cfx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      cfx.restore(); cfx.globalAlpha = 1; }
+    fxRaf = (bits.length || now < rainUntil) ? requestAnimationFrame(fxTick) : (cfx.clearRect(0, 0, w, h), 0);
+  }
+  function confetti() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!fx) { fx = document.createElement("canvas"); fx.className = "tp-fx"; fx.setAttribute("aria-hidden", "true"); (WEB ? document.body : document.querySelector(".phone")).appendChild(fx); cfx = fx.getContext("2d"); }
+    const r = fx.getBoundingClientRect(), d = devicePixelRatio || 1; fx.width = r.width * d; fx.height = r.height * d; cfx.setTransform(d, 0, 0, d, 0, 0);
+    const w = r.width, h = r.height;
+    for (const side of [0, 1]) for (let i = 0; i < 80; i++) { const sp = rnd(700, 1350), up = rnd(1.05, 1.45), dir = side ? -1 : 1; bits.push(piece(side ? w + 6 : -6, h * .92, dir * Math.cos(up) * sp, -Math.sin(up) * sp)); }
+    rainUntil = performance.now() + 2500; if (!fxRaf) { fxT = performance.now(); fxRaf = requestAnimationFrame(fxTick); }
+  }
+  /* a finished series: confetti only when no more episodes are coming (ended / canceled); returning = "All caught up" */
+  const finished = x => /Ended|Canceled/.test(x.st);
+  function afterProgress(before) {
+    const x = X(), now = myOf(st.key);
+    if (now === "completed" && before !== "completed") { if (finished(x)) { toast(`${x.t} complete — every episode watched`); confetti(); } else toast("All caught up — we'll tell you when new episodes air"); }
+  }
+
+  /* ---------- controls + render ---------- */
+  const root = document.getElementById("tp"), scrollEl = () => WEB ? window : document.getElementById("scr");
+  function controls() {
+    const x = X(), up = upcoming(x), s = myOf(st.key);
+    const mk = (k, label, opts) => `<span class="seg" data-k="${k}">${label ? `<small>${label}</small>` : ""}${opts.map(([v, l]) => `<button type="button" data-v="${v}" aria-pressed="${(k === "key" ? st.key : k === "theme" ? st.theme : k === "tstyle" ? st.tstyle : s) === v}">${l}</button>`).join("")}</span>`;
+    const titles = KEYS.map(k => [k, LIST[k].t + (MOVIE ? "" : ` <span style="opacity:.6;font-weight:600">· ${upcoming(LIST[k]) ? "Upcoming" : /Returning/.test(LIST[k].st) ? "Returning" : LIST[k].st}</span>`)]);
+    const you = MOVIE ? (up ? [["none", "Not following"], ["fol", "Following"], ["watched", "Watched"]] : [["none", "Not added"], ["wl", "Watchlist"], ["watched", "Watched"]])
+      : (up ? [["none", "Not following"], ["fol", "Following"]] : [["none", "Not added"], ["wl", "Watchlist"], ["watching", "Watching"], ["completed", "Completed"]]);
+    document.getElementById("ctl").innerHTML = `<b>${MOVIE ? "Movie page" : "Series page"} · ${WEB ? "Website" : "App"}</b>${mk("key", "", titles)}${mk("my", "You", you)}${mk("tstyle", "Title", [["logo", "Logo"], ["text", "Text"]])}${mk("theme", "", [["dark", "Dark"], ["light", "Light"]])}`;
+  }
+  function render(keepScroll) {
+    const x = X(), sc = scrollEl(), y = keepScroll ? (WEB ? scrollY : sc && sc.scrollTop) : 0;
+    document.documentElement.dataset.theme = st.theme;
+    root.innerHTML = st.cp ? (WEB ? cpWeb(x) : cpApp(x)) : WEB ? renderWeb(x) : renderApp(x);
+    const ph = document.querySelector(".phone"); if (ph) ph.classList.toggle("cp", !!st.cp); document.body.classList.toggle("cp", !!st.cp);
+    controls();
+    const nsc = scrollEl();
+    if (st.cp) { if (WEB) scrollTo(0, y || 0); else { nsc.scrollTop = y || 0; } const ta = document.getElementById("cp-in"); if (ta) { grow(ta); if (st.cpFocus) { st.cpFocus = false; ta.focus(); } } return; }
+    if (WEB) { scrollTo(0, y || 0); observe(); measure(x); } else { nsc.scrollTop = y || 0; nsc.addEventListener("scroll", onAppScroll, { passive: true }); onAppScroll(); }
+  }
+  function grow(t) { t.style.height = "auto"; t.style.height = Math.min(WEB ? 220 : 120, t.scrollHeight) + "px"; }
+  function onAppScroll() { const sc = document.getElementById("scr"); document.querySelector(".phone").classList.toggle("solid", sc.scrollTop > 170); }
+  let obs;
+  function observe() {
+    if (obs) obs.disconnect(); const s = root.querySelector(".w-sent"), n = root.querySelector(".w-name"); if (!s || !n || !("IntersectionObserver" in window)) return;
+    obs = new IntersectionObserver(([en]) => n.classList.toggle("stuck", !en.isIntersecting), { rootMargin: "-70px 0px 0px 0px" }); obs.observe(s);
+  }
+  addEventListener("scroll", () => { const h = document.querySelector(".w-site"); if (h) h.classList.toggle("solid", scrollY > 40); }, { passive: true });
+
+  let tt; const toast = m => { const t = document.getElementById("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2000); };
+  const setMy = v => { st.my[st.key] = v; store.set("my-" + st.key, v); };
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".seg button");
+    if (c) { const k = c.parentNode.dataset.k, v = c.dataset.v;
+      if (k === "key") { st.key = v; store.set("key", v); st.cp = false; st.ov = false; st.more = false; st.tr = false; render(false); return; }
+      if (k === "theme") { st.theme = v; store.set("theme", v); render(true); return; }
+      if (k === "tstyle") { st.tstyle = v; store.set("tstyle", v); render(true); return; }
+      const before = myOf(st.key); setMy(v); st.eps[st.key] = seedEps(st.key, v); render(true); if (!MOVIE) afterProgress(before); return; }
+    const a = e.target.closest("[data-act]");
+    if (a) { const x = X(), v = a.dataset.act;
+      const M = { watch: ["watched", "Marked as watched"], unwatch: ["none", "Removed from watched"], wl: ["wl", "Added to your watchlist"], unwl: ["none", "Removed from your watchlist"],
+        follow: ["fol", MOVIE ? "Following — we'll tell you when it's out" : "Following — we'll tell you when it airs"], unfollow: ["none", "Unfollowed"],
+        start: ["watching", "Added to Watching"], stop: ["none", "Removed from your shows"] }[v];
+      if (v === "cpopen") { st.cpBack = WEB ? scrollY : (scrollEl() || {}).scrollTop || 0; st.cp = true; st.cpFocus = !!a.dataset.focus; render(false); return; }
+      if (v === "cpclose") { st.cp = false; render(false); const b = st.cpBack || 0; if (WEB) scrollTo(0, b); else scrollEl().scrollTop = b; return; }
+      if (v === "cpsort") { st.cpSort = a.dataset.v; render(true); return; }
+      if (v === "cpspoil") { st.cpSp = !st.cpSp; render(true); return; }
+      if (v === "cpsend") { const t = st.cpDraft.trim(); if (!t) return; const d = new Date(TODAY.getTime() - 60e3).toISOString().slice(0, 16);
+        (st.cpNew[st.key] || (st.cpNew[st.key] = [])).unshift({ id: "n" + Date.now(), u: "kazm", n: "KAZM", b: t, sp: st.cpSp, l: 0, d, rep: [] }); st.cpDraft = ""; st.cpSp = false; if (st.cp) st.cpSort = st.cpSort; render(false); toast("Comment posted"); return; }
+      if (v === "cmall") { const was = st.cmall[st.key]; st.cmall[st.key] = !was; render(true); if (was) { const c = document.getElementById("tp-cm"), sc = document.getElementById("scr"); if (c) (sc && !WEB ? sc.scrollTo({ top: c.offsetTop - 100 }) : c.scrollIntoView({ block: "start" })); } return; }
+      if (v === "cmmore") { st.cmx[a.dataset.id] = !st.cmx[a.dataset.id]; render(true); return; }
+      if (v === "cmrep") { st.cmr[a.dataset.id] = !st.cmr[a.dataset.id]; render(true); return; }
+      if (v === "cmlike") { st.cml[a.dataset.id] = !st.cml[a.dataset.id]; render(true); return; }
+      if (v === "cmspoil") { st.cms[a.dataset.id] = 1; render(true); return; }
+      if (v === "more") { st.more = !st.more; render(true); return; }
+      if (v === "det") { st.det[st.key] = !st.det[st.key]; render(true); return; }
+      if (v === "hide") { st.hide = !st.hide; render(true); return; }
+      if (v === "mute") { st.mute = !st.mute; render(true); return; }
+      if (v === "info") { if (!WEB) { st.tab[st.key] = "ov"; render(true); const d = document.getElementById("tp-det"), sc = document.getElementById("scr"); if (d && sc) sc.scrollTo({ top: d.offsetTop - 110, behavior: "smooth" }); } return; }
+      if (v === "close") { st.more = false; render(true); return; }
+      if (v === "fav") { st.fav[st.key] = !st.fav[st.key]; st.more = false; toast(st.fav[st.key] ? "Added to your favourites" : "Removed from your favourites"); render(true); return; }
+      if (v === "share") { st.more = false; render(true); return toast("Share sheet opens here"); }
+      if (v === "rewatch") { st.more = false; render(true); return toast(MOVIE ? "Rewatch started — it counts as a new watch" : "Rewatch started from episode 1"); }
+      if (v === "allwatched") { const before = myOf(st.key), seen = epsOf(st.key); allAired(x).forEach(([sn, e]) => seen[sn + "-" + e[0]] = 1); setMy("completed"); st.more = false; render(true); afterProgress(before); return; }
+      if (v === "rate") return toast("Rating sheet opens here");
+      if (v === "wl" || v === "unwl") { const s0 = myOf(st.key), on = v === "wl";
+        if (s0 === "wl" || s0 === "none") setMy(on ? "wl" : "none"); st.wl[st.key] = on;
+        toast(on ? "Added to your watchlist" : "Removed from your watchlist"); render(true); return; }
+      if (v === "list") { st.more = false; render(true); return toast("Your lists open here"); }
+      if (M) { setMy(M[0]); if (!MOVIE) st.eps[st.key] = M[0] === "none" ? {} : (M[0] === "watching" ? epsOf(st.key) : st.eps[st.key]); toast(M[1]); render(true); }
+      return; }
+    const ep = e.target.closest("[data-ep]");
+    if (ep) { const x = X(), seen = epsOf(st.key), k = ep.dataset.ep; seen[k] ? delete seen[k] : seen[k] = 1;
+      const all = allAired(x), done = all.filter(([sn, e]) => seen[sn + "-" + e[0]]).length;
+      const cur = myOf(st.key); if (done === all.length) setMy("completed"); else if (done && cur !== "watching") { setMy("watching"); toast("Added to Watching"); } else if (!done && cur === "watching") setMy("none");
+      render(true); afterProgress(cur); return; }
+    const tb = e.target.closest("[data-tab]"); if (tb) { st.tab[st.key] = tb.dataset.tab; render(true); const sc = document.getElementById("scr"), sg = document.querySelector(".a-seg"); if (sc && sg && sc.scrollTop > sg.offsetTop - 110) sc.scrollTop = sg.offsetTop - 110; return; }
+    const op = e.target.closest("[data-open]"); if (op) { const o = st.open[st.key] || (st.open[st.key] = {}), n = op.dataset.open; o[n] = !o[n]; render(true); return; }
+    const sn = e.target.closest("[data-sn]"); if (sn) { st.season[st.key] = +sn.dataset.sn; render(true); return; }
+    const ss = e.target.closest("[data-season]");
+    if (ss) { const x = X(), seen = epsOf(st.key), n = ss.dataset.season, L = (x.eps[n] || []).filter(e => e[2] && days(e[2]) <= 0), all = L.every(e => seen[n + "-" + e[0]]);
+      L.forEach(e => all ? delete seen[n + "-" + e[0]] : seen[n + "-" + e[0]] = 1);
+      const A = allAired(x), done = A.filter(([s2, e]) => seen[s2 + "-" + e[0]]).length, before = myOf(st.key); setMy(done === A.length ? "completed" : done ? "watching" : "none");
+      toast(all ? `Season ${n} unmarked` : `Season ${n} watched`); render(true); afterProgress(before); return; }
+    if (e.target.closest("[data-ov]")) { st.ov = true; render(true); return; }
+    if (e.target.closest("[data-tr]")) { st.tr = !st.tr; render(true); return; }
+    if (st.more && WEB && !e.target.closest(".tp-mw")) { st.more = false; render(true); }
+    const so = e.target.closest("[data-soon]"); if (so) toast(so.dataset.soon + " opens here");
+  });
+  document.addEventListener("input", e => { if (e.target.id !== "cp-in") return; st.cpDraft = e.target.value; grow(e.target); const b = document.querySelector(".cp-send"); if (b) b.disabled = !st.cpDraft.trim(); const bx = document.querySelector(".cp-box"); if (bx) bx.classList.toggle("typing", !!st.cpDraft.trim()); });
+  document.addEventListener("keydown", e => { if (e.target.id === "cp-in" && e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); document.querySelector(".cp-send").click(); } });
+  render(false);
+})();
+</script></body></html>

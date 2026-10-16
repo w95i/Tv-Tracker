@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "title": "TVTracker — Every show. Every film. Never lose track.",
+    "description": "Track every show and film you watch, see where to stream it, and know the moment your show comes back. Free on iPhone, Android and the web, in English and Arabic."
+  },
+  "skip": "Skip to content",
+  "nav": {
+    "features": "Features",
+    "import": "Import",
+    "main": "Main",
+    "footer": "Footer",
+    "about": "About"
+  },
+  "header": {
+    "langBtn": "العربية",
+    "theme": "Switch theme",
+    "login": "Log in",
+    "signup": "Sign up free"
+  },
+  "hero": {
+    "kick": "Free · iPhone, Android & web",
+    "titleLine": "Every show. Every film.",
+    "titleEm": "Never lose track.",
+    "lede": "Tick off episodes, see where to stream, and know the moment your show comes back.",
+    "cta": "Start tracking — it's free",
+    "dlOn": "Download on the",
+    "dlGet": "Get it on"
+  },
+  "carousel": {
+    "label": "Titles",
+    "roledescription": "carousel",
+    "prev": "Previous title",
+    "next": "Next title",
+    "show": "Show {title} on the phone",
+    "showing": "Now showing {title}"
+  },
+  "phone": {
+    "trailer": "Tap to watch the trailer",
+    "markWatched": "Mark as watched",
+    "addWatchlist": "Add to watchlist",
+    "details": "Details",
+    "overview": "Overview",
+    "episodes": "Episodes",
+    "wins": "{n} wins",
+    "runtime": "{h}h {m}m",
+    "status": {
+      "returning": "Returning",
+      "ended": "Ended",
+      "canceled": "Canceled",
+      "inProduction": "In production"
+    },
+    "play": "Play the trailer",
+    "stop": "Stop the trailer",
+    "mute": "Mute",
+    "unmute": "Sound on",
+    "trailerOf": "{title} trailer",
+    "fullscreen": "Watch the trailer full screen"
+  },
+  "why": {
+    "kick": "Why TVTracker",
+    "title": "Made for how you actually watch.",
+    "upNext": {
+      "title": "Never lose your place",
+      "text": "Your next episode is always on top. One tap and it's ticked off."
+    },
+    "moods": {
+      "title": "Can't decide? Pick a mood.",
+      "text": "Tell us how tonight feels — we start from your watchlist.",
+      "laugh": "Make me laugh",
+      "edge": "Edge of my seat",
+      "feelGood": "Feel good",
+      "mind": "Mind-bending"
+    },
+    "import": {
+      "title": "Bring your history",
+      "text": "From TV Time, Trakt, IMDb or Bingers — in about a minute.",
+      "episodes": "episodes",
+      "done": "All imported"
+    }
+  },
+  "footer": {
+    "open": "Open TVTracker",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "attribution": "Film and TV data and images from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. Where-to-watch data by JustWatch. TVTracker is not affiliated with TV Time. © 2026 Alphabet."
+  },
+  "common": {
+    "close": "Close"
+  },
+  "about": {
+    "kick": "About us",
+    "titleLine": "Lights down.",
+    "titleEm": "Gold up.",
+    "lede": "One place for the films and shows you have finished, the ones you are halfway through, and the ones you keep meaning to start.",
+    "built": "Built for people who finish things.",
+    "madeBy": "Designed & developed by",
+    "roadmap": "Our roadmap on GitHub",
+    "facts": {
+      "screens": {
+        "title": "Every screen",
+        "text": "One library on the web, iPhone, iPad and Android. Same place, instantly."
+      },
+      "free": {
+        "title": "Free to use",
+        "text": "Works in the browser, no install needed. No ads in your way.",
+        "chips": {
+          "noInstall": "No install",
+          "noAds": "No ads"
+        }
+      },
+      "languages": {
+        "title": "English & العربية",
+        "text": "The whole app, in both languages."
+      },
+      "data": {
+        "title": "Data you can trust",
+        "text": "Film and show data and artwork by TMDB and TheTVDB. Where-to-watch data by JustWatch."
+      }
+    }
+  },
+  "switching": {
+    "kick": "Switching?",
+    "title": "TV Time closed. Your history doesn't have to.",
+    "text": "Bring every show, episode and film you've logged — from TV Time, IMDb, Letterboxd, Trakt or any CSV. It takes about a minute.",
+    "cta": "Import your history",
+    "apps": {
+      "tvtime": "1,016 episodes",
+      "imdb": "212 ratings",
+      "letterboxd": "184 films",
+      "trakt": "232 plays"
+    },
+    "done": "Done",
+    "phone": {
+      "title": "Importing your history",
+      "from": "From TV Time, IMDb, Letterboxd and Trakt",
+      "shows": "Shows",
+      "episodes": "Episodes",
+      "movies": "Movies",
+      "finished": "All set — welcome home"
+    }
+  },
+  "splash": {
+    "label": "Intro",
+    "skip": "Skip",
+    "skipLabel": "Skip the intro",
+    "taglineA": "Every episode.",
+    "taglineB": "Every feeling."
+  }
+}

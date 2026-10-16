@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TVTracker — Every show. Every film. Never lose track.</title>
+<meta name="description" content="Track every show and film you watch, see where to stream it, and know the moment your show comes back. Free on iPhone, Android and the web, in English and Arabic.">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&family=Figtree:wght@400;500;600;700;800&family=Readex+Pro:wght@400;500;600;700&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#000;--bg-rgb:0,0,0;--surface:#111217;--surface-2:#1a1b22;--line:rgba(255,255,255,.08);
+  --text:#f4f5f8;--heading:#f6f7fb;--muted:#8e96ad;--dim:#c3c8d6;--glass:255,255,255;--amber:#ffc42e;--ink:#1c1400;--accent:#ffc42e;--ph:#1d1e25;
+  --chip:rgba(22,23,29,.86);--chip-line:rgba(255,255,255,.1);--shadow:0 30px 60px -20px rgba(0,0,0,.85);
+  --font:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;--display:"Archivo","Figtree",system-ui,sans-serif;--gut:clamp(20px,5vw,64px);--ease:cubic-bezier(.22,1,.36,1)}
+:root[data-theme="light"]{color-scheme:light;--bg:#f5f5f7;--bg-rgb:245,245,247;--surface:#fff;--surface-2:#ececf0;--line:rgba(16,18,27,.09);
+  --text:#15161c;--heading:#0e0f14;--muted:#5e6476;--dim:#3f4557;--glass:16,18,27;--accent:#8a5d00;--ph:#e2e3e9;
+  --chip:rgba(255,255,255,.92);--chip-line:rgba(16,18,27,.08);--shadow:0 30px 60px -24px rgba(16,18,27,.35)}
+:root[lang="ar"]{--font:"Readex Pro","Figtree",system-ui,sans-serif;--display:"Readex Pro","Archivo",system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}button{font:inherit;color:inherit}img{display:block;max-width:100%}
+h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;color:var(--heading);letter-spacing:-.025em;text-wrap:balance}
+:root[lang="ar"] h1,:root[lang="ar"] h2,:root[lang="ar"] h3{font-weight:700;letter-spacing:0}
+p{margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:var(--gut)}
+.d{display:block}.l{display:none}:root[data-theme="light"] .d{display:none}:root[data-theme="light"] .l{display:block}
+:focus-visible{outline:2.5px solid var(--amber);outline-offset:3px;border-radius:8px}
+.skip{position:absolute;inset-inline-start:12px;top:-60px;z-index:100;padding:10px 14px;border-radius:10px;background:var(--amber);color:var(--ink);font-weight:800}.skip:focus{top:12px}
+.kick{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+:root[lang="ar"] .kick{letter-spacing:0;font-size:13px}
+
+/* buttons — rounded squares */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:52px;padding:0 24px;border:0;border-radius:12px;font-size:16px;font-weight:800;white-space:nowrap;cursor:pointer;transition:filter .2s,transform .15s,background .2s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--amber);color:var(--ink)}
+.btn.sm{height:40px;padding:0 16px;font-size:14px;border-radius:11px}
+.btn.ghost{background:rgba(var(--glass),.08);color:var(--text)}
+.btn svg{width:18px;height:18px}
+:root[dir="rtl"] .btn svg.ar{transform:scaleX(-1)}
+@media (hover:hover){.btn.pri:hover{filter:brightness(1.07)}.btn.ghost:hover{background:rgba(var(--glass),.13)}}
+.store{display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 18px 0 14px;border-radius:12px;background:rgba(var(--glass),.07);box-shadow:inset 0 0 0 1px rgba(var(--glass),.12);line-height:1.1;text-align:start}
+.store svg{width:21px;height:21px;flex:none}
+.store small{display:block;font-size:10.5px;font-weight:600;color:var(--muted)}
+.store b{display:block;font-size:15px;font-weight:800}
+@media (hover:hover){.store:hover{background:rgba(var(--glass),.12)}}
+
+/* header */
+.hd{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .3s,box-shadow .3s}
+.hd.solid{background:rgba(var(--bg-rgb),.8);-webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px);box-shadow:0 1px 0 var(--line)}
+.hd .wrap{height:68px;display:flex;align-items:center;gap:32px}
+.logo{display:flex;align-items:center;height:44px}.logo img{height:20px;width:auto}
+.nav{display:flex;gap:26px}
+.nav a{font-size:15px;font-weight:600;color:var(--dim);padding:8px 0}
+@media (hover:hover){.nav a:hover{color:var(--text)}}
+.hd-r{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
+.ib{height:40px;min-width:40px;padding:0 11px;border:0;border-radius:11px;display:grid;place-items:center;background:rgba(var(--glass),.08);color:var(--text);cursor:pointer;font-size:14px;font-weight:700}
+.ib svg{width:19px;height:19px}
+:root:not([lang="ar"]) .ib.lang{font-family:"Readex Pro",sans-serif;font-weight:600}
+.ib .sun{display:none}:root[data-theme="light"] .ib .sun{display:block}:root[data-theme="light"] .ib .moon{display:none}
+.login{font-size:15px;font-weight:700;color:var(--dim);padding:10px 8px;white-space:nowrap}
+
+.ft{padding:40px 0 52px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.ft-g{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}
+.ft nav{display:flex;flex-wrap:wrap;gap:4px 22px}
+.ft nav a{display:inline-block;padding:8px 0;font-weight:600;color:var(--dim)}
+.ft .att{margin-top:22px;font-size:12.5px;line-height:1.6;max-width:62em}
+
+/* reveal on scroll (only when JS + motion are on) */
+.js .rv{opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.js .rv.in{opacity:1;transform:none}
+
+/* header: solid amber in both themes */
+.hd,.hd.solid{background:var(--amber);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;color:var(--ink)}
+.hd .nav a{color:rgba(28,20,0,.72)}
+@media (hover:hover){.hd .nav a:hover{color:var(--ink)}}
+.hd .login{color:var(--ink)}
+.hd .ib{background:rgba(28,20,0,.09);color:var(--ink)}
+@media (hover:hover){.hd .ib:hover{background:rgba(28,20,0,.15)}}
+.hd .btn.pri{background:var(--ink);color:#fff}
+.hd .logo .ink{display:block}
+/* ---------- BAND: one solid amber, words left, two phones right ---------- */
+.band{margin-top:68px;background:linear-gradient(90deg,#3022a8 0%,#6542bd 45%,#bb68d3 100%);color:#fff;overflow:hidden}
+:root[dir="rtl"] .band{background:linear-gradient(270deg,#3022a8 0%,#6542bd 45%,#bb68d3 100%)}
+.band .wrap{display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);gap:40px;align-items:center;min-height:600px}
+.band .tx{padding-block:64px}
+.band h1{font-size:clamp(38px,4.4vw,60px);line-height:1.04;letter-spacing:-.035em;color:#fff}
+:root[lang="ar"] .band h1{line-height:1.35;letter-spacing:0}
+.band h1 em{font-style:normal;color:#fff;background:linear-gradient(transparent 56%,var(--amber) 56%,var(--amber) 90%,transparent 90%);-webkit-box-decoration-break:clone;box-decoration-break:clone;padding-inline:.04em}
+.pts{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.pts li{display:flex;align-items:center;gap:12px;font-size:17.5px;font-weight:700;color:rgba(255,255,255,.92)}
+.pts i{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.14);color:#fff}
+.pts i svg{width:18px;height:18px}
+.band .ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+.store.ic{width:52px;padding:0;justify-content:center}.store.ic svg{width:24px;height:24px}
+.btn.ink{background:var(--ink);color:#fff}
+@media (hover:hover){.btn.ink:hover{background:#000}}
+.band .store{background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.28);color:#fff}
+.band .store small{color:rgba(255,255,255,.75)}
+@media (hover:hover){.band .store:hover{background:rgba(255,255,255,.18)}}
+.phs{position:relative;align-self:end;height:540px;direction:ltr}
+.pp{position:absolute;bottom:-170px;width:292px;padding:8px;border-radius:52px;background:#0e0f14;box-shadow:0 30px 50px -20px rgba(20,8,60,.55)}
+.pp img{width:100%;height:auto;aspect-ratio:1206/2622;border-radius:44px}
+.pp.a{left:0;z-index:2}
+.pp.b{left:250px;bottom:-216px;z-index:1}
+.rise{animation:rise .9s var(--ease) both}.rise.r2{animation-delay:.06s}.rise.r3{animation-delay:.12s}.rise.r4{animation-delay:.18s}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}}
+.up9{animation:up9 1s .1s var(--ease) both}.up9.b{animation-delay:.22s}
+@keyframes up9{from{opacity:0;transform:translateY(80px)}}
+
+/* ---------- shows + genres ---------- */
+.sec{padding-top:64px}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+.sh h2{font-size:clamp(24px,2.6vw,32px);line-height:1.1}
+.sh p{margin-top:6px;font-size:15.5px;color:var(--muted)}
+.arw{display:flex;gap:8px}
+.arw button{width:40px;height:40px;border:0;border-radius:11px;display:grid;place-items:center;background:rgba(var(--glass),.08);color:var(--text);cursor:pointer}
+.arw button svg{width:18px;height:18px}
+:root[dir="rtl"] .arw button svg{transform:scaleX(-1)}
+@media (hover:hover){.arw button:hover{background:rgba(var(--glass),.14)}}
+.rail{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
+.rail::-webkit-scrollbar{display:none}
+.sc{flex:0 0 262px;scroll-snap-align:start;text-align:start}
+.sc i{display:block;aspect-ratio:16/9;border-radius:14px;background:var(--ph) center/cover;box-shadow:inset 0 0 0 1px var(--line)}
+.sc b{display:block;margin-top:10px;font-size:15.5px;font-weight:800;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc small{display:block;margin-top:2px;font-size:13.5px;font-weight:600;color:var(--muted)}
+@media (hover:hover){.sc i{transition:transform .3s var(--ease)}.sc:hover i{transform:translateY(-3px)}}
+.gsec{padding-bottom:96px}
+/* ---------- import: one panel, six sources ---------- */
+.impx{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;align-items:center;padding:36px;border-radius:24px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.itx h2{margin-top:12px;font-size:clamp(26px,2.8vw,36px);line-height:1.1}
+.itx p{margin-top:12px;font-size:16px;line-height:1.6;color:var(--muted);max-width:30em}
+.itx .btn{margin-top:22px}
+.srcs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.src{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--surface-2)}
+.src .lg{flex:none;width:44px;height:44px;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line)}
+.src .lg svg,.src .lg img{width:100%;height:100%;display:block}
+.src b{min-width:0;font-size:15.5px;font-weight:800;color:var(--heading);overflow-wrap:anywhere;line-height:1.2}
+.gens{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.gen{position:relative;flex:none;height:200px;padding:20px;border-radius:22px;overflow:hidden;isolation:isolate;display:flex;align-items:flex-start;background:linear-gradient(135deg,hsl(var(--h) 70% 42%),hsl(calc(var(--h) + 28) 64% 24%))}
+.gen b{position:relative;z-index:2;font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1;letter-spacing:-.01em;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.3)}
+:root[lang="ar"] .gen b{font-weight:700;letter-spacing:0}
+.ga{position:absolute;z-index:0;inset-inline-start:7%;top:28%;width:52%;height:80%;object-fit:contain;object-position:left top;pointer-events:none}
+:root[dir="rtl"] .ga{object-position:right top;transform:scaleX(-1)}
+.gp{position:absolute;z-index:1;inset-inline-end:-8px;bottom:-38px;width:176px;height:186px}
+.gp i{position:absolute;width:108px;aspect-ratio:2/3;border-radius:10px;background:#222 center/cover no-repeat;box-shadow:0 8px 22px rgba(0,0,0,.45);transition:transform .35s cubic-bezier(.2,1.4,.4,1)}
+.gp i:nth-child(1){inset-inline-end:60px;bottom:12px;transform:rotate(-14deg)}
+.gp i:nth-child(2){inset-inline-end:2px;bottom:0;transform:rotate(11deg)}
+:root[dir="rtl"] .gp i:nth-child(1){transform:rotate(14deg)}:root[dir="rtl"] .gp i:nth-child(2){transform:rotate(-11deg)}
+@media (hover:hover){.gen:hover .gp i:nth-child(1){transform:rotate(-20deg) translateY(-10px)}.gen:hover .gp i:nth-child(2){transform:rotate(17deg) translateY(-14px)}}
+
+
+
+
+
+.gens{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.gen{height:170px;padding:20px;border-radius:22px}
+.gen b{font-size:24px}
+.gp{width:170px;height:170px;inset-inline-end:-10px;bottom:-34px}
+.gp i{width:104px}
+.gp i:nth-child(1){inset-inline-end:58px}
+
+@media (max-width:1100px){.gens{grid-template-columns:repeat(3,minmax(0,1fr))}.band .wrap{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pp{width:250px}.pp.b{left:212px}}
+@media (max-width:900px){
+  .nav{display:none}
+  .impx{grid-template-columns:1fr;gap:26px;padding:24px}
+  .band .wrap{grid-template-columns:1fr;gap:0;min-height:0}
+  .band .tx{padding-block:44px 30px}
+  .phs{height:440px;width:100%;max-width:470px;margin:0 auto}
+.pp{width:250px;bottom:-130px}.pp.a{left:0}.pp.b{left:auto;right:0;bottom:-160px}
+}
+@media (max-width:640px){
+  .login,.hd-r .ib.th{display:none}
+  .hd .wrap{height:60px;gap:12px}.logo img{height:17px}.btn.sm{padding:0 13px}
+  .band{margin-top:60px}
+  .pts li{font-size:16px}
+  .band .ctas{flex-wrap:nowrap;gap:8px}
+  .band .ctas .btn{flex:1 1 auto;min-width:0;height:54px;padding:0 14px;font-size:15px}
+  .store.ic{height:54px;width:54px}
+  .phs{height:330px}
+  .pp{width:204px;padding:6px;border-radius:38px;bottom:-120px}.pp img{border-radius:32px}.pp.b{bottom:-152px}
+  .sec{padding-top:48px}
+  .sc{flex-basis:220px}
+  .srcs{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.src{padding:11px;gap:10px}.src .lg{width:38px;height:38px;border-radius:11px}.src b{font-size:14px}
+  .itx .btn{width:100%}
+  .arw{display:none}
+  .gens{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .gen{height:112px;padding:14px;border-radius:16px}.gen b{font-size:17px}
+  .gp{width:104px;height:112px;inset-inline-end:-8px;bottom:-22px}.gp i{width:66px;border-radius:7px}.gp i:nth-child(1){inset-inline-end:36px;bottom:8px}
+  .gsec{padding-bottom:70px}
+  .ft-g{flex-direction:column;align-items:flex-start}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}.js .rv{opacity:1;transform:none}}
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-t="skip">Skip to content</a>
+<header class="hd solid" id="hd">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="TVTracker"><img class="ink" src="data:image/png;base64,[STRIPPED 13KB]" alt="TVTracker" width="184" height="20"></a>
+    <nav class="nav" aria-label="Main"><a href="#import" data-t="nImp">Import</a><a href="#shows" data-t="nShows">Shows</a><a href="#genres" data-t="nGen">Genres</a></nav>
+    <div class="hd-r">
+      <button type="button" class="ib lang" data-act="lang" data-t="langBtn">العربية</button>
+      <button type="button" class="ib th" data-act="theme" aria-label="Switch theme"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button>
+      <a class="login" href="https://tvtracker.tv/app" data-t="login">Log in</a>
+      <a class="btn pri sm" href="https://tvtracker.tv/app" data-t="signup">Sign up free</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="band" id="top" aria-labelledby="h1">
+  <div class="wrap">
+    <div class="tx">
+      <h1 id="h1" class="rise" data-t="h1">Every show.<br>Every film.<br><em>Never lose track.</em></h1>
+      <div class="ctas rise r3"><a class="btn pri" href="https://tvtracker.tv/app"><span data-t="cta">Start tracking — it's free</span><svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="store ic" aria-label="Download on the App Store" href="https://apps.apple.com/us/app/tvt-track-movies-shows/id6797001715"><svg viewBox="4.69 3.2 13.91 17.4" fill="currentColor" aria-hidden="true"><path d="M16.4 12.8c0-2.2 1.8-3.3 1.9-3.4-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.7.8-3.3.8-.7 0-1.7-.8-2.8-.8-1.5 0-2.8.8-3.6 2.1-1.5 2.6-.4 6.5 1.1 8.6.7 1 1.6 2.2 2.7 2.2 1.1 0 1.5-.7 2.8-.7 1.3 0 1.6.7 2.8.7 1.2 0 1.9-1 2.6-2.1.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.2-.9-2.2-3.2zM14.3 5.9c.6-.7 1-1.7.9-2.7-.9 0-2 .6-2.6 1.3-.6.6-1.1 1.6-.9 2.6 1 .1 2-.5 2.6-1.2z"/></svg></a>
+        <a class="store ic" aria-label="Get it on Google Play" href="https://play.google.com/store/apps/details?id=com.alphabetiq.tvtracker"><svg viewBox="1.7 0.05 21.29 23.9" fill="currentColor" aria-hidden="true"><path d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202c1.302.65 1.302 2.293 0 2.594zM17.089 7.36L4.723.243C4.155-.088 3.492.037 3.024.393l10.056 9.993 4.009-3.026zM3.024 23.607c.468.356 1.131.481 1.699.15l12.366-7.117-4.009-3.026L3.024 23.607zM2.16 1.052C1.878 1.406 1.7 1.89 1.7 2.48v19.04c0 .59.178 1.074.46 1.428l10.774-10.71L2.16 1.052z"/></svg></a>
+      </div>
+    </div>
+    <div class="phs" aria-hidden="true"><div class="pp a up9"><img class="d" src="data:image/jpeg;base64,[STRIPPED 118KB]" alt="" width="1206" height="2622"><img class="l" src="data:image/jpeg;base64,[STRIPPED 125KB]" alt="" width="1206" height="2622"></div><div class="pp b up9 b"><img class="d" src="data:image/jpeg;base64,[STRIPPED 138KB]" alt="" width="1206" height="2622"><img class="l" src="data:image/jpeg;base64,[STRIPPED 137KB]" alt="" width="1206" height="2622"></div></div>
+  </div>
+</section>
+
+<section class="sec" id="import" aria-labelledby="i-h">
+  <div class="wrap">
+    <div class="impx">
+      <div class="itx"><span class="kick" data-t="iKick">Already tracking somewhere?</span>
+        <h2 id="i-h" data-t="iH">Bring your history from anywhere.</h2>
+        <p data-t="iP">Every show, episode, film and rating comes with you — even the list you kept in your notes. It takes about a minute.</p>
+        <a class="btn ghost" href="https://tvtracker.tv/app"><span data-t="iBtn">Import your history</span><svg class="ar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <ul class="srcs"><li class="src"><span class="lg"><svg viewBox="0 0 24 24" style="background:#000"><path fill="#FFD400" d="M0 0v24h24V0zm4.8 4.8h14.4v4.8h-4.8v9.6H9.6V9.6H4.8Z"/></svg></span><b>TV Time</b></li><li class="src"><span class="lg"><svg viewBox="0 0 24 24" style="background:#fff"><path fill="#9F42C6" d="m15.082 15.107-.73-.73 9.578-9.583a4.499 4.499 0 0 0-.115-.575L13.662 14.382l1.08 1.08-.73.73-1.81-1.81L23.422 3.144c-.075-.15-.155-.3-.25-.44L11.508 14.377l2.154 2.155-.73.73-7.193-7.199.73-.73 4.309 4.31L22.546 1.86A5.618 5.618 0 0 0 18.362 0H5.635A5.637 5.637 0 0 0 0 5.634V18.37A5.632 5.632 0 0 0 5.635 24h12.732C21.477 24 24 21.48 24 18.37V6.19l-8.913 8.918zm-4.314-2.155L6.814 8.988l.73-.73 3.954 3.96zm1.075-1.084-3.954-3.96.73-.73 3.959 3.96zm9.853 5.688a4.141 4.141 0 0 1-4.14 4.14H6.438a4.144 4.144 0 0 1-4.139-4.14V6.438A4.141 4.141 0 0 1 6.44 2.3h10.387v1.04H6.438c-1.71 0-3.099 1.39-3.099 3.1V17.55c0 1.71 1.39 3.105 3.1 3.105h11.117c1.71 0 3.1-1.395 3.1-3.105v-1.754h1.04v1.754z"/></svg></span><b>Trakt</b></li><li class="src"><span class="lg"><svg viewBox="0 0 24 24" style="background:#F5C518"><path fill="#000" d="M22.3781 0H1.6218C.7411.0583.0587.7437.0018 1.5953l-.001 20.783c.0585.8761.7125 1.543 1.5559 1.6191A.337.337 0 0 0 1.6016 24h20.7971a.4579.4579 0 0 0 .0437-.002c.8727-.0768 1.5568-.8271 1.5568-1.7085V1.7098c0-.8914-.696-1.6416-1.584-1.7078A.3294.3294 0 0 0 22.3781 0zm0 .496a1.2144 1.2144 0 0 1 1.1252 1.2139v20.5797c0 .6377-.4875 1.1602-1.1045 1.2145H1.6016c-.5967-.0543-1.0645-.5297-1.1053-1.1258V1.6284C.5371 1.0185 1.0184.5364 1.6217.496h20.7564zM4.7954 8.2603v7.3636H2.8899V8.2603h1.9055zm6.5367 0v7.3636H9.6707v-4.9704l-.6711 4.9704H7.813l-.6986-4.8618-.0066 4.8618h-1.668V8.2603h2.468c.0748.4476.1492.9694.2307 1.5734l.2712 1.8713.4407-3.4447h2.4817zm2.9772 1.3289c.0742.0404.122.108.1417.2034.0279.0953.0345.3118.0345.6442v2.8548c0 .4881-.0345.7867-.0955.8954-.0609.1152-.2304.1695-.5018.1695V9.5211c.204 0 .3457.0205.4211.0681zm-.0211 6.0347c.4543 0 .8006-.0265 1.0245-.0742.2304-.0477.4204-.1357.5694-.2648.1556-.1218.2642-.298.3251-.5219.0611-.2238.1021-.6648.1021-1.3224v-2.5832c0-.6986-.0271-1.1668-.0742-1.4039-.041-.237-.1431-.4543-.3126-.6437-.1695-.1973-.4198-.3324-.7456-.421-.3191-.0808-.8542-.1285-1.7694-.1285h-1.4244v7.3636h2.3051zm5.14-1.7827c0 .3523-.0199.5762-.0544.6708-.033.0947-.1894.1424-.3046.1424-.1086 0-.19-.0477-.2238-.1351-.041-.0887-.0609-.2986-.0609-.6238v-1.9469c0-.3324.0199-.5423.0543-.6237.0338-.0808.1086-.122.2171-.122.1153 0 .2709.0412.3114.1425.041.0947.0609.2986.0609.6032v1.8926zm-2.4747-5.5809v7.3636h1.7157l.1152-.4675c.1556.1894.3251.3324.5152.4271.1828.0881.4608.1357.678.1357.3047 0 .5629-.0748.7802-.237.2165-.1562.3589-.3462.4198-.5628.0543-.2173.0887-.543.0887-.9841v-2.0675c0-.4409-.0139-.7324-.0344-.8681-.0199-.1357-.0742-.2781-.1695-.4204-.1021-.1425-.2437-.251-.4272-.3325-.1834-.0742-.3999-.1152-.6576-.1152-.2172 0-.4952.0477-.6846.1285-.1835.0887-.353.2238-.5086.4007V8.2603h-1.8309z"/></svg></span><b>IMDb</b></li><li class="src"><span class="lg"><svg viewBox="0 0 48 48" style="background:#202830"><circle cx="13" cy="24" r="7.5" fill="#ff8000"/><circle cx="24" cy="24" r="7.5" fill="#00e054" fill-opacity=".9"/><circle cx="35" cy="24" r="7.5" fill="#40bcf4" fill-opacity=".9"/></svg></span><b>Letterboxd</b></li><li class="src"><span class="lg"><img src="data:image/png;base64,[STRIPPED 3KB]" alt=""></span><b>Bingers</b></li><li class="src"><span class="lg"><svg viewBox="0 0 48 48" style="background:#fff"><rect x="0" y="0" width="48" height="13" fill="#ffd60a"/><path d="M10 22h28M10 29h28M10 36h18" stroke="#c7c7cc" stroke-width="2.6" stroke-linecap="round"/></svg></span><b data-ar="الملاحظات">Notes</b></li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="shows" aria-labelledby="t-h">
+  <div class="wrap">
+    <div class="sh"><div><h2 id="t-h" data-t="tH">Trending this week</h2><p data-t="tP">The shows everyone is watching right now</p></div>
+      <div class="arw"><button type="button" data-scroll="-1" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button type="button" data-scroll="1" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div></div>
+    <div class="rail" id="rail"><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 14KB]')"></i><b>Silo</b><small data-ar="2023 · خيال علمي">2023 · Sci-Fi</small></a><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 16KB]')"></i><b>House of the Dragon</b><small data-ar="2022 · فانتازيا">2022 · Fantasy</small></a><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 25KB]')"></i><b>Shōgun</b><small data-ar="2024 · دراما">2024 · Drama</small></a><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 19KB]')"></i><b>The Last of Us</b><small data-ar="2023 · دراما">2023 · Drama</small></a><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 20KB]')"></i><b>The Boys</b><small data-ar="2019 · أكشن">2019 · Action</small></a><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 25KB]')"></i><b>Wednesday</b><small data-ar="2022 · كوميديا">2022 · Comedy</small></a><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 18KB]')"></i><b>Game of Thrones</b><small data-ar="2011 · فانتازيا">2011 · Fantasy</small></a><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 13KB]')"></i><b>Invincible</b><small data-ar="2021 · رسوم متحركة">2021 · Animation</small></a><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 22KB]')"></i><b>The Mandalorian</b><small data-ar="2019 · خيال علمي">2019 · Sci-Fi</small></a><a class="sc" href="https://tvtracker.tv/app"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 23KB]')"></i><b>FROM</b><small data-ar="2022 · رعب">2022 · Horror</small></a></div>
+  </div>
+</section>
+
+<section class="sec gsec" id="genres" aria-labelledby="g-h">
+  <div class="wrap">
+    <div class="sh"><h2 id="g-h" data-t="gH2">Browse by genre</h2></div>
+    <div class="gens"><a class="gen" href="https://tvtracker.tv/app" style="--h:8"><img class="ga d" src="data:image/png;base64,[STRIPPED 10KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 13KB]" alt="" aria-hidden="true"><b data-ar="أكشن">Action</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 11KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 18KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:44"><img class="ga d" src="data:image/png;base64,[STRIPPED 23KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 27KB]" alt="" aria-hidden="true"><b data-ar="كوميديا">Comedy</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 14KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 19KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:350"><img class="ga d" src="data:image/png;base64,[STRIPPED 20KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 24KB]" alt="" aria-hidden="true"><b data-ar="دراما">Drama</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 13KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 9KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:200"><img class="ga d" src="data:image/png;base64,[STRIPPED 11KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 14KB]" alt="" aria-hidden="true"><b data-ar="خيال علمي">Sci-Fi</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 14KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 7KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:270"><img class="ga d" src="data:image/png;base64,[STRIPPED 11KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 14KB]" alt="" aria-hidden="true"><b data-ar="إثارة">Thriller</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 9KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 10KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:0"><img class="ga d" src="data:image/png;base64,[STRIPPED 28KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 36KB]" alt="" aria-hidden="true"><b data-ar="جريمة">Crime</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 18KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 15KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:285"><img class="ga d" src="data:image/png;base64,[STRIPPED 16KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 20KB]" alt="" aria-hidden="true"><b data-ar="فانتازيا">Fantasy</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 17KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 14KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:330"><img class="ga d" src="data:image/png;base64,[STRIPPED 28KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 33KB]" alt="" aria-hidden="true"><b data-ar="رومانسي">Romance</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 15KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 11KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:160"><img class="ga d" src="data:image/png;base64,[STRIPPED 22KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 26KB]" alt="" aria-hidden="true"><b data-ar="رسوم متحركة">Animation</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 22KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 15KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:230"><img class="ga d" src="data:image/png;base64,[STRIPPED 13KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 16KB]" alt="" aria-hidden="true"><b data-ar="غموض">Mystery</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 17KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 18KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:28"><img class="ga d" src="data:image/png;base64,[STRIPPED 18KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 22KB]" alt="" aria-hidden="true"><b data-ar="تاريخ">History</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 12KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 18KB]')"></i></span></a><a class="gen" href="https://tvtracker.tv/app" style="--h:70"><img class="ga d" src="data:image/png;base64,[STRIPPED 15KB]" alt="" aria-hidden="true"><img class="ga l" src="data:image/png;base64,[STRIPPED 18KB]" alt="" aria-hidden="true"><b data-ar="حرب">War</b><span class="gp" aria-hidden="true"><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 16KB]')"></i><i style="background-image:url('data:image/jpeg;base64,[STRIPPED 14KB]')"></i></span></a></div>
+  </div>
+</section>
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-g">
+      <a class="logo" href="#top" aria-label="TVTracker"><img class="d" src="data:image/png;base64,[STRIPPED 21KB]" alt="TVTracker" width="166" height="18"><img class="l" src="data:image/png;base64,[STRIPPED 17KB]" alt="" width="166" height="18"></a>
+      <nav aria-label="Footer"><a href="https://tvtracker.tv/app" data-t="fOpen">Open TVTracker</a><a href="https://tvtracker.tv/privacy" data-t="fPriv">Privacy</a><a href="https://tvtracker.tv/terms" data-t="fTerms">Terms</a><a href="mailto:info@tvtracker.tv">info@tvtracker.tv</a></nav>
+    </div>
+    <p class="att" data-t="att">Film and TV data and images from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. Where-to-watch data by JustWatch. TVTracker is not affiliated with TV Time. © 2026 Alphabet.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement; root.classList.add('js');
+  var AR={nShows:"المسلسلات",iKick:"تتابع بمكان ثاني؟",iH:"جيب سجلّك من أي مكان.",iP:"كل مسلسل وحلقة وفيلم وتقييم ينتقل معك — حتى القائمة اللي كاتبها بملاحظاتك. تاخذ دقيقة تقريباً.",iBtn:"استورد سجلّك",b1:"تابع كل حلقة تشاهدها",b2:"اعرف وين تشاهد أي عمل",b3:"تنبيه أول ما ترجع مسلسلاتك",b4:"اكتشف شنو تشاهد بعدين",tH:"رائج هالأسبوع",tP:"المسلسلات اللي الكل يتابعها هسه",gH2:"تصفّح حسب النوع",skip:"تخطَّ إلى المحتوى",nFeat:"المميزات",nGen:"الأنواع",nImp:"الاستيراد",langBtn:"English",login:"تسجيل الدخول",signup:"سجّل مجاناً",
+  kick:"مجاني · iPhone وAndroid والويب",h1:"كل مسلسل.<br>كل فيلم.<br><em>بلا ما يضيع شي.</em>",lede:"علّم الحلقات، اعرف وين تشاهد، وخلّينا نبلّغك أول ما يرجع مسلسلك.",cta:"ابدأ المتابعة — مجاناً",
+  dlOn:"حمّله من",dlGet:"احصل عليه من",n1:"بلا إعلانات تزعجك",n2:"English والعربية",n3:"استيراد من TV Time",
+  ch1:"S03 E08 · تمت المشاهدة",ch2:"الموسم 3 بعد <em>34 يوم</em>",ch3:"قيّمته 10/10",
+  iKick:"تتابع بمكان ثاني؟",iH:"جيب سجلّك من أي مكان.",stT:"حيرة أقل.<br>مشاهدة أكثر.",stamp:"حلقة بعد؟<br>نفهمك تماماً.",u1f:"تم الاستيراد",u2:"من TV Time وTrakt وIMDb وBingers",iBtn:"استورد سجلّك",u1:"جارٍ استيراد سجلّك",k1:"مسلسل",k2:"حلقة",k3:"فيلم",dn:"تم — أهلاً بك في بيتك الجديد",ok:"تم",a1:"1,016 حلقة",a2:"212 تقييم",a3:"304 حلقة",a4:"232 مشاهدة",
+  sKick:"كيف يشتغل",sH:"مصمم على طريقة مشاهدتك فعلاً.",
+  t1:"لا تضيع مكانك أبداً",p1:"حلقتك التالية دايماً فوق. علّمها بلمسة، أو علّم موسم كامل مرة وحدة.",
+  t2:"لا يفوتك أي رجوع",p2:"عدّاد لكل عرض أول ونهاية موسم، وتنبيه بيوم العرض نفسه.",
+  t3:"محتار؟ اختر مزاجك",p3:"فاجئني، أو قول لنا شنو مزاجك الليلة. نبدأ من قائمة مشاهدتك.",
+  t4:"كل شي عن العمل",p4:"تقييمات IMDb وRotten Tomatoes وMetacritic، الممثلين، الإعلانات، ووين تشاهده.",
+  t5:"احكي عنه",p5:"تعليقات وصور GIF وإخفاء الحرق، مع ناس تشاهد نفس الشي.",
+  gKick:"لقّي سهرتك",gH:"تصفّح حسب النوع",gP:"لكل نوع لونه. اختر واحداً وابدأ.",
+  eH:"حلقتك القادمة تنتظرك.",eP:"مجاني على iPhone وAndroid والويب.",
+  fOpen:"افتح TVTracker",fPriv:"الخصوصية",fTerms:"الشروط",att:"بيانات الأفلام والمسلسلات وصورها من TMDB. يستخدم هذا المنتج واجهة TMDB البرمجية لكنه غير معتمد أو مصادق عليه من TMDB. بيانات أماكن المشاهدة من JustWatch. TVTracker غير تابع لـ TV Time. © 2026 Alphabet."};
+  var EN={},nodes=[].slice.call(document.querySelectorAll('[data-t]')),metas=[].slice.call(document.querySelectorAll('[data-ar]'));
+  nodes.forEach(function(n){var k=n.getAttribute('data-t');if(!(k in EN))EN[k]=n.innerHTML;});
+  function get(k,d){try{return localStorage.getItem('tvt-lp6-'+k)||d}catch(e){return d}}function put(k,v){try{localStorage.setItem('tvt-lp6-'+k,v)}catch(e){}}
+  function setLang(l){var D=l==='ar'?AR:EN;root.lang=l;root.dir=l==='ar'?'rtl':'ltr';nodes.forEach(function(n){var k=n.getAttribute('data-t');if(D[k]!=null)n.innerHTML=D[k];});
+    metas.forEach(function(n){if(!n.hasAttribute('data-en'))n.setAttribute('data-en',n.textContent);n.textContent=l==='ar'?n.getAttribute('data-ar'):n.getAttribute('data-en');});
+    document.title=l==='ar'?'TVTracker — كل مسلسل. كل فيلم.':'TVTracker — Every show. Every film. Never lose track.';put('lang',l);}
+  function setTheme(t){root.setAttribute('data-theme',t);document.querySelector('meta[name=theme-color]').setAttribute('content',t==='light'?'#f5f5f7':'#000000');put('theme',t);}
+  var q=(location.hash.match(/^#(ar|en|light|dark)$/)||[])[1];
+  setTheme(q==='light'||q==='dark'?q:get('theme','dark'));
+  var lang=q==='ar'||q==='en'?q:get('lang',(navigator.language||'').slice(0,2)==='ar'?'ar':'en');if(lang!=='en')setLang(lang);
+  document.addEventListener('click',function(e){var a=e.target.closest('[data-act]');if(!a)return;var v=a.getAttribute('data-act');if(v==='lang')setLang(root.lang==='ar'?'en':'ar');if(v==='theme')setTheme(root.getAttribute('data-theme')==='light'?'dark':'light');});
+  /* header turns solid once you scroll */
+  var hd=document.getElementById('hd');function onS(){hd.classList.toggle('solid',scrollY>30)}addEventListener('scroll',onS,{passive:true});onS();
+  var still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* reveal + story steps */
+  if('IntersectionObserver' in window&&!still){var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{rootMargin:'0px 0px -10% 0px'});
+    var rvs=[].slice.call(document.querySelectorAll('.rv'));rvs.forEach(function(n){io.observe(n);});
+    /* a fast fling can skip past an element entirely — reveal anything already above the fold line */
+    addEventListener('scroll',function(){rvs=rvs.filter(function(n){if(n.classList.contains('in'))return false;if(n.getBoundingClientRect().top<innerHeight*.95){n.classList.add('in');return false;}return true;});},{passive:true});}
+  else [].forEach.call(document.querySelectorAll('.rv'),function(n){n.classList.add('in');});
+
+  /* rail arrows */
+  [].forEach.call(document.querySelectorAll('[data-scroll]'),function(b){b.addEventListener('click',function(){var r=document.getElementById('rail'),d=+b.getAttribute('data-scroll')*(root.dir==='rtl'?-1:1);r.scrollBy({left:d*r.clientWidth*.8,behavior:still?'auto':'smooth'});});});
+})();
+</script>
+</body>
+</html>
