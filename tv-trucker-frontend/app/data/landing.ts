@@ -23,51 +23,6 @@ export const fanSlots: FanSlot[] = [
 const wallPosters = Array.from({ length: 42 }, (_, i) => `/images/posters/wall-${String(i + 1).padStart(2, "0")}.jpg`);
 export const wallRows: string[][] = [0, 1, 2].map((r) => wallPosters.slice(r * 14, r * 14 + 14));
 
-export interface UpNextItem {
-  title: string;
-  episode: string;
-  poster: string;
-  watched: boolean;
-}
-
-export const upNext: UpNextItem[] = [
-  { title: "The Mandalorian", episode: "S03 E08", poster: "/images/posters/up-next-1.jpg", watched: true },
-  { title: "Silo", episode: "S02 E10", poster: "/images/posters/up-next-2.jpg", watched: true },
-  { title: "Shōgun", episode: "S01 E05", poster: "/images/posters/up-next-3.jpg", watched: false },
-];
-
-export interface Mood {
-  /** i18n key under why.moods */
-  key: string;
-  /** Hue of the tile's gradient */
-  hue: number;
-  posters: [string, string];
-}
-
-export const moods: Mood[] = [
-  { key: "laugh", hue: 32, posters: ["/images/posters/mood-1a.jpg", "/images/posters/mood-1b.jpg"] },
-  { key: "edge", hue: 350, posters: ["/images/posters/mood-2a.jpg", "/images/posters/mood-2b.jpg"] },
-  { key: "feelGood", hue: 150, posters: ["/images/posters/mood-3a.jpg", "/images/posters/mood-3b.jpg"] },
-  { key: "mind", hue: 232, posters: ["/images/posters/mood-4a.jpg", "/images/posters/mood-4b.jpg"] },
-];
-
-export const importedEpisodes = 1248;
-
-export interface AboutFact {
-  /** i18n key under about.facts, and the icon to draw */
-  key: "screens" | "free" | "languages" | "data";
-  /** Small labels under the text: names as written, or "t:" + an i18n key for words that need translating */
-  chips: string[];
-}
-
-// The About section's facts. Copy comes from the live site (tvtracker.tv) and the landing designs.
-export const aboutFacts: AboutFact[] = [
-  { key: "screens", chips: ["Web", "iPhone", "iPad", "Android"] },
-  { key: "free", chips: ["t:about.facts.free.chips.noInstall", "t:about.facts.free.chips.noAds"] },
-  { key: "languages", chips: ["English", "العربية"] },
-  { key: "data", chips: ["TMDB", "TheTVDB", "JustWatch"] },
-];
-
 export interface SwitchApp {
   /** i18n key under switching.apps */
   key: "tvtime" | "imdb" | "letterboxd" | "trakt";

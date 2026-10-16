@@ -16,14 +16,15 @@ type Box = [number, number, number, number];
 // Desktop: the phone in the middle, TV Time + Letterboxd on the left, IMDb + Trakt on the right
 // (the right column sits 40px higher, the design's stagger). Phones: the design's 2 × 2 above the phone.
 const L = {
-  d: { W: 960, H: 600, a: [[0, 70, 1], [728, 30, 1], [0, 300, 1], [728, 260, 1]], p: [349, 6, 1] },
-  m: { W: 360, H: 760, a: [[0, 0, 0.74], [188, 0, 0.74], [0, 140, 0.74], [188, 140, 0.74]], p: [80, 300, 0.76] },
+  d: { W: 960, H: 660, a: [[0, 70, 1], [728, 30, 1], [0, 300, 1], [728, 260, 1]], p: [330, 6, 1] },
+  m: { W: 360, H: 800,a: [[0, 0, 0.74], [188, 0, 0.74], [0, 140, 0.74], [188, 140, 0.74]], p: [66, 300, 0.76] },
 };
+const PHONE_W = 300; // .ph7's width
 const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 let apps: HTMLElement[] = [], ph: HTMLElement | null = null, fps: HTMLElement[] = [], slots: HTMLElement[] = [], holes: HTMLElement[] = [];
-let trail: SVGSVGElement | null = null, paths: SVGPathElement[] = [], nums: HTMLElement[] = [], pct: HTMLElement | null = null, bar: HTMLElement | null = null, done: HTMLElement | null = null;
+let trail: SVGSVGElement | null = null, paths: SVGPathElement[] = [], nums: HTMLElement[] = [], pct: HTMLElement | null = null, bar: HTMLElement | null = null, done: HTMLElement | null = null, dslot: HTMLElement | null = null;
 let geo: { a: Box; b: Box }[] | null = null;
 let sc = 1;
 let raf = 0;
@@ -37,7 +38,7 @@ const isRtl = () => document.documentElement.dir === "rtl";
 
 function layout() {
   const s = st.value, b = box.value;
-  if (!s || !b || !ph || !trail) return;
+  if (!s || !b || !ph || !trail || !dslot) return;
   const M = desk() ? L.d : L.m, rtl = isRtl();
   s.style.width = M.W + "px";
   s.style.height = M.H + "px";
@@ -45,8 +46,12 @@ function layout() {
     const c = M.a[k]!, x = rtl ? M.W - c[0]! - 232 * c[2]! : c[0]!;
     a.style.transform = `translate(${x}px,${c[1]}px) scale(${c[2]})`;
   });
-  const px = rtl ? M.W - M.p[0]! - 262 * M.p[2]! : M.p[0]!;
+  const px = rtl ? M.W - M.p[0]! - PHONE_W * M.p[2]! : M.p[0]!;
   ph.style.transform = `translate(${px}px,${M.p[1]}px) scale(${M.p[2]})`;
+  // the button, in app units (the screen is 402 × 874 drawn 284px wide, inside an 8px frame):
+  // 20px in from the sides, its bottom 14px above the 84px tab bar
+  const ps = M.p[2]!, k = (284 / 402) * ps;
+  dslot!.style.transform = `translate(${px + 8 * ps + 20 * k}px,${M.p[1]! + 8 * ps + (874 - 84 - 14 - 56) * k}px) scale(${k})`;
   sc = Math.min(1.12, b.clientWidth / M.W, b.clientHeight / M.H);
   s.style.transform = `translate(-50%,-50%) scale(${sc})`;
   s.style.transformOrigin = "50% 50%";
@@ -98,7 +103,10 @@ function scene(p: number) {
   pct!.textContent = Math.round(qe * 100) + "%";
   bar!.style.setProperty("--k", qe.toFixed(3));
   done!.classList.toggle("on", p > 0.95);
+  complete.value = p > 0.95;
 }
+// the phone's heading turns from "Importing…" to "Import complete" with the button
+const complete = ref(false);
 
 // Plays the scene once, from 0 to 1.
 function play() {
@@ -128,6 +136,7 @@ onMounted(() => {
   pct = s.querySelector(".pb em");
   bar = s.querySelector(".pb");
   done = s.querySelector(".done7");
+  dslot = s.querySelector(".dslot");
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (still || !("IntersectionObserver" in window)) progress = 1;
   addEventListener("resize", redraw);
@@ -194,25 +203,47 @@ onBeforeUnmount(() => mo?.disconnect());
                 <div class="rw"><span /><span /></div>
               </div>
               <svg class="trail"><path /><path /><path /><path /></svg>
+              <!-- the same phone as the hero's: the app drawn at 402 × 874, scaled into the frame -->
               <div class="ph7">
-                <div class="ui7">
-                  <span class="sb">9:41</span><span class="isl" />
-                  <h4>{{ t("switching.phone.title") }}</h4>
-                  <p class="su">{{ t("switching.phone.from") }}</p>
-                  <div class="ct">
-                    <div><b>0</b><small>{{ t("switching.phone.shows") }}</small></div>
-                    <div><b>0</b><small>{{ t("switching.phone.episodes") }}</small></div>
-                    <div><b>0</b><small>{{ t("switching.phone.movies") }}</small></div>
-                  </div>
-                  <div class="pb"><span><i /></span><em>0%</em></div>
-                  <div class="grid7"><i v-for="n in 16" :key="n" /></div>
-                  <div class="done7">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                    <span>{{ t("switching.phone.finished") }}</span>
+                <span class="sz" />
+                <div class="scrbox">
+                  <div class="ui7">
+                    <h4>{{ complete ? t("switching.phone.complete") : t("switching.phone.title") }}</h4>
+                    <p class="su">{{ t("switching.phone.from") }}</p>
+                    <div class="ct">
+                      <div><b>0</b><small>{{ t("switching.phone.shows") }}</small></div>
+                      <div><b>0</b><small>{{ t("switching.phone.episodes") }}</small></div>
+                      <div><b>0</b><small>{{ t("switching.phone.movies") }}</small></div>
+                    </div>
+                    <div class="pb"><span><i /></span><em>0%</em></div>
+                    <div class="grid7"><i v-for="n in 16" :key="n" /></div>
+                    <!-- chrome, as in the hero phone: status bar, tab bar, home indicator -->
+                    <div class="sbar" dir="ltr">
+                      <span class="tm">9:41</span><i class="cam" />
+                      <span class="ic">
+                        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1" /><rect x="5" y="5.5" width="3" height="6.5" rx="1" /><rect x="10" y="3" width="3" height="9" rx="1" /><rect x="15" y="0" width="3" height="12" rx="1" /></svg>
+                        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.1-1.1A10 10 0 0 0 8 .6 10 10 0 0 0 .9 3.5L2 4.6a8.4 8.4 0 0 1 6-2.4zm0 3.2c1.4 0 2.7.5 3.7 1.4l1.1-1.1A7 7 0 0 0 8 3.8a7 7 0 0 0-4.8 1.9l1.1 1.1c1-.9 2.3-1.4 3.7-1.4zm0 3.2c.6 0 1.1.2 1.5.6L8 10.7 6.5 9.2c.4-.4.9-.6 1.5-.6z" /></svg>
+                        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.5" stroke="currentColor" opacity=".4" /><rect x="2" y="2" width="20" height="9" rx="2" fill="currentColor" /><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" opacity=".45" /></svg>
+                      </span>
+                    </div>
+                    <div class="nav" dir="ltr">
+                      <span><svg viewBox="26.6 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor" stroke-width="1.7"><path d="M46.6 7H30.6C29.5 7 28.6 7.9 28.6 9V20C28.6 21.1 29.5 22 30.6 22H46.6C47.7 22 48.6 21.1 48.6 20V9C48.6 7.9 47.7 7 46.6 7Z" /><path d="M43.6 2L38.6 7L33.6 2" /></svg></span>
+                      <span><svg viewBox="26.6 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor" stroke-width="1.7"><path d="M45.6 3H31.6C30.5 3 29.6 3.9 29.6 5V19C29.6 20.1 30.5 21 31.6 21H45.6C46.7 21 47.6 20.1 47.6 19V5C47.6 3.9 46.7 3 45.6 3Z" /><path d="M33.6 3V21" /><path d="M29.6 7.5H33.6" /><path d="M29.6 12H47.6" /><path d="M29.6 16.5H33.6" /><path d="M43.6 3V21" /><path d="M43.6 7.5H47.6" /><path d="M43.6 16.5H47.6" /></svg></span>
+                      <span><svg viewBox="26.6 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor" stroke-width="1.7"><path d="M37.6 19C42.02 19 45.6 15.42 45.6 11C45.6 6.58 42.02 3 37.6 3C33.18 3 29.6 6.58 29.6 11C29.6 15.42 33.18 19 37.6 19Z" /><path d="M47.6 21L43.3 16.7" /></svg></span>
+                      <span><b class="av">K</b></span>
+                    </div>
+                    <i class="home" />
                   </div>
                 </div>
               </div>
               <i v-for="src in switchPosters" :key="src" class="fp" :style="{ backgroundImage: `url('${src}')` }" />
+              <!-- above the landed posters (they live on the stage, over the phone), placed on the phone's bottom -->
+              <div class="dslot">
+                <div class="done7">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                  <span>{{ t("switching.phone.finished") }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -251,30 +282,48 @@ onBeforeUnmount(() => mo?.disconnect());
 .app .rw{display:flex;flex-direction:column;gap:6px;margin-top:12px}
 .app .rw span{display:block;height:6px;border-radius:3px;background:rgba(var(--glass),.09)}
 .app .rw span:nth-child(1){width:86%}.app .rw span:nth-child(2){width:64%}
-/* our phone, filling up */
-.ph7{position:absolute;z-index:2;width:262px;padding:8px;border-radius:44px;background:#0e0f14;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 50px 90px -30px rgba(0,0,0,.9);transform-origin:0 0}
-:root[data-theme="light"] .ph7{box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),0 50px 90px -34px rgba(16,18,27,.45)}
-.ui7{position:relative;height:552px;border-radius:37px;overflow:hidden;background:var(--bg);color:var(--text);padding:46px 16px 16px;direction:ltr}
+/* our phone, filling up: the hero phone's frame (PosterFan .ph9) and screen (PhoneTitleScreen .scr) */
+.ph7{position:absolute;z-index:2;width:300px;padding:8px;border-radius:50px;background:#0e0f14;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 40px 80px -30px rgba(0,0,0,.9);transform-origin:0 0}
+:root[data-theme="light"] .ph7{box-shadow:0 40px 80px -34px rgba(16,18,27,.5)}
+.ph7 .sz{display:block;width:100%;aspect-ratio:402/874;border-radius:42px}
+.scrbox{position:absolute;inset:8px;border-radius:42px;overflow:hidden;background:#000}
+:root[data-theme="light"] .scrbox{background:#f5f5f7}
+/* the screen at the app's own size, 402 × 874, scaled to the 284px screen */
+.ui7{--bg:#000;--heading:#f4f6ff;--txt:#f4f5f8;--muted:#9aa3bd;--acc:#ffc42e;--cell:rgba(255,255,255,.07);--slot:rgba(255,255,255,.1);--line:rgba(255,255,255,.08);
+  position:relative;width:402px;height:874px;padding:64px 20px 0;overflow:hidden;background:var(--bg);color:var(--txt);direction:ltr;transform:scale(calc(284 / 402));transform-origin:0 0}
+:root[data-theme="light"] .ui7{--bg:#f5f5f7;--heading:#0e0f14;--txt:#15161c;--muted:#5e6476;--acc:#8a5d00;--cell:#fff;--slot:rgba(16,18,27,.12);--line:rgba(16,18,27,.08)}
 :root[dir="rtl"] .ui7{direction:rtl}
-.ui7 .sb{position:absolute;top:13px;left:26px;font-size:12px;font-weight:800}
-.ui7 .isl{position:absolute;top:10px;left:50%;width:84px;height:24px;margin-left:-42px;border-radius:14px;background:#000}
-:root[data-theme="light"] .ui7 .isl{background:#0e0f14}
-.ui7 h4{margin:0;font-family:var(--display);font-size:18px;font-weight:800;color:var(--heading);letter-spacing:-.01em}
+.ui7 h4{margin:0;font-family:var(--display);font-size:24px;font-weight:800;line-height:1.2;color:var(--heading);letter-spacing:-.015em}
 :root[lang="ar"] .ui7 h4{font-weight:700;letter-spacing:0}
-.ui7 .su{margin-top:3px;font-size:11px;font-weight:600;color:var(--muted)}
-.ct{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px}
-.ct div{padding:9px 8px;border-radius:11px;background:rgba(var(--glass),.06)}
-.ct b{display:block;font-family:var(--display);font-size:19px;font-weight:800;line-height:1.1;color:var(--heading);font-variant-numeric:tabular-nums}
-.ct small{display:block;margin-top:2px;font-size:10px;font-weight:700;color:var(--muted)}
-.pb{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:11px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.ui7 .su{margin:4px 0 0;font-size:14.5px;font-weight:600;color:var(--muted)}
+.ct{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.ct div{padding:12px;border-radius:14px;background:var(--cell)}
+:root[data-theme="light"] .ct div{box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.08)}
+.ct b{display:block;font-family:var(--display);font-size:26px;font-weight:800;line-height:1.1;color:var(--heading);font-variant-numeric:tabular-nums}
+.ct small{display:block;margin-top:3px;font-size:13px;font-weight:700;color:var(--muted)}
+.pb{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px;font-weight:800;color:var(--acc);font-variant-numeric:tabular-nums}
 .pb em{font-style:normal}
-.pb span{flex:1;height:6px;border-radius:3px;background:rgba(var(--glass),.1);overflow:hidden}
-.pb span i{display:block;height:100%;width:100%;border-radius:3px;background:var(--amber);transform-origin:left;transform:scaleX(var(--k,0))}
+.pb span{flex:1;height:8px;border-radius:4px;background:var(--slot);overflow:hidden}
+.pb span i{display:block;height:100%;width:100%;border-radius:4px;background:#ffc42e;transform-origin:left;transform:scaleX(var(--k,0))}
 :root[dir="rtl"] .pb span i{transform-origin:right}
-.grid7{display:grid;grid-template-columns:repeat(4,50px);gap:6px;margin-top:14px;justify-content:center}
-.grid7 i{width:50px;height:75px;border-radius:7px;box-shadow:inset 0 0 0 1.5px rgba(var(--glass),.1);background:rgba(var(--glass),.03)}
-.done7{position:absolute;left:16px;right:16px;bottom:16px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--amber);color:var(--ink);font-size:14px;font-weight:800;opacity:0;transform:translateY(14px);transition:opacity .4s var(--ease),transform .5s var(--ease)}
-.done7 svg{width:18px;height:18px}
+.grid7{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.grid7 i{aspect-ratio:2/3;border-radius:10px;box-shadow:inset 0 0 0 1.5px var(--slot)}
+/* the hero phone's chrome */
+.sbar{position:absolute;z-index:30;inset:0 0 auto;height:56px;color:var(--txt);font-size:17px;font-weight:600;font-family:"Figtree",system-ui,sans-serif}
+.sbar svg{display:block}
+.tm{position:absolute;left:48px;top:18px;line-height:20px}
+.cam{position:absolute;left:139px;top:11px;width:124px;height:36px;border-radius:20px;background:#000}
+.ic{position:absolute;right:30px;top:22px;display:flex;align-items:center;gap:6px}
+.nav{position:absolute;z-index:25;inset:auto 0 0;height:84px;display:grid;grid-template-columns:repeat(4,1fr);padding:0 8px 34px;background:var(--bg);border-top:1px solid var(--line);color:var(--txt)}
+.nav span{display:grid;place-items:center;height:50px}
+.nav svg{width:26px;height:26px}
+.av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#ffc42e;color:#1c1400;font-size:12px;font-weight:800}
+.home{position:absolute;z-index:26;left:134px;bottom:8px;width:134px;height:5px;border-radius:3px;background:var(--txt)}
+/* the button floats over the last row of posters, just above the tab bar (app units, scaled like the screen) */
+.dslot{position:absolute;left:0;top:0;z-index:6;width:362px;transform-origin:0 0;pointer-events:none}
+:root[dir="rtl"] .dslot{direction:rtl}
+.done7{height:56px;box-shadow:0 16px 34px -10px rgba(0,0,0,.65);border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;background:#ffc42e;color:#1c1400;font-size:19px;font-weight:800;opacity:0;transform:translateY(18px);transition:opacity .4s var(--ease),transform .5s var(--ease)}
+.done7 svg{width:22px;height:22px}
 .done7.on{opacity:1;transform:none}
 /* the data itself */
 .fp{position:absolute;left:0;top:0;width:44px;height:66px;border-radius:7px;background:var(--ph) center/cover no-repeat;box-shadow:0 2px 6px rgba(0,0,0,.25);transform-origin:0 0;will-change:transform;z-index:5}

@@ -1,4 +1,4 @@
-// The intro splash plays on every visit (every full page load). `active` lets the hero hold its
+// The intro splash plays once per browser session (the first load in a tab; reloads skip it). `active` lets the hero hold its
 // entrance — and the carousel and trailer their timers — until it's over.
 export function useSplash() {
   const active = useState("splash-active", () => true);

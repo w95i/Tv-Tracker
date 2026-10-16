@@ -4,7 +4,10 @@ useReveal();
 
 <template>
   <HomeHero />
-  <HomeAbout />
+  <HomeTrack />
+  <HomeFeel />
+  <HomeUpcoming />
   <HomeSwitching />
-  <HomeWhy />
+  <HomeStats />
+  <HomeGet />
 </template>

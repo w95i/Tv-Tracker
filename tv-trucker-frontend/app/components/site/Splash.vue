@@ -1,21 +1,41 @@
 <script setup lang="ts">
 import { splashCharacters } from "~/data/splash";
 
-// The intro, on every visit — after the classic Marvel comic-flip intro, in our colours:
-//  1. 18 characters flip past like comic pages, fast, smeared by motion blur (0 – 2.6s)
-//  2. the tvtracker letters arrive with the same pages flipping inside them (2.35 – 3.0s)
-//  3. the field turns amber, the letters go solid, the Peek mark and the slogan join (3.2 – 3.6s)
-//  4. it holds ~3.5s, then fades into the page (gone at 7.5s)
+// The intro, once per browser session (first open of a tab, not on reload) — after the classic Marvel comic-flip intro, in our colours:
+//  1. 18 characters flip past like comic pages, very fast, each from a different side (0 – 1.75s)
+//  2. the tvtracker letters arrive with the same pages flipping inside them (1.45 – 2.05s)
+//  3. the field turns amber, the letters go solid, the Peek mark and the slogan join (2.3 – 2.7s)
+//  4. it holds ~3.5s, then fades into the page (gone at 6.6s)
 // Smooth by construction: the amber tint, vignette and motion blur are baked into the images, so at run
 // time the browser only moves pictures and changes opacity. Pure CSS from the first paint; the script only
 // removes it at the end, or on Skip / Esc. Reduced motion: no intro.
 const { t } = useI18n();
 const { active } = useSplash();
 
-const FLIP = 145; // ms per page
-const OUT_AT = 7100; // ms: the brand card lifts away (keep in step with the CSS below)
+const SEEN_KEY = "tvt_splash"; // sessionStorage: this tab has seen the intro
+const FLIP = 90; // ms per page
+const OUT_AT = 6200; // ms: the brand card lifts away (keep in step with the CSS below)
 const END = OUT_AT + 400;
-const pages = splashCharacters.map((c, i) => ({ i, src: c.image, blur: c.blur }));
+
+// Where each page comes from, in turn: a page swings in on a hinge at the opposite edge (rotate), slides
+// (translate) and settles (scale): right, left, top, bottom, in turn. Vertical entries get the up-down blur.
+const DIRS = [
+  { name: "right", tx: "60%", ty: "0%", rx: "0deg", ry: "-38deg", s: 1.15, o: "0% 50%", blur: "h" },
+  { name: "left", tx: "-60%", ty: "0%", rx: "0deg", ry: "38deg", s: 1.15, o: "100% 50%", blur: "h" },
+  { name: "top", tx: "0%", ty: "-60%", rx: "38deg", ry: "0deg", s: 1.15, o: "50% 100%", blur: "v" },
+  { name: "bottom", tx: "0%", ty: "60%", rx: "-38deg", ry: "0deg", s: 1.15, o: "50% 0%", blur: "v" },
+] as const;
+
+const pages = splashCharacters.map((c, i) => {
+  const d = DIRS[i % DIRS.length]!;
+  return {
+    i,
+    src: c.image,
+    from: d.name,
+    blur: d.blur === "v" ? c.vblur : d.blur === "h" ? c.blur : null,
+    style: { "--i": i, "--tx": d.tx, "--ty": d.ty, "--rx": d.rx, "--ry": d.ry, "--s": d.s, "--o": d.o, zIndex: i + 1 },
+  };
+});
 
 const leaving = ref(false);
 let fallback: ReturnType<typeof setTimeout> | undefined;
@@ -37,6 +57,7 @@ const onAnimEnd = (e: AnimationEvent) => {
 
 onMounted(() => {
   if (!active.value) return;
+  if (document.documentElement.dataset.splash === "seen") return done();
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return done();
   addEventListener("keydown", onKey);
   // In case the animation event never arrives (e.g. a background tab), never stay longer than the intro.
@@ -50,15 +71,22 @@ onBeforeUnmount(() => {
 // While it plays the page behind doesn't scroll and the hero holds its entrance (main.css).
 // The stills are requested first thing and decoded before their page flips (a tiny inline script in <head>),
 // so no page shows up late.
-const sources = [...pages.map((p) => p.src), ...pages.map((p) => p.blur)];
+const sources = [...pages.map((p) => p.src), ...pages.flatMap((p) => (p.blur ? [p.blur] : []))];
 useHead({
   htmlAttrs: { class: computed(() => (active.value ? "splashing" : "")) },
   link: computed(() =>
     active.value ? pages.map((p, i) => ({ rel: "preload", as: "image", href: p.src, fetchpriority: i < 6 ? "high" : "auto" })) : [],
   ),
+  // Once per browser session: the first load of a tab plays it and notes that in sessionStorage; reloads
+  // (and other pages) in that tab find the note and hide the splash before the first paint. If storage is
+  // blocked it plays every time.
   script: computed(() =>
     active.value
-      ? [{ key: "splash-decode", tagPosition: "head", innerHTML: `window.__splash=${JSON.stringify(sources)}.map(function(s){var i=new Image();i.src=s;i.decode&&i.decode().catch(function(){});return i})` }]
+      ? [{
+          key: "splash-decode",
+          tagPosition: "head",
+          innerHTML: `(function(){try{if(sessionStorage.getItem(${JSON.stringify(SEEN_KEY)})){document.documentElement.setAttribute("data-splash","seen");return}sessionStorage.setItem(${JSON.stringify(SEEN_KEY)},"1")}catch(e){}window.__splash=${JSON.stringify(sources)}.map(function(s){var i=new Image();i.src=s;i.decode&&i.decode().catch(function(){});return i})})()`,
+        }]
       : [],
   ),
 });
@@ -76,9 +104,9 @@ useHead({
   >
     <!-- 1. the deck: each page flips in over the last; its blurred copy fades as it lands -->
     <div class="deck" aria-hidden="true">
-      <div v-for="p in pages" :key="p.i" class="pg" :style="{ '--i': p.i, zIndex: p.i + 1 }">
+      <div v-for="p in pages" :key="p.i" class="pg" :data-from="p.from" :style="p.style">
         <img :src="p.src" alt="" decoding="sync">
-        <img class="mb" :src="p.blur" alt="" decoding="sync">
+        <img v-if="p.blur" class="mb" :src="p.blur" alt="" decoding="sync">
       </div>
       <i class="dim" />
     </div>
@@ -106,31 +134,32 @@ useHead({
 </template>
 
 <style scoped>
-/* Timeline (ms): flips 0–2610 · letters in 2350–2950 · amber 3200–3550 · mark 3450 · slogan 3600 ·
-   hold to 7100 · out 7100–7500. Only transform and opacity animate. */
+/* Timeline (ms): flips 0–1675 · letters in 1450–2050 · amber 2300–2650 · mark 2550 · slogan 2700 ·
+   hold to 6200 · out 6200–6600. Only transform and opacity animate. */
 .splash{position:fixed;inset:0;z-index:200;overflow:hidden;background:#000;color:#fff;
-  animation:out .4s 7.1s ease forwards}
+  animation:out .4s 6.2s ease forwards}
 .splash.leaving{animation:out .3s ease forwards}
 @keyframes out{to{opacity:0;visibility:hidden}}
 
-/* 1 · the deck. A page swings in from the right like a turning comic page and lands; the motion-blurred
-   copy on top fades out as it lands. The next page lands on top. */
+/* 1 · the deck. Each page swings in like a turning comic page — from the side its --tx/--ty/--rx/--ry/--s
+   say (right, left, top, bottom), hinged on the opposite edge — and
+   lands; the motion-blurred copy on top fades out as it lands. The next page lands on top. */
 /* explicit layers: the deck (with its own 18 stacked pages) under the field, the name above both */
 .deck{position:absolute;z-index:0;inset:0;perspective:1400px}
-.pg{position:absolute;inset:0;opacity:0;transform-origin:0 50%;will-change:transform,opacity;
+.pg{position:absolute;inset:0;opacity:0;transform-origin:var(--o);will-change:transform,opacity;
   animation:flip calc(var(--flip) * 1.6) calc(var(--flip) * var(--i)) cubic-bezier(.2,.7,.2,1) forwards}
 .pg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .pg .mb{animation:unblur calc(var(--flip) * 1.2) calc(var(--flip) * var(--i)) ease-out forwards}
 @keyframes flip{
-  0%{opacity:1;transform:translateX(55%) rotateY(-38deg) scaleX(1.25)}
+  0%{opacity:1;transform:translate(var(--tx),var(--ty)) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s))}
   100%{opacity:1;transform:none}}
 @keyframes unblur{0%{opacity:1}100%{opacity:0}}
-.dim{position:absolute;inset:0;z-index:30;background:#000;opacity:0;animation:fade-to .6s 2.4s ease forwards}
+.dim{position:absolute;inset:0;z-index:30;background:#000;opacity:0;animation:fade-to .6s 1.5s ease forwards}
 @keyframes fade-to{to{opacity:.6}}
 
 /* 3 · the amber field, with a vignette like the stills */
 .field{position:absolute;z-index:1;inset:0;opacity:0;background:radial-gradient(ellipse at center,#ffc42e 0%,#f2a900 58%,#a85f00 100%);
-  animation:fade .35s 3.2s ease forwards}
+  animation:fade .35s 2.3s ease forwards}
 @keyframes fade{to{opacity:1}}
 
 /* 2 + 3 · the name. The letters are a mask (the brand kit's wordmark); behind it, first the same flipping
@@ -138,21 +167,21 @@ useHead({
 .lockup{position:absolute;z-index:2;left:50%;top:50%;width:min(80vw,820px);transform:translate(-50%,-50%)}
 .word{position:relative;width:100%;aspect-ratio:704/120;opacity:0;
   -webkit-mask:url("/images/brand/peek-wordmark.svg") center/contain no-repeat;mask:url("/images/brand/peek-wordmark.svg") center/contain no-repeat;
-  animation:word-in .6s 2.35s cubic-bezier(.22,1,.36,1) forwards}
+  animation:word-in .6s 1.45s cubic-bezier(.22,1,.36,1) forwards}
 @keyframes word-in{from{opacity:0;transform:scale(1.3)}to{opacity:1;transform:none}}
-.word-deck{position:absolute;inset:-60% -10%;animation:pan 1.6s 2.35s linear forwards}
+.word-deck{position:absolute;inset:-60% -10%;animation:pan 1.6s 1.45s linear forwards}
 .wpg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
   animation:show 1ms calc(var(--flip) * var(--i)) forwards}
 @keyframes show{to{opacity:1}}
 @keyframes pan{from{transform:translateX(-5%) scale(1.1)}to{transform:translateX(5%) scale(1.1)}}
-.word-ink{position:absolute;inset:0;background:#120d02;opacity:0;animation:fade .35s 3.25s ease forwards}
+.word-ink{position:absolute;inset:0;background:#120d02;opacity:0;animation:fade .35s 2.35s ease forwards}
 
 .mark{position:absolute;left:50%;bottom:calc(100% + clamp(18px,3vw,30px));width:clamp(56px,7vw,96px);height:auto;border-radius:22%;opacity:0;transform:translateX(-50%);
-  animation:pop .55s 3.45s cubic-bezier(.34,1.56,.64,1) forwards}
+  animation:pop .55s 2.55s cubic-bezier(.34,1.56,.64,1) forwards}
 @keyframes pop{from{opacity:0;transform:translateX(-50%) scale(.5)}to{opacity:1;transform:translateX(-50%) scale(1)}}
 .tag{position:absolute;left:0;right:0;top:calc(100% + clamp(16px,2.6vw,28px));margin:0;text-align:center;opacity:0;
   font-family:var(--display);font-size:clamp(18px,2.6vw,34px);font-weight:800;letter-spacing:-.02em;color:#120d02;
-  animation:rise .5s 3.6s cubic-bezier(.22,1,.36,1) forwards}
+  animation:rise .5s 2.7s cubic-bezier(.22,1,.36,1) forwards}
 :root[lang="ar"] .tag{font-weight:700;letter-spacing:0}
 @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
@@ -169,4 +198,6 @@ useHead({
 }
 /* reduced motion: no intro (the script ends it at once; this stops it flashing first) */
 @media (prefers-reduced-motion:reduce){.splash{display:none}}
+/* already seen in this tab (set by the head script before the first paint) */
+:root[data-splash="seen"] .splash{display:none}
 </style>

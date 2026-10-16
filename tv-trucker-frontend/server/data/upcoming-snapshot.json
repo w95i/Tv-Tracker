@@ -1,0 +1,227 @@
+[
+ {
+  "kind": "show",
+  "tmdbId": 247718,
+  "date": "2026-10-16",
+  "title": {
+   "en": "MobLand",
+   "ar": "أرض العصابات"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/5Xc7WpWsgflfgEMoBlf9TmWhfbH.jpg",
+  "season": 2,
+  "episode": 5,
+  "episodeName": {
+   "en": "Birdland",
+   "ar": "Birdland"
+  },
+  "tag": null,
+  "provider": "Paramount+"
+ },
+ {
+  "kind": "show",
+  "tmdbId": 153312,
+  "date": "2026-10-16",
+  "title": {
+   "en": "Tulsa King",
+   "ar": "ملك تولسا"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/rOYLWCdAifpUtPlTf1WHxyaxeMt.jpg",
+  "season": 4,
+  "episode": 1,
+  "episodeName": {
+   "en": "W.W.D.D.",
+   "ar": "ماذا سيفعل دوايت؟"
+  },
+  "tag": "premiere",
+  "provider": "Paramount+"
+ },
+ {
+  "kind": "movie",
+  "tmdbId": 791523,
+  "date": "2026-10-19",
+  "title": {
+   "en": "Wildwood",
+   "ar": "Wildwood"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/snFM00mpNAfUzUtkdEW0uDEvXA0.jpg",
+  "season": null,
+  "episode": null,
+  "episodeName": null,
+  "tag": null,
+  "provider": null
+ },
+ {
+  "kind": "show",
+  "tmdbId": 213375,
+  "date": "2026-10-20",
+  "title": {
+   "en": "VisionQuest",
+   "ar": "رحلة ڤيجن"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/WGyAyBPncfuu8MZhLY9RtfZPM0.jpg",
+  "season": 1,
+  "episode": 3,
+  "episodeName": {
+   "en": "Reboot",
+   "ar": "Reboot"
+  },
+  "tag": null,
+  "provider": null
+ },
+ {
+  "kind": "show",
+  "tmdbId": 95480,
+  "date": "2026-10-21",
+  "title": {
+   "en": "Slow Horses",
+   "ar": "Slow Horses"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/AdYr4DjOgXvDUMwu6vEhZy1Rnxk.jpg",
+  "season": 6,
+  "episode": 6,
+  "episodeName": {
+   "en": "Judgement Day",
+   "ar": "يوم الحساب"
+  },
+  "tag": "finale",
+  "provider": "Apple TV+"
+ },
+ {
+  "kind": "show",
+  "tmdbId": 273247,
+  "date": "2026-10-21",
+  "title": {
+   "en": "The Lowdown",
+   "ar": "The Lowdown"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/jgfHT7oLJtBDlRABiTTEp2AEret.jpg",
+  "season": 2,
+  "episode": 3,
+  "episodeName": {
+   "en": "Truth's Easy",
+   "ar": "Truth's Easy"
+  },
+  "tag": null,
+  "provider": "Disney+"
+ },
+ {
+  "kind": "movie",
+  "tmdbId": 1400940,
+  "date": "2026-10-21",
+  "title": {
+   "en": "Clayface",
+   "ar": "ذو الطِّينة"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/5jCpQnWPikggmQZoDp1eAi6BI6w.jpg",
+  "season": null,
+  "episode": null,
+  "episodeName": null,
+  "tag": null,
+  "provider": null
+ },
+ {
+  "kind": "show",
+  "tmdbId": 2190,
+  "date": "2026-10-28",
+  "title": {
+   "en": "South Park",
+   "ar": "ساوث بارك"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/k7n2EVge7G77eMr3brztRGG1fFU.jpg",
+  "season": 29,
+  "episode": 4,
+  "episodeName": null,
+  "tag": null,
+  "provider": "Paramount+"
+ },
+ {
+  "kind": "movie",
+  "tmdbId": 1381071,
+  "date": "2026-11-03",
+  "title": {
+   "en": "Godzilla Minus Zero",
+   "ar": "غودزيلا ناقص صفر"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/hSmIJluOJmTWvJs4d7kHRxjc8s8.jpg",
+  "season": null,
+  "episode": null,
+  "episodeName": null,
+  "tag": null,
+  "provider": null
+ },
+ {
+  "kind": "movie",
+  "tmdbId": 1117898,
+  "date": "2026-11-04",
+  "title": {
+   "en": "The Cat in the Hat",
+   "ar": "القط ذو القبعة"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/mWN6knIVJ2o7eGwSm7mOgSCwNUc.jpg",
+  "season": null,
+  "episode": null,
+  "episodeName": null,
+  "tag": null,
+  "provider": null
+ },
+ {
+  "kind": "movie",
+  "tmdbId": 1170608,
+  "date": "2026-12-15",
+  "title": {
+   "en": "Dune: Part Three",
+   "ar": "كثيب: القسم الثالث"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/d43fvHQsIMa4kpyhKXw0haEJIvI.jpg",
+  "season": null,
+  "episode": null,
+  "episodeName": null,
+  "tag": null,
+  "provider": null
+ },
+ {
+  "kind": "movie",
+  "tmdbId": 1003596,
+  "date": "2026-12-16",
+  "title": {
+   "en": "Avengers: Doomsday",
+   "ar": "أفنجرز: ظهور دكتور دووم"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/sLYCyO58UvBuBtbHTQjPCCgJ4dG.jpg",
+  "season": null,
+  "episode": null,
+  "episodeName": null,
+  "tag": null,
+  "provider": null
+ },
+ {
+  "kind": "show",
+  "tmdbId": 114461,
+  "date": "2027-01-20",
+  "title": {
+   "en": "Ahsoka",
+   "ar": "أسوكا"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/eiJeWeCAEZAmRppnXHiTWDcCd3Q.jpg",
+  "season": 2,
+  "episode": 1,
+  "episodeName": null,
+  "tag": "premiere",
+  "provider": "Disney+"
+ },
+ {
+  "kind": "show",
+  "tmdbId": 125988,
+  "date": "2027-07-08",
+  "title": {
+   "en": "Silo",
+   "ar": "Silo"
+  },
+  "poster": "https://image.tmdb.org/t/p/w342/r2QXomqKjkKHVtYGGtkf2l2Y7go.jpg",
+  "season": 4,
+  "episode": 1,
+  "episodeName": null,
+  "tag": "premiere",
+  "provider": "Apple TV+"
+ }
+]

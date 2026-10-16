@@ -19,14 +19,16 @@ const toggleLang = () => setLocale(locale.value === "ar" ? "en" : "ar");
 // The nav, as in the web app's header (tvtracker-series-web.html .w-nav): centred, icon + label, and the
 // current one in amber with an underline. On this one-page site "current" is the section in view.
 const routes = [
-  { id: "about", label: "nav.about" },
+  { id: "track", label: "nav.track" },
+  { id: "feel", label: "nav.feel" },
+  { id: "upcoming", label: "nav.upcoming" },
   { id: "import", label: "nav.import" },
-  { id: "why", label: "nav.features" },
 ] as const;
 const current = ref<string | null>(null);
 let spy: IntersectionObserver | null = null;
 onMounted(() => {
-  const sections = routes.map((r) => document.getElementById(r.id)).filter((s): s is HTMLElement => !!s);
+  // every section, so one that isn't in the nav (the hero, Stats…) lights nothing up
+  const sections = Array.from(document.querySelectorAll<HTMLElement>("section[id]"));
   if (!sections.length || !("IntersectionObserver" in window)) return;
   // A section is current while it crosses the band just above the middle of the screen.
   spy = new IntersectionObserver(
@@ -53,9 +55,10 @@ onBeforeUnmount(() => spy?.disconnect());
           :class="{ cur: current === r.id }"
           :aria-current="current === r.id ? 'location' : undefined"
         >
-          <svg v-if="r.id === 'about'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 11v5.5M12 7.6v.2" /></svg>
-          <svg v-else-if="r.id === 'import'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v11M7.5 10l4.5 4.5 4.5-4.5" /><path d="M4 15.5v2.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5" /></svg>
-          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.4 5.6 6.1.5-4.6 4 1.4 5.9L12 15.9 6.7 19l1.4-5.9-4.6-4 6.1-.5z" /></svg>
+          <svg v-if="r.id === 'track'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8 12.3l2.7 2.7L16.2 9.5" /></svg>
+          <svg v-else-if="r.id === 'feel'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 14.5c.9 1.2 2.1 1.8 3.5 1.8s2.6-.6 3.5-1.8M9 9.6h.01M15 9.6h.01" /></svg>
+          <svg v-else-if="r.id === 'upcoming'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg>
+          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v11M7.5 10l4.5 4.5 4.5-4.5" /><path d="M4 15.5v2.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5" /></svg>
           <span>{{ t(r.label) }}</span>
         </a>
       </nav>
@@ -83,9 +86,10 @@ onBeforeUnmount(() => spy?.disconnect());
 .nav a.cur{color:var(--accent);font-weight:700}
 .nav a.cur::after{content:"";position:absolute;left:14px;right:14px;bottom:10px;height:2px;border-radius:2px;background:var(--amber)}
 @media (hover:hover){.nav a:not(.cur):hover{color:var(--text)}}
-/* below this the centred nav would run into the buttons on the right (the Arabic labels are wider):
-   it sits after the logo, without icons */
-@media (max-width:1240px){
+/* The Arabic labels are wider: centred, the nav would run into the buttons at any width, so in Arabic it
+   sits after the logo. Below 1360px (both languages) it sits after the logo, without icons. */
+:root[lang="ar"] .nav{position:static;transform:none}
+@media (max-width:1360px){
   .nav{position:static;transform:none;height:100%}
   .nav a{padding:0 10px}
   .nav a svg{display:none}
@@ -97,7 +101,7 @@ onBeforeUnmount(() => spy?.disconnect());
 :root:not([lang="ar"]) .ib.lang{font-family:"Readex Pro",sans-serif;font-weight:600}
 .ib .sun{display:none}:root[data-theme="light"] .ib .sun{display:block}:root[data-theme="light"] .ib .moon{display:none}
 .login{font-size:15px;font-weight:700;color:var(--dim);padding:10px 8px;white-space:nowrap}
-@media (max-width:900px){.nav{display:none}}
+@media (max-width:1000px){.nav{display:none}}
 @media (max-width:640px){
   .login,.hd-r .ib.th{display:none}
   .hd .wrap{height:60px;gap:12px}

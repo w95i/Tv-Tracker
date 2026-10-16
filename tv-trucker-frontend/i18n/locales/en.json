@@ -5,11 +5,12 @@
   },
   "skip": "Skip to content",
   "nav": {
-    "features": "Features",
-    "import": "Import",
     "main": "Main",
     "footer": "Footer",
-    "about": "About"
+    "track": "Track",
+    "feel": "Feelings",
+    "upcoming": "Upcoming",
+    "import": "Import"
   },
   "header": {
     "langBtn": "العربية",
@@ -56,28 +57,6 @@
     "trailerOf": "{title} trailer",
     "fullscreen": "Watch the trailer full screen"
   },
-  "why": {
-    "kick": "Why TVTracker",
-    "title": "Made for how you actually watch.",
-    "upNext": {
-      "title": "Never lose your place",
-      "text": "Your next episode is always on top. One tap and it's ticked off."
-    },
-    "moods": {
-      "title": "Can't decide? Pick a mood.",
-      "text": "Tell us how tonight feels — we start from your watchlist.",
-      "laugh": "Make me laugh",
-      "edge": "Edge of my seat",
-      "feelGood": "Feel good",
-      "mind": "Mind-bending"
-    },
-    "import": {
-      "title": "Bring your history",
-      "text": "From TV Time, Trakt, IMDb or Bingers — in about a minute.",
-      "episodes": "episodes",
-      "done": "All imported"
-    }
-  },
   "footer": {
     "open": "Open TVTracker",
     "privacy": "Privacy",
@@ -86,37 +65,6 @@
   },
   "common": {
     "close": "Close"
-  },
-  "about": {
-    "kick": "About us",
-    "titleLine": "Lights down.",
-    "titleEm": "Gold up.",
-    "lede": "One place for the films and shows you have finished, the ones you are halfway through, and the ones you keep meaning to start.",
-    "built": "Built for people who finish things.",
-    "madeBy": "Designed & developed by",
-    "roadmap": "Our roadmap on GitHub",
-    "facts": {
-      "screens": {
-        "title": "Every screen",
-        "text": "One library on the web, iPhone, iPad and Android. Same place, instantly."
-      },
-      "free": {
-        "title": "Free to use",
-        "text": "Works in the browser, no install needed. No ads in your way.",
-        "chips": {
-          "noInstall": "No install",
-          "noAds": "No ads"
-        }
-      },
-      "languages": {
-        "title": "English & العربية",
-        "text": "The whole app, in both languages."
-      },
-      "data": {
-        "title": "Data you can trust",
-        "text": "Film and show data and artwork by TMDB and TheTVDB. Where-to-watch data by JustWatch."
-      }
-    }
   },
   "switching": {
     "kick": "Switching?",
@@ -132,6 +80,7 @@
     "done": "Done",
     "phone": {
       "title": "Importing your history",
+      "complete": "Import complete",
       "from": "From TV Time, IMDb, Letterboxd and Trakt",
       "shows": "Shows",
       "episodes": "Episodes",
@@ -145,5 +94,163 @@
     "skipLabel": "Skip the intro",
     "taglineA": "Every episode.",
     "taglineB": "Every feeling."
+  },
+  "track": {
+    "kick": "Every episode, ticked off",
+    "titleLine": "Tick it off.",
+    "titleEm": "We'll line up the next one.",
+    "lede": "Your shows, in the order you're watching them. One tap marks the episode and the next one is ready — no hunting for where you left off.",
+    "points": {
+      "left": {
+        "title": "Always know how far behind you are",
+        "text": "+3 means three episodes waiting. FINALE and LATEST tell you when the end is near."
+      },
+      "end": {
+        "title": "Finish a series, feel it",
+        "text": "All caught up when you're level with a running show. Series complete — with confetti — when it's over for good."
+      },
+      "sync": {
+        "title": "The same list everywhere",
+        "text": "Tick it on your phone, see it on the web. Your place travels with you."
+      }
+    },
+    "watchingNow": "Watching now",
+    "tryIt": "Try it — tap ✓",
+    "se": "S{s} · E{e}",
+    "finale": "FINALE",
+    "latest": "LATEST",
+    "watched": "WATCHED",
+    "caught": "ALL CAUGHT UP",
+    "complete": "SERIES COMPLETE",
+    "watchedCount": "{n} episodes watched",
+    "markLabel": "Mark {title} S{s} E{e} as watched",
+    "allDone": "You're all caught up",
+    "again": "Start over",
+    "cta": "Start your list"
+  },
+  "feel": {
+    "kick": "Rate it, and say how it felt",
+    "titleLine": "A score can't say it.",
+    "titleEm": "A feeling can.",
+    "lede": "After every episode, tell TVTracker how it left you — then see how everyone else took it. Twelve feelings, one for every kind of night.",
+    "episodes": "Episodes",
+    "se": "Season {s} · Episode {e}",
+    "question": "How did it make you feel?",
+    "everyone": "How {n} people felt",
+    "pickFirst": "Pick a feeling to see how everyone else felt",
+    "you": "You",
+    "f": {
+      "shocked": "Shocked",
+      "frustrated": "Frustrated",
+      "sad": "Sad",
+      "reflective": "Reflective",
+      "touched": "Touched",
+      "amused": "Amused",
+      "scared": "Scared",
+      "bored": "Bored",
+      "understood": "Understood",
+      "thrilled": "Thrilled",
+      "confused": "Confused",
+      "tense": "Tense"
+    }
+  },
+  "up": {
+    "kick": "Never miss a return",
+    "titleLine": "It's back tonight.",
+    "titleEm": "You'll know first.",
+    "lede": "New episodes, season premieres and films, counted down to the day — with where to watch them. This is what's coming, live.",
+    "now": "now",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "inDays": "In {n} days",
+    "inMonth": "In a month",
+    "inMonths": "In {n} months",
+    "se": "S{s} · E{e}",
+    "film": "Film",
+    "cinemas": "In cinemas",
+    "tags": {
+      "premiere": "PREMIERE",
+      "finale": "FINALE"
+    },
+    "groups": {
+      "today": "Today",
+      "week": "This week",
+      "month": "This month",
+      "later": "Later"
+    },
+    "noteEpisode": "{title} — {se} is out {when}.",
+    "notePremiere": "{title} is back — season {s} starts {when}.",
+    "noteFilm": "{title} hits cinemas {when}.",
+    "noteFilmToday": "{title} is in cinemas today.",
+    "railLabel": "Coming up",
+    "prev": "Earlier",
+    "next": "Later",
+    "source": "Dates and services from the TVTracker database (TMDB, JustWatch). US release dates."
+  },
+  "stats": {
+    "kick": "Stats that earn themselves",
+    "titleLine": "Every hour counted.",
+    "titleEm": "None of them wasted.",
+    "lede": "Your watching, added up — the days you binged, the genres you live in, the feelings that stuck. Nothing to fill in: it builds itself as you tick.",
+    "year": "Your library, in numbers",
+    "totals": {
+      "hours": "hours watched",
+      "episodes": "episodes",
+      "shows": "shows",
+      "movies": "films"
+    },
+    "daysOf": "That's {n} days of screen time. Worth it.",
+    "favourite": "Most watched",
+    "favEpisodes": "{n} episodes · {h} hours",
+    "feltMost": "You felt it most",
+    "feltCount": "after {n} episodes",
+    "everyDay": "A year of watching",
+    "streak": "day streak",
+    "less": "Less",
+    "more": "More",
+    "genres": "Your genres",
+    "g": {
+      "drama": "Drama",
+      "scifi": "Sci-fi & fantasy",
+      "crime": "Crime",
+      "comedy": "Comedy",
+      "animation": "Animation"
+    }
+  },
+  "get": {
+    "kick": "Everywhere you watch",
+    "titleLine": "One library.",
+    "titleEm": "Every screen.",
+    "lede": "Start in the browser — nothing to install — and pick up on your phone or tablet. Same shows, same place, in English or Arabic.",
+    "plats": {
+      "web": {
+        "title": "Web",
+        "text": "Open it and go. Works in any browser, no install needed.",
+        "go": "Open TVTracker"
+      },
+      "ios": {
+        "title": "iPhone & iPad",
+        "text": "Your list in your pocket, with reminders when your shows return.",
+        "go": "App Store"
+      },
+      "android": {
+        "title": "Android",
+        "text": "The same app, the same library, on any Android phone.",
+        "go": "Google Play"
+      },
+      "lang": {
+        "title": "English & العربية",
+        "text": "The whole app in both languages — right-to-left done properly."
+      }
+    },
+    "perks": {
+      "free": "Free to use",
+      "noAds": "No ads",
+      "import": "Import from TV Time, IMDb, Letterboxd & Trakt",
+      "data": "Data from TMDB, TheTVDB & JustWatch"
+    },
+    "finLine": "Every episode.",
+    "finEm": "Every feeling.",
+    "finText": "Lights down. Gold up. Your shows and films, all in one place — free."
   }
 }
