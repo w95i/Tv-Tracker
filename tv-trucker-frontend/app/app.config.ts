@@ -7,6 +7,7 @@ export default defineAppConfig({
     privacy: "https://tvtracker.tv/privacy",
     terms: "https://tvtracker.tv/terms",
     email: "info@tvtracker.tv",
+    alphabet: "https://alphabet.iq/",
     roadmap: "https://github.com/Alphabet-iq/tvtracker-roadmap",
   },
 });

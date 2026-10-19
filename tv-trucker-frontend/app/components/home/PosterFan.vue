@@ -229,7 +229,7 @@ onMounted(() => afterSplash(() => setTimeout(() => (ready.value = true), 1800)))
 
 /* the title page sits exactly over the screenshot: 402 × 874 scaled to the 284px screen */
 .scrbox{position:absolute;inset:calc(8px*var(--u));border-radius:calc(42px*var(--u));overflow:hidden;background:#000}
-:root[data-theme="light"] .scrbox{background:#f5f5f7}
+:root[data-theme="light"] .scrbox{background:var(--bg)}
 .fit{width:402px;height:874px;transform:scale(calc(var(--u)*284/402));transform-origin:0 0}
 .scr-enter-active,.scr-leave-active{transition:opacity .45s var(--ease),transform .45s var(--ease)}
 .scr-enter-from{opacity:0;transform:translateX(var(--sx))}

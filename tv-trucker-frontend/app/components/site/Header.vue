@@ -3,10 +3,13 @@ const { t, locale, setLocale } = useI18n();
 const { toggleTheme } = useTheme();
 const { links } = useAppConfig();
 
-// The bar turns solid once you scroll.
+// The bar turns solid once you scroll; clear at the top, and clear again once the poster finale reaches
+// the bar (it runs on to the end).
 const solid = ref(false);
 const onScroll = () => {
-  solid.value = scrollY > 30;
+  const fin = document.querySelector(".fin");
+  const atFin = !!fin && (fin.getBoundingClientRect().top <= 68 || innerHeight + scrollY >= document.documentElement.scrollHeight - 4);
+  solid.value = scrollY > 30 && !atFin;
 };
 onMounted(() => {
   addEventListener("scroll", onScroll, { passive: true });
@@ -23,6 +26,7 @@ const routes = [
   { id: "feel", label: "nav.feel" },
   { id: "upcoming", label: "nav.upcoming" },
   { id: "import", label: "nav.import" },
+  { id: "pricing", label: "nav.pricing" },
 ] as const;
 const current = ref<string | null>(null);
 let spy: IntersectionObserver | null = null;
@@ -58,6 +62,7 @@ onBeforeUnmount(() => spy?.disconnect());
           <svg v-if="r.id === 'track'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8 12.3l2.7 2.7L16.2 9.5" /></svg>
           <svg v-else-if="r.id === 'feel'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8.5 14.5c.9 1.2 2.1 1.8 3.5 1.8s2.6-.6 3.5-1.8M9 9.6h.01M15 9.6h.01" /></svg>
           <svg v-else-if="r.id === 'upcoming'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg>
+          <svg v-else-if="r.id === 'pricing'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12.6V4.5a1 1 0 0 1 1-1h8.1l8 8a1.5 1.5 0 0 1 0 2.1l-7 7a1.5 1.5 0 0 1-2.1 0z" /><circle cx="8.5" cy="8.5" r="1.6" /></svg>
           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v11M7.5 10l4.5 4.5 4.5-4.5" /><path d="M4 15.5v2.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5" /></svg>
           <span>{{ t(r.label) }}</span>
         </a>
@@ -82,7 +87,7 @@ onBeforeUnmount(() => spy?.disconnect());
 /* nav: centred in the bar, the web app's .w-nav */
 .nav{position:absolute;left:50%;top:0;height:100%;transform:translateX(-50%);display:flex}
 .nav a{position:relative;display:flex;align-items:center;gap:8px;height:100%;padding:0 14px;font-size:15px;font-weight:500;color:var(--muted);white-space:nowrap;transition:color .15s}
-.nav a svg{width:21px;height:21px;flex:none}
+.nav a svg{display:none} /* text-only nav */
 .nav a.cur{color:var(--accent);font-weight:700}
 .nav a.cur::after{content:"";position:absolute;left:14px;right:14px;bottom:10px;height:2px;border-radius:2px;background:var(--amber)}
 @media (hover:hover){.nav a:not(.cur):hover{color:var(--text)}}
@@ -90,20 +95,20 @@ onBeforeUnmount(() => spy?.disconnect());
    sits after the logo. Below 1360px (both languages) it sits after the logo, without icons. */
 :root[lang="ar"] .nav{position:static;transform:none}
 @media (max-width:1360px){
-  .nav{position:static;transform:none;height:100%}
-  .nav a{padding:0 10px}
-  .nav a svg{display:none}
-  .nav a.cur::after{left:10px;right:10px}
+.nav{position:static;transform:none;height:100%}
+.nav a{padding:0 10px}
+.nav a svg{display:none}
+.nav a.cur::after{left:10px;right:10px}
 }
 .hd-r{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
 .ib{height:40px;min-width:40px;padding:0 11px;border:0;border-radius:11px;display:grid;place-items:center;background:rgba(var(--glass),.08);color:var(--text);cursor:pointer;font-size:14px;font-weight:700}
 .ib svg{width:19px;height:19px}
-:root:not([lang="ar"]) .ib.lang{font-family:"Readex Pro",sans-serif;font-weight:600}
+:root:not([lang="ar"]) .ib.lang{font-family:"Tajawal",sans-serif;font-weight:600}
 .ib .sun{display:none}:root[data-theme="light"] .ib .sun{display:block}:root[data-theme="light"] .ib .moon{display:none}
 .login{font-size:15px;font-weight:700;color:var(--dim);padding:10px 8px;white-space:nowrap}
 @media (max-width:1000px){.nav{display:none}}
 @media (max-width:640px){
-  .login,.hd-r .ib.th{display:none}
-  .hd .wrap{height:60px;gap:12px}
+.login,.hd-r .ib.th{display:none}
+.hd .wrap{height:60px;gap:12px}
 }
 </style>

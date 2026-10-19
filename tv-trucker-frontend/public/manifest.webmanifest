@@ -1,0 +1,20 @@
+{
+  "name": "TVTracker",
+  "short_name": "TVTracker",
+  "description": "Track every show and film you watch, get an alert when new episodes air, and bring your history from TV Time or Trakt.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/images/brand-v6/peek-icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "related_applications": [
+    { "platform": "itunes", "url": "https://apps.apple.com/us/app/tvt-track-movies-shows/id6797001715", "id": "6797001715" },
+    { "platform": "play", "url": "https://play.google.com/store/apps/details?id=com.alphabetiq.tvtracker", "id": "com.alphabetiq.tvtracker" }
+  ]
+}

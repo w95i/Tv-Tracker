@@ -1,5 +1,4 @@
-// "How did it make you feel?" — the 12 Peek feelings (brand kit v5.8; the emoji are cut from
-// design-references/originals/tvtracker-peek-figma-board-v5.8.svg into public/images/feelings/<key>.svg),
+// "How did it make you feel?" — the 12 Peek feelings (brand kit v6, public/images/feelings-v6/<key>.svg),
 // and three episodes to feel something about. Episode names, IMDb ratings and stills come from the
 // TVTracker API (fetched 2026-10-16). How everyone felt is an illustration (shares out of 100).
 

@@ -8,8 +8,8 @@ const width = Math.round((props.height * 1026.14) / 256);
 
 <template>
   <a class="logo" href="#top" aria-label="TVTracker">
-    <img class="d" src="/images/brand/peek-logo-dark.svg" alt="TVTracker" :width="width" :height="height">
-    <img class="l" src="/images/brand/peek-logo-light.svg" alt="" :width="width" :height="height">
+    <img class="d" src="/images/brand-v6/peek-logo-dark.svg" alt="TVTracker" :width="width" :height="height">
+    <img class="l" src="/images/brand-v6/peek-logo-light.svg" alt="" :width="width" :height="height">
   </a>
 </template>
 

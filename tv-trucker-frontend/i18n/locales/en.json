@@ -1,7 +1,8 @@
 {
   "meta": {
-    "title": "TVTracker — Every show. Every film. Never lose track.",
-    "description": "Track every show and film you watch, see where to stream it, and know the moment your show comes back. Free on iPhone, Android and the web, in English and Arabic."
+    "title": "TVTracker — Track Every TV Show and Movie, Free",
+    "description": "Track every show and film you watch, get an alert when new episodes air, and bring your history from TV Time or Trakt. Free on iPhone, Android and the web.",
+    "imageAlt": "TVTracker — every show, every film, never lose track."
   },
   "skip": "Skip to content",
   "nav": {
@@ -10,7 +11,62 @@
     "track": "Track",
     "feel": "Feelings",
     "upcoming": "Upcoming",
-    "import": "Import"
+    "import": "Import",
+    "pricing": "Pricing"
+  },
+  "pricing": {
+    "kick": "Pricing",
+    "title": "Free.",
+    "titleEm": "All of it.",
+    "lede": "Every show, every film, every feeling. No plans, no trials, no card. Just download and start.",
+    "price": "$0",
+    "forever": "forever",
+    "unl": "Everything, unlimited.",
+    "unlSub": "Every show, every film, every feature. Use it as you wish.",
+    "cta": "Start free",
+    "close": "Close",
+    "tier": "One plan · Everything",
+    "cheer": "Free forever — tap to celebrate",
+    "incl": "Everything is included",
+    "f": {
+      "track": {
+        "t": "Every show and film",
+        "s": "Track as many as you like, no limits."
+      },
+      "progress": {
+        "t": "Episode by episode",
+        "s": "One tap and the next one is ready."
+      },
+      "feel": {
+        "t": "How it made you feel",
+        "s": "Twelve feelings for every episode."
+      },
+      "upcoming": {
+        "t": "Never miss a return",
+        "s": "Premieres, finales and new episodes."
+      },
+      "import": {
+        "t": "Bring your history",
+        "s": "From TV Time, Trakt, IMDb and Letterboxd."
+      },
+      "stats": {
+        "t": "Your year in stats",
+        "s": "Hours, streaks, genres and feelings."
+      },
+      "devices": {
+        "t": "Phone and web",
+        "s": "iPhone, iPad, Android and the web, in sync."
+      },
+      "lang": {
+        "t": "English and Arabic",
+        "s": "The whole app, in both languages."
+      }
+    },
+    "no": {
+      "plans": "No plans",
+      "trials": "No trials",
+      "card": "No card"
+    }
   },
   "header": {
     "langBtn": "العربية",
@@ -19,13 +75,10 @@
     "signup": "Sign up free"
   },
   "hero": {
-    "kick": "Free · iPhone, Android & web",
     "titleLine": "Every show. Every film.",
     "titleEm": "Never lose track.",
     "lede": "Tick off episodes, see where to stream, and know the moment your show comes back.",
-    "cta": "Start tracking — it's free",
-    "dlOn": "Download on the",
-    "dlGet": "Get it on"
+    "cta": "Start tracking — it's free"
   },
   "carousel": {
     "label": "Titles",
@@ -61,12 +114,16 @@
     "open": "Open TVTracker",
     "privacy": "Privacy",
     "terms": "Terms",
-    "attribution": "Film and TV data and images from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB. Where-to-watch data by JustWatch. TVTracker is not affiliated with TV Time. © 2026 Alphabet."
+    "contact": "Contact",
+    "data": "Data by TMDB & TVDB",
+    "dev": "Developed by",
+    "attribution": "Film and TV data and images from TMDB and TheTVDB. This product uses the TMDB API but is not endorsed or certified by TMDB. Where-to-watch data by JustWatch. TVTracker is not affiliated with TV Time. © 2026 Alphabet."
   },
   "common": {
     "close": "Close"
   },
   "switching": {
+    "replay": "Play it again",
     "kick": "Switching?",
     "title": "TV Time closed. Your history doesn't have to.",
     "text": "Bring every show, episode and film you've logged — from TV Time, IMDb, Letterboxd, Trakt or any CSV. It takes about a minute.",
@@ -99,24 +156,24 @@
     "kick": "Every episode, ticked off",
     "titleLine": "Tick it off.",
     "titleEm": "We'll line up the next one.",
-    "lede": "Your shows, in the order you're watching them. One tap marks the episode and the next one is ready — no hunting for where you left off.",
+    "lede": "Your shows, in the order you watch them. One tap, and the next episode is ready.",
     "points": {
       "left": {
-        "title": "Always know how far behind you are",
-        "text": "+3 means three episodes waiting. FINALE and LATEST tell you when the end is near."
+        "title": "+3 shows how far behind you are",
+        "text": ""
       },
       "end": {
-        "title": "Finish a series, feel it",
-        "text": "All caught up when you're level with a running show. Series complete — with confetti — when it's over for good."
+        "title": "Confetti when a series ends",
+        "text": ""
       },
       "sync": {
-        "title": "The same list everywhere",
-        "text": "Tick it on your phone, see it on the web. Your place travels with you."
+        "title": "One list on your phone and the web",
+        "text": ""
       }
     },
     "watchingNow": "Watching now",
     "tryIt": "Try it — tap ✓",
-    "se": "S{s} · E{e}",
+    "se": "S{s} E{e}",
     "finale": "FINALE",
     "latest": "LATEST",
     "watched": "WATCHED",
@@ -165,9 +222,16 @@
     "inDays": "In {n} days",
     "inMonth": "In a month",
     "inMonths": "In {n} months",
-    "se": "S{s} · E{e}",
+    "se": "S{s} E{e}",
     "film": "Film",
     "cinemas": "In cinemas",
+    "airs": "Airs",
+    "day": "day",
+    "days": "days",
+    "badge": {
+      "premiere": "Season premiere",
+      "finale": "Finale"
+    },
     "tags": {
       "premiere": "PREMIERE",
       "finale": "FINALE"
@@ -208,13 +272,40 @@
     "streak": "day streak",
     "less": "Less",
     "more": "More",
-    "genres": "Your genres",
+    "genres": "Top genres",
+    "topGenre": "Top genre",
     "g": {
       "drama": "Drama",
       "scifi": "Sci-fi & fantasy",
       "crime": "Crime",
       "comedy": "Comedy",
       "animation": "Animation"
+    }
+  },
+  "genres": {
+    "kick": "Find your next one",
+    "titleLine": "Browse by genre.",
+    "titleEm": "Whatever the mood.",
+    "lede": "Every genre has its own corner — the big new shows, the classics, and the ones your friends are watching.",
+    "g": {
+      "action": "Action",
+      "comedy": "Comedy",
+      "drama": "Drama",
+      "scifi": "Sci-Fi",
+      "thriller": "Thriller",
+      "animation": "Animation",
+      "mystery": "Mystery",
+      "history": "History",
+      "adventure": "Adventure",
+      "fantasy": "Fantasy",
+      "romance": "Romance",
+      "crime": "Crime",
+      "family": "Family",
+      "war": "War",
+      "western": "Western",
+      "reality": "Reality",
+      "soap": "Soap",
+      "music": "Music"
     }
   },
   "get": {
@@ -249,8 +340,27 @@
       "import": "Import from TV Time, IMDb, Letterboxd & Trakt",
       "data": "Data from TMDB, TheTVDB & JustWatch"
     },
+    "poke": "Poke Peek",
     "finLine": "Every episode.",
     "finEm": "Every feeling.",
-    "finText": "Lights down. Gold up. Your shows and films, all in one place — free."
+    "finText": "Lights down. Gold up. Your shows and films, all in one place — free.",
+    "cta": "Start free"
+  },
+  "contact": {
+    "kick": "Contact",
+    "titleLine": "Say hello.",
+    "titleEm": "We read every message.",
+    "lede": "Questions, ideas or something that broke — we’d love to hear from you.",
+    "mailTitle": "Email us",
+    "copy": "Copy the email address",
+    "copyShort": "Copy",
+    "copied": "Copied",
+    "name": "Your name",
+    "optional": "(optional)",
+    "message": "Message",
+    "needMessage": "Write a message first.",
+    "send": "Send the message",
+    "note": "Opens your email app with everything filled in — just press send.",
+    "sent": "Your email app should be open now. Didn’t open? Write to {email}."
   }
 }

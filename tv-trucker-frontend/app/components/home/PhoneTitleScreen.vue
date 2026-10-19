@@ -261,7 +261,7 @@ function onFullClosed(time: number) {
 /* Values are the prototype's computed styles at 402 × 874. */
 .scr{--bg:#000;--ph:#22232b;--heading:#f4f6ff;--txt:#f4f5f8;--dim:#c9cedc;--muted:#9aa3bd;--acc:#ffc42e;--btn:rgba(255,255,255,.09);--btn-sh:none;--ring:rgba(255,255,255,.14);--cert:rgba(255,255,255,.32);--line:rgba(255,255,255,.08);--fade:0,0,0;
   position:relative;width:402px;height:874px;overflow:hidden;background:var(--bg);color:var(--txt);font-family:var(--font);font-size:16px;line-height:normal;text-align:start}
-:root[data-theme="light"] .scr{--bg:#f5f5f7;--ph:#e2e3e9;--heading:#0e0f14;--txt:#15161c;--dim:#4a5063;--muted:#5e6476;--acc:#8a5d00;--btn:#fff;--btn-sh:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.08);--ring:rgba(16,18,27,.14);--cert:rgba(16,18,27,.32);--line:rgba(16,18,27,.08);--fade:245,245,247}
+:root[data-theme="light"] .scr{--bg:#f5f0f0;--ph:#e6e0e0;--heading:#0e0f14;--txt:#15161c;--dim:#4a5063;--muted:#5e6476;--acc:#8a5d00;--btn:var(--paper);--btn-sh:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.08);--ring:rgba(16,18,27,.14);--cert:rgba(16,18,27,.32);--line:rgba(16,18,27,.08);--fade:245,240,240}
 .scr svg{display:block;flex:none}
 
 .cover{position:relative;height:262px;overflow:hidden}

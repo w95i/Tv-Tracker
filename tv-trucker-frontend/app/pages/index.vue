@@ -9,5 +9,7 @@ useReveal();
   <HomeUpcoming />
   <HomeSwitching />
   <HomeStats />
+  <HomePricing />
+  <HomeContact />
   <HomeGet />
 </template>

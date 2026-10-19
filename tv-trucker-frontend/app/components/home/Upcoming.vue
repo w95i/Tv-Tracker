@@ -46,7 +46,11 @@ function countdown(days: number) {
 const dateLabel = (d: string) =>
   new Intl.DateTimeFormat(ar.value ? "ar" : "en", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(d));
 const title = (it: UpcomingItem) => (ar.value ? it.title.ar : it.title.en);
-const epLine = (it: UpcomingItem) => (it.season ? t("up.se", { s: fmt(it.season), e: fmt(it.episode ?? 1) }) : t("up.film"));
+const fmt2 = (n: number) => n.toLocaleString(ar.value ? "ar" : "en", { minimumIntegerDigits: 2 });
+const epLine = (it: UpcomingItem) => (it.season ? t("up.se", { s: fmt2(it.season), e: fmt2(it.episode ?? 1) }) : t("up.film"));
+// "day" / "days" under the countdown number (Arabic: يوم، يومان، أيام، يوماً)
+const dayWord = (n: number) =>
+  !ar.value ? (n === 1 ? t("up.day") : t("up.days")) : n === 1 ? "يوم" : n === 2 ? "يومان" : n <= 10 ? "أيام" : "يوماً";
 
 // the notification: today's first return
 const note = computed(() => groups.value.find((g) => g.key === "today")?.items[0] ?? groups.value[0]?.items[0] ?? null);
@@ -89,9 +93,9 @@ onMounted(() => {
     ([e]) => {
       if (!e?.isIntersecting) return;
       io?.disconnect();
-      setTimeout(() => (shown.value = true), 700);
+      setTimeout(() => (shown.value = true), 250);
     },
-    { threshold: 0.35 },
+    { threshold: 0.2 },
   );
   io.observe(sec.value);
 });
@@ -99,7 +103,7 @@ onBeforeUnmount(() => io?.disconnect());
 </script>
 
 <template>
-  <section id="upcoming" ref="sec" class="sec up" aria-labelledby="up-h">
+  <section id="upcoming" ref="sec" class="sec up" :class="{ seen: shown }" aria-labelledby="up-h">
     <div class="wrap">
       <div class="up-top">
         <div class="sec-h rv">
@@ -109,7 +113,7 @@ onBeforeUnmount(() => io?.disconnect());
         </div>
         <!-- a push notification, as the app sends it -->
         <div v-if="note" class="note" :class="{ on: shown }" aria-hidden="true">
-          <img src="/images/brand/peek-icon.svg" alt="" width="40" height="40">
+          <img src="/images/brand-v6/peek-app-icon.svg" alt="" width="40" height="40">
           <span class="nt">
             <span class="nh"><b>TVTracker</b><small>{{ t("up.now") }}</small></span>
             <span class="nb">{{ noteText }}</span>
@@ -121,21 +125,27 @@ onBeforeUnmount(() => io?.disconnect());
 
     <div class="rail-w rv">
       <div ref="rail" class="rail" tabindex="0" :aria-label="t('up.railLabel')" @scroll.passive="edges">
-        <div v-for="g in groups" :key="g.key" class="grp">
-          <p class="gh"><i aria-hidden="true" />{{ t(`up.groups.${g.key}`) }}<span>{{ fmt(g.items.length) }}</span></p>
+        <div v-for="(g, gi) in groups" :key="g.key" class="grp">
+          <h3 class="gh">{{ t(`up.groups.${g.key}`) }}<span>{{ fmt(g.items.length) }}</span></h3>
           <ul class="items" role="list">
-            <li v-for="it in g.items" :key="`${it.kind}-${it.tmdbId}`" class="it">
-              <div class="po" :style="it.poster ? { backgroundImage: `url('${it.poster}')` } : undefined">
-                <span class="cd" :class="{ now: it.days <= 0 }">{{ countdown(it.days) }}</span>
-                <span v-if="it.tag" class="tag">{{ t(`up.tags.${it.tag}`) }}</span>
+            <!-- the app's Upcoming card: a floating 2:3 poster on its own blurred poster, the countdown at the end -->
+            <li v-for="(it, i) in g.items" :key="`${it.kind}-${it.tmdbId}`" class="uc" :class="{ today: it.days <= 0 }" :style="{ '--i': gi * 2 + i }">
+              <span class="bd" :style="it.poster ? { backgroundImage: `url('${it.poster}')` } : undefined" aria-hidden="true" />
+              <span class="sc" aria-hidden="true" />
+              <span class="po" :style="it.poster ? { backgroundImage: `url('${it.poster}')` } : undefined" aria-hidden="true" />
+              <div class="ui">
+                <div class="meta">
+                  <span>{{ dateLabel(it.date) }}<template v-if="it.provider"> · {{ it.provider }}</template><template v-else-if="it.kind === 'movie'"> · {{ t("up.cinemas") }}</template></span>
+                  <span v-if="it.tag" class="ub">{{ t(`up.badge.${it.tag}`) }}</span>
+                </div>
+                <b class="ut">{{ title(it) }}</b>
+                <span class="ep"><span class="code">{{ epLine(it) }}</span></span>
+                <span class="us">{{ it.episodeName ? (ar ? it.episodeName.ar : it.episodeName.en) : "" }}</span>
               </div>
-              <b class="tt">{{ title(it) }}</b>
-              <span class="ln">{{ epLine(it) }}<template v-if="it.episodeName"> · {{ ar ? it.episodeName.ar : it.episodeName.en }}</template></span>
-              <span class="ft">
-                <span class="dt">{{ dateLabel(it.date) }}</span>
-                <span v-if="it.provider" class="pv">{{ it.provider }}</span>
-                <span v-else-if="it.kind === 'movie'" class="pv cin">{{ t("up.cinemas") }}</span>
-              </span>
+              <div class="cdn" :class="{ now: it.days <= 0 }">
+                <template v-if="it.days <= 0"><small>{{ t("up.airs") }}</small><b>{{ t("up.today") }}</b></template>
+                <template v-else><b>{{ fmt(it.days) }}</b><small>{{ dayWord(it.days) }}</small></template>
+              </div>
             </li>
           </ul>
         </div>
@@ -169,48 +179,64 @@ onBeforeUnmount(() => io?.disconnect());
 
 /* the rail: full width, lined up with the content on the start side */
 .rail-w{position:relative;margin-top:44px}
-.rail{display:flex;gap:44px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;padding:6px max(var(--gut),calc((100vw - 1240px)/2 + var(--gut))) 18px;scroll-padding-inline:max(var(--gut),calc((100vw - 1240px)/2 + var(--gut)))}
+/* edge to edge: the rail runs the full width of the screen, no inset */
+.rail{display:flex;gap:40px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;padding:6px 16px 24px;scroll-padding-inline:16px}
 .rail::-webkit-scrollbar{display:none}
 .rail:focus-visible{outline-offset:-4px}
 .grp{flex:none;scroll-snap-align:start}
-/* the group label sits on a timeline */
-.gh{position:relative;display:flex;align-items:center;gap:10px;padding-bottom:18px;margin-bottom:18px;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--heading)}
-:root[lang="ar"] .gh{letter-spacing:0;font-size:14px}
-.gh::after{content:"";position:absolute;inset-inline:0 -44px;bottom:0;height:2px;background:var(--line)}
-.gh i{position:absolute;inset-inline-start:0;bottom:-5px;z-index:1;width:12px;height:12px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px var(--bg)}
-.gh span{height:22px;min-width:22px;padding:0 7px;border-radius:7px;display:grid;place-items:center;font-size:12px;letter-spacing:0;color:var(--muted);background:rgba(var(--glass),.08)}
-.items{list-style:none;margin:0;padding:0;display:flex;gap:16px}
-.it{width:176px;display:flex;flex-direction:column;gap:4px}
-.po{position:relative;aspect-ratio:2/3;margin-bottom:8px;border-radius:14px;background:var(--ph) center/cover no-repeat;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 20px 36px -20px rgba(0,0,0,.7);transition:transform .35s var(--ease)}
-@media (hover:hover){.it:hover .po{transform:translateY(-4px)}}
-.cd{position:absolute;top:10px;inset-inline-start:10px;height:26px;padding:0 9px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:800;letter-spacing:.03em;color:#fff;background:rgba(10,10,14,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);text-transform:uppercase}
-:root[lang="ar"] .cd{letter-spacing:0}
-.cd.now{color:#1c1400;background:#ffc42e}
-.tag{position:absolute;bottom:10px;inset-inline-start:10px;height:22px;padding:0 8px;border-radius:7px;display:grid;place-items:center;font-size:11px;font-weight:900;letter-spacing:.08em;color:#1c1400;background:#fff}
-:root[lang="ar"] .tag{letter-spacing:0}
-.tt{font-size:15.5px;font-weight:800;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ln{font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ft{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
-.dt{font-size:12.5px;font-weight:700;color:var(--dim)}
-.pv{height:22px;padding:0 8px;border-radius:7px;display:grid;place-items:center;font-size:11.5px;font-weight:800;color:var(--dim);background:rgba(var(--glass),.08);white-space:nowrap}
-.pv.cin{color:var(--accent);background:rgba(255,196,46,.12)}
+/* the group heading, as in the app: the word, then a quiet count */
+.gh{display:flex;align-items:baseline;gap:8px;margin:0 0 14px;font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:-.01em;color:var(--heading)}
+:root[lang="ar"] .gh{font-weight:700;letter-spacing:0}
+.gh span{font-size:14px;font-weight:700;color:var(--muted);letter-spacing:0;font-variant-numeric:tabular-nums}
+.items{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);gap:14px}
+
+/* the card */
+.uc{position:relative;width:420px;height:140px;display:flex;align-items:center;border-radius:20px;overflow:hidden;isolation:isolate;background:var(--surface);
+}
+:root[data-theme="light"] .uc{box-shadow:0 1px 2px rgba(20,22,30,.06),0 0 0 1px rgba(16,18,27,.06)}
+.uc .bd{position:absolute;inset:-8px -16px;z-index:-2;background:center/cover no-repeat;filter:blur(6px);opacity:.3;transition:opacity .4s,transform 6s ease-out}
+.uc .sc{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(17,18,23,.82),rgba(17,18,23,.62) 26%,rgba(17,18,23,.82))}
+:root[data-theme="light"] .uc .sc{background:linear-gradient(90deg,rgba(255,255,255,.42),rgba(255,255,255,.5) 35%,rgba(255,255,255,.62))}
+/* light: the same bright, saturated poster blur as the web app's Upcoming cards */
+:root[data-theme="light"] .uc .bd{filter:blur(5px) saturate(1.6) brightness(1.2);opacity:.6}
+.uc .po{flex:none;width:82px;height:123px;margin-inline-start:9px;border-radius:11px;background:var(--ph) center/cover no-repeat;box-shadow:0 6px 16px rgba(0,0,0,.35);transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
+.ui{flex:1;min-width:0;align-self:stretch;display:flex;flex-direction:column;padding:13px 16px 13px 16px}
+.meta{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.meta > span:first-child{overflow:hidden;text-overflow:ellipsis}
+:root[lang="ar"] .meta{letter-spacing:0;font-size:12.5px}
+.ub{flex:none;color:var(--accent);font-weight:800;letter-spacing:.02em;text-transform:none;font-size:12.5px}
+.ut{margin-top:auto;font-family:var(--display);font-size:17px;font-weight:800;line-height:1.22;color:var(--heading);padding-inline-end:88px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+:root[lang="ar"] .ut{font-weight:700}
+.ep{margin-top:2px}
+.code{font-size:14.5px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+.us{margin-top:1px;padding-inline-end:88px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* the countdown */
+.cdn{position:absolute;inset-inline-end:18px;bottom:14px;display:flex;flex-direction:column;align-items:flex-end;line-height:1}
+.cdn b{font-family:var(--display);font-size:36px;font-weight:800;letter-spacing:-.03em;color:var(--heading);font-variant-numeric:tabular-nums}
+.cdn small{margin-top:4px;font-size:12px;font-weight:600;color:var(--muted)}
+.cdn.now{flex-direction:column}
+.cdn.now small{margin:0 0 4px}
+.cdn.now b{font-size:28px;color:var(--accent)}
 
 /* arrows, over the rail's ends */
 .ra{position:absolute;top:calc(50% - 22px);z-index:2;width:44px;height:44px;padding:0;border:0;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--text);background:rgba(var(--glass),.1);box-shadow:inset 0 0 0 1px rgba(var(--glass),.14);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:opacity .2s,background .2s}
 :root[data-theme="light"] .ra{background:rgba(255,255,255,.9)}
 .ra svg{width:20px;height:20px}
 .ra:disabled{opacity:0;pointer-events:none}
-.ra.prev{inset-inline-start:max(10px,calc((100vw - 1240px)/2 - 10px))}
-.ra.next{inset-inline-end:max(10px,calc((100vw - 1240px)/2 - 10px))}
+.ra.prev{inset-inline-start:24px}
+.ra.next{inset-inline-end:24px}
 :root[dir="rtl"] .ra svg{transform:scaleX(-1)}
 @media (hover:hover){.ra:hover{background:rgba(var(--glass),.18)}}
 .src{margin-top:14px;font-size:12.5px;color:var(--muted)}
-
 @media (max-width:900px){.up-top{grid-template-columns:1fr;gap:28px}.note{width:min(100%,400px)}}
 @media (max-width:640px){
-  .rail{gap:30px}
-  .gh::after{inset-inline-end:-30px}
-  .it{width:142px}
-  .ra{display:none}
+.rail{gap:28px}
+.uc{width:min(340px,calc(100vw - 2 * var(--gut) - 24px));height:128px}
+.uc .po{width:72px;height:108px}
+.ut{font-size:15.5px;padding-inline-end:72px}
+.us{padding-inline-end:72px}
+.cdn b{font-size:30px}
+.cdn.now b{font-size:24px}
+.ra{display:none}
 }
 </style>

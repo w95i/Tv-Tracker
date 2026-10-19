@@ -41,6 +41,7 @@ const pct = (c: Card) => {
 const watchedCount = (c: Card) => c.show.before + lastN(c);
 const tag = (c: Card) => (left(c) > 0 ? `+${left(c)}` : c.show.ended ? t("track.finale") : t("track.latest"));
 const fmt = (n: number) => n.toLocaleString(ar.value ? "ar" : "en");
+const fmt2 = (n: number) => n.toLocaleString(ar.value ? "ar" : "en", { minimumIntegerDigits: 2 });
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const still = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -113,7 +114,7 @@ onBeforeUnmount(() => io?.disconnect());
               <svg v-else-if="k === 'end'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z" /></svg>
               <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-14.2 5M4 12a8 8 0 0 1 14.2-5" /><path d="M18.5 3v4h-4M5.5 21v-4h4" /></svg>
             </span>
-            <span><b>{{ t(`track.points.${k}.title`) }}</b>{{ t(`track.points.${k}.text`) }}</span>
+            <span>{{ t(`track.points.${k}.title`) }}</span>
           </li>
         </ul>
       </div>
@@ -124,23 +125,21 @@ onBeforeUnmount(() => io?.disconnect());
           <div class="ph">
             <span class="pt">{{ t("track.watchingNow") }}</span>
             <span class="pc">{{ fmt(cards.length) }}</span>
-            <span class="hint">{{ t("track.tryIt") }}</span>
           </div>
 
           <TransitionGroup tag="ul" name="row" class="rows" role="list">
-            <li v-for="(c, i) in cards" :key="c.show.id" class="row" :class="[{ top: i === 0 }, c.phase && `ph-${c.phase}`, c.end && `end-${c.end}`]">
+            <li v-for="(c, i) in cards" :key="c.show.id" class="row" :class="[i === 0 ? 'hero' : 'line', c.phase && `ph-${c.phase}`, c.end && `end-${c.end}`]">
               <span class="bd" :style="{ backgroundImage: `url('${c.backdrop}')` }" aria-hidden="true" />
-              <img class="po" :src="c.poster" alt="" loading="lazy">
+              <span class="sc" aria-hidden="true" />
+              <span class="th" :style="{ backgroundImage: `url('${c.backdrop}')` }" aria-hidden="true" />
               <div class="info">
                 <b class="ttl">{{ ar ? c.title.ar : c.title.en }}</b>
                 <!-- re-keyed per episode, so the next one plays its entrance -->
                 <span :key="c.at" class="ep" :class="{ next: c.at > 0 }">
-                  <em>{{ t("track.se", { s: fmt(c.show.season), e: fmt(ep(c).n) }) }}</em>
-                  <span>{{ ar ? ep(c).ar : ep(c).en }}</span>
+                  <span class="code"><em>{{ t("track.se", { s: fmt2(c.show.season), e: fmt2(ep(c).n) }) }}</em><i class="tg" :class="{ fin: left(c) === 0 }">{{ tag(c) }}</i></span>
+                  <span class="en">{{ ar ? ep(c).ar : ep(c).en }}</span>
                 </span>
-                <span class="bar" aria-hidden="true"><i :style="{ transform: `scaleX(${pct(c)})` }" /></span>
               </div>
-              <span class="tg" :class="{ fin: left(c) === 0 }">{{ tag(c) }}</span>
               <button
                 type="button"
                 class="ck"
@@ -164,7 +163,7 @@ onBeforeUnmount(() => io?.disconnect());
           </TransitionGroup>
 
           <div v-if="!cards.length" class="empty">
-            <img src="/images/feelings/thrilled.svg" alt="" width="56" height="56">
+            <img src="/images/feelings-v6/thrilled.svg" alt="" width="56" height="56">
             <b>{{ t("track.allDone") }}</b>
             <button type="button" class="btn sm ghost" @click="reset">{{ t("track.again") }}</button>
           </div>
@@ -182,56 +181,87 @@ onBeforeUnmount(() => io?.disconnect());
 <style scoped>
 .track{--io:cubic-bezier(.65,0,.35,1);--emph:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.56,.64,1)}
 .tr-g{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:72px;align-items:center}
-
-.pts{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:18px}
-.pts li{display:flex;gap:14px;align-items:flex-start;font-size:15.5px;line-height:1.55;color:var(--muted)}
-.pts b{display:block;font-size:16px;color:var(--heading)}
-.pi{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(255,196,46,.14);color:var(--amber)}
+.pts{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:12px}
+.pts li{display:flex;gap:12px;align-items:center;font-size:16px;font-weight:600;line-height:1.35;color:var(--heading)}
+.pi{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,196,46,.14);color:var(--amber)}
 :root[data-theme="light"] .pi{background:rgba(255,196,46,.24);color:var(--accent)}
-.pi svg{width:19px;height:19px}
+.pi svg{width:17px;height:17px}
 
 /* the panel: the app's dark list on a surface card */
 .panel{position:relative;overflow:hidden;padding:18px;border-radius:28px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line),var(--shadow)}
-.ph{display:flex;align-items:center;gap:10px;padding:4px 6px 14px}
-.pt{font-family:var(--display);font-size:20px;font-weight:800;color:var(--heading);letter-spacing:-.01em}
+.ph{position:relative;display:flex;align-items:center;gap:10px;min-height:58px;padding:4px 6px 14px}
+.pt{align-self:baseline;font-family:var(--display);font-size:20px;font-weight:800;color:var(--heading);letter-spacing:-.01em}
 :root[lang="ar"] .pt{font-weight:700;letter-spacing:0}
-.pc{min-width:26px;height:24px;padding:0 8px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--ink);background:var(--amber)}
-.hint{margin-inline-start:auto;font-size:13px;font-weight:700;color:var(--muted)}
+/* the count, as in the app: a quiet number beside the title */
+.pc{align-self:baseline;font-size:15px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+/* the hint stops short of Peek, who sits over the first card's ✓ */
+.hint{margin-inline-start:auto;margin-inline-end:calc(var(--ck-x) + var(--pw) / 2 + 6px);font-size:13px;font-weight:700;color:var(--muted);transition:opacity .3s ease}
+.hint.off{opacity:0}
 
-.rows{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.row{position:relative;overflow:hidden;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:14px;padding:12px 14px 12px 12px;border-radius:18px;background:var(--surface-2);isolation:isolate}
-:root[dir="rtl"] .row{padding:12px 12px 12px 14px}
-/* the top card is the "hero": its backdrop shows through */
-.bd{position:absolute;inset:0;z-index:-1;background:center 30%/cover no-repeat;opacity:0;transition:opacity .5s var(--emph)}
-.bd::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,14,.94) 30%,rgba(10,10,14,.55))}
-:root[dir="rtl"] .bd::after{background:linear-gradient(270deg,rgba(10,10,14,.94) 30%,rgba(10,10,14,.55))}
-.row.top{padding-block:18px}
-.row.top .bd{opacity:1}
-.row.top .ttl,.row.top .ep span{color:#fff}
-.row.top .ep em{color:#ffc42e}
-.row.top .tg{color:#fff;background:rgba(255,255,255,.14)}
-.row.top .bar{background:rgba(255,255,255,.18)}
-.po{width:58px;height:87px;border-radius:10px;object-fit:cover;background:var(--ph);box-shadow:0 0 0 1px rgba(255,255,255,.08);transition:width .5s var(--emph),height .5s var(--emph)}
-.row.top .po{width:74px;height:111px}
-.info{min-width:0;display:flex;flex-direction:column;gap:5px}
-.ttl{font-family:var(--display);font-size:17px;font-weight:800;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+/* Peek over anything (kit v6.1, "down"): the eyes' flat bottom sits exactly on the first card's top edge,
+   centred over its ✓. Rises once the list is on screen, sinks after the first tap. */
+.peek{position:absolute;bottom:0;inset-inline-end:calc(var(--ck-x) - var(--pw) / 2);width:var(--pw);height:calc(var(--pw) * 40 / 88);overflow:hidden;pointer-events:none}
+.peek img{position:absolute;left:0;bottom:0;width:100%;height:100%;transform:translateY(100%);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.peek.up img{transform:none;animation:bob 2.4s 1s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:none}50%{transform:translateY(3px)}}
+.pe-l{display:none}
+:root[data-theme="light"] .pe-d{display:none}
+:root[data-theme="light"] .pe-l{display:block}
+
+/* the list, as the app draws Watching now: the latest show is the hero (its backdrop, full bleed);
+   the rest are rows — a floating 16:9 still on its own blurred backdrop */
+.panel{--ck-x:60px;--pw:116px}
+.rows{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.row{position:relative;overflow:hidden;isolation:isolate;display:flex;align-items:center;gap:16px;border-radius:20px;background:var(--surface-2);transition:height .5s var(--emph)}
+.bd{position:absolute;z-index:-2;inset:0;background:center 30%/cover no-repeat;transition:filter .5s var(--emph),opacity .5s var(--emph),inset .5s var(--emph)}
+.sc{position:absolute;z-index:-1;inset:0;transition:opacity .5s var(--emph)}
+.th{flex:none;border-radius:12px;background:var(--ph) center/cover no-repeat;box-shadow:0 4px 12px rgba(0,0,0,.3);transition:width .5s var(--emph),opacity .3s ease}
+.info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ttl{font-family:var(--display);font-weight:800;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
 :root[lang="ar"] .ttl{font-weight:700;letter-spacing:0}
-.ep{display:flex;gap:7px;min-width:0;font-size:14px;font-weight:600;color:var(--dim)}
-.ep em{flex:none;font-style:normal;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
-.ep span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar{display:block;height:5px;margin-top:5px;border-radius:3px;background:rgba(var(--glass),.1);overflow:hidden}
-.bar i{display:block;height:100%;border-radius:3px;background:var(--amber);transform-origin:left;transition:transform .6s var(--emph)}
-:root[dir="rtl"] .bar i{transform-origin:right}
-.tg{height:26px;padding:0 9px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:800;letter-spacing:.02em;color:var(--dim);background:rgba(var(--glass),.08);font-variant-numeric:tabular-nums}
-.tg.fin{color:var(--ink)!important;background:var(--amber)!important}
-/* the ✓: an outlined circle; 44px to touch */
-.ck{position:relative;width:44px;height:44px;padding:0;border:0;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--amber);background:rgba(255,196,46,.12);box-shadow:inset 0 0 0 2px rgba(255,196,46,.55);transition:transform .15s var(--ease),background .2s}
-:root[data-theme="light"] .ck{color:var(--accent);background:rgba(255,196,46,.2);box-shadow:inset 0 0 0 2px rgba(200,140,0,.5)}
-.row.top .ck{color:#ffc42e;background:rgba(255,196,46,.16);box-shadow:inset 0 0 0 2px rgba(255,196,46,.7)}
+.ep{display:flex;flex-direction:column;gap:2px;min-width:0}
+.code{display:flex;align-items:baseline;gap:8px}
+.code em{font-style:normal;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.tg{direction:ltr;unicode-bidi:isolate;font-style:normal;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.tg.fin{font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--accent)}
+:root[lang="ar"] .tg.fin{letter-spacing:0;font-size:13px}
+.en{font-size:14px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* hero */
+.row.hero{height:232px;align-items:flex-end;padding:0 36px 22px 24px}
+:root[dir="rtl"] .row.hero{padding:0 24px 22px 36px}
+.hero .bd{filter:none;opacity:1}
+.hero .sc{background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.86))}
+.hero .th{width:0;margin-inline-end:-16px;opacity:0}
+.hero .ttl{font-size:22px;color:#fff}
+.hero .code em,.hero .tg.fin{color:#ffc42e}
+.hero .code em{font-size:18px}
+.hero .tg{color:rgba(255,255,255,.7)}
+.hero .en{color:rgba(255,255,255,.8)}
+
+/* rows */
+.row.line{height:104px;padding:0 36px 0 8px}
+:root[dir="rtl"] .row.line{padding:0 8px 0 36px}
+.line .bd{inset:-24px -16px;filter:blur(6px);opacity:.3}
+.line .sc{background:linear-gradient(90deg,rgba(17,18,23,.15),rgba(17,18,23,.45))}
+:root[dir="rtl"] .line .sc{background:linear-gradient(270deg,rgba(17,18,23,.15),rgba(17,18,23,.45))}
+:root[data-theme="light"] .line .sc{background:linear-gradient(90deg,rgba(255,255,255,.42),rgba(255,255,255,.5) 35%,rgba(255,255,255,.62))}
+:root[data-theme="light"][dir="rtl"] .line .sc{background:linear-gradient(270deg,rgba(255,255,255,.42),rgba(255,255,255,.5) 35%,rgba(255,255,255,.62))}
+/* light: the same bright, saturated poster blur as the Upcoming cards */
+:root[data-theme="light"] .line .bd{filter:blur(5px) saturate(1.6) brightness(1.2);opacity:.6}
+.line .th{width:156px;height:88px}
+.line .ttl{font-size:17px}
+.line .code em{font-size:16px}
+
+/* the ✓: the app's glass circle */
+.ck{position:relative;flex:none;width:48px;height:48px;padding:0;border:0;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:#fff;
+  background:rgba(0,0,0,.32);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .15s var(--ease),background .2s,box-shadow .2s}
 .ck svg{width:22px;height:22px}
 .ck:active{transform:scale(.88)}
 .ck:disabled{cursor:default}
-@media (hover:hover){.ck:not(:disabled):hover{background:rgba(255,196,46,.24)}}
+.hero .ck{margin-bottom:2px}
+:root[data-theme="light"] .line .ck{color:var(--heading);background:rgba(255,255,255,.6);box-shadow:inset 0 0 0 1.5px rgba(16,18,27,.22)}
+@media (hover:hover){.ck:not(:disabled):hover{background:rgba(255,196,46,.24);box-shadow:inset 0 0 0 1.5px rgba(255,196,46,.8)}}
 .ck.pulse::after{content:"";position:absolute;inset:-2px;border-radius:50%;box-shadow:0 0 0 2px #ffc42e;animation:pulse 1.6s var(--ease) infinite}
 @keyframes pulse{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(1.6)}}
 
@@ -255,6 +285,10 @@ onBeforeUnmount(() => io?.disconnect());
 @keyframes lab{to{opacity:1;transform:none}}
 .ph-out .badge,.ph-out .sl{transform:none;opacity:1;animation:none}
 .ph-out .badge svg{stroke-dashoffset:0;animation:none}
+/* light mode: the watched sweep is the app's green, white tick and text */
+:root[data-theme="light"] .sw{background:#61C169;color:#fff}
+:root[data-theme="light"] .badge{background:#fff;color:#61C169}
+:root[data-theme="light"] .sl small{opacity:.9}
 
 /* the next episode enters from −28px, 110ms after the sweep starts out */
 .ep.next{animation:ep-in .45s .11s var(--ease) backwards}
@@ -266,27 +300,31 @@ onBeforeUnmount(() => io?.disconnect());
 .row-move{transition:transform .5s var(--emph)}
 .row-leave-active{transition:opacity .22s ease;position:absolute;left:0;right:0}
 .row-leave-to{opacity:0}
-
 .empty{display:flex;flex-direction:column;align-items:center;gap:14px;padding:36px 10px 28px;text-align:center}
 .empty img{width:56px;height:56px;border-radius:16px}
 .empty b{font-family:var(--display);font-size:20px;color:var(--heading)}
 .sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0)}
-
 .more{display:flex;width:fit-content;align-items:center;gap:3px;height:40px;margin:14px auto 0;font-size:15px;font-weight:700;color:var(--accent)}
 .more svg{width:17px;height:17px;transition:transform .2s var(--ease)}
 :root[dir="rtl"] .more svg.ar{transform:scaleX(-1)}
-
 @media (max-width:1000px){.tr-g{grid-template-columns:1fr;gap:48px}.tr-g > .rv:last-child{max-width:640px;width:100%;margin-inline:auto}}
 @media (max-width:640px){
-  .panel{padding:12px;border-radius:22px}
-  .hint{display:none}
-  .row{gap:10px;padding:10px}
-  :root[dir="rtl"] .row{padding:10px}
-  .po{width:48px;height:72px}
-  .row.top .po{width:60px;height:90px}
-  .ttl{font-size:15.5px}
-  .ep{font-size:13px}
-  .tg{height:24px;padding:0 7px;font-size:11px}
+.panel{padding:12px;border-radius:22px;--ck-x:46px;--pw:88px}
+.ph{min-height:50px}
+.hint{display:none}
+.row.hero{height:196px;padding:0 24px 16px 16px}
+:root[dir="rtl"] .row.hero{padding:0 16px 16px 24px}
+.row.line{height:84px;gap:12px;padding:0 24px 0 6px}
+:root[dir="rtl"] .row.line{padding:0 6px 0 24px}
+.line .th{width:112px;height:63px;border-radius:10px}
+.hero .th{margin-inline-end:-12px}
+.hero .ttl{font-size:19px}
+.hero .code em{font-size:16px}
+.line .ttl{font-size:15px}
+.line .code em{font-size:14px}
+.tg{font-size:12.5px}
+.en{font-size:12.5px}
+.ck{width:44px;height:44px}
 }
 @media (prefers-reduced-motion:reduce){.ck.pulse::after{display:none}}
 </style>

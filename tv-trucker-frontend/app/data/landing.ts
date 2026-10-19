@@ -27,17 +27,17 @@ export interface SwitchApp {
   /** i18n key under switching.apps */
   key: "tvtime" | "imdb" | "letterboxd" | "trakt";
   name: string;
-  /** The app's badge: text on a colour, or Letterboxd's three dots */
-  badge: { bg: string; fg?: string; text?: string; dots?: string[] };
+  /** The app's badge: its logo, text on a colour, or Letterboxd's three dots */
+  badge: { img?: string; bg?: string; fg?: string; text?: string; dots?: string[] };
 }
 
 // "Switching?" (from tvtracker-landing (1).html): the four apps that hand their history over,
 // the 16 posters that fly from them into the phone (4 per app), and the totals the phone counts up to.
 export const switchApps: SwitchApp[] = [
-  { key: "tvtime", name: "TV Time", badge: { bg: "#ffd54a", fg: "#1d1d1f", text: "TV" } },
+  { key: "tvtime", name: "TV Time", badge: { img: "/images/logos/tvtime.png" } },
   { key: "imdb", name: "IMDb", badge: { bg: "#f5c518", fg: "#000", text: "IMDb" } },
   { key: "letterboxd", name: "Letterboxd", badge: { bg: "#202830", dots: ["#ff8000", "#00e054", "#40bcf4"] } },
-  { key: "trakt", name: "Trakt", badge: { bg: "#ed1c24", fg: "#fff", text: "tr" } },
+  { key: "trakt", name: "Trakt", badge: { img: "/images/logos/trakt.png" } },
 ];
 export const switchPosters = Array.from({ length: 16 }, (_, i) => `/images/posters/switch-${String(i + 1).padStart(2, "0")}.jpg`);
 export const importTotals = { shows: 86, episodes: 1248, movies: 312 };

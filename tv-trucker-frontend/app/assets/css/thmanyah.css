@@ -1,0 +1,50 @@
+/* Switch this file on in nuxt.config.ts (css: [..., "~/assets/css/thmanyah.css"]) once the files are in
+   public/fonts/thmanyah/ — until then every Arabic page would request them and get 404s. */
+/* Arabic type: خط ثمانية (Thmanyah)
+   The foundry's licence asks that the files come from its own download (thmanyah.com/font), so they are not bundled:
+   put them in public/fonts/thmanyah/ with these names (woff2 or otf both work). Until they are there, Tajawal stands in.
+   unicode-range: Arabic only, so English words and Western digits inside Arabic titles stay in Figtree. */
+@font-face {
+  font-family: "Thmanyah Sans";
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url("/fonts/thmanyah/sans-400.woff2") format("woff2"),
+    url("/fonts/thmanyah/sans-400.otf") format("opentype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+00AB,
+    U+00BB;
+}
+@font-face {
+  font-family: "Thmanyah Sans";
+  font-weight: 500 800;
+  font-display: swap;
+  src:
+    url("/fonts/thmanyah/sans-700.woff2") format("woff2"),
+    url("/fonts/thmanyah/sans-700.otf") format("opentype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+00AB,
+    U+00BB;
+}
+@font-face {
+  font-family: "Thmanyah Sans";
+  font-weight: 900;
+  font-display: swap;
+  src:
+    url("/fonts/thmanyah/sans-900.woff2") format("woff2"),
+    url("/fonts/thmanyah/sans-900.otf") format("opentype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+00AB,
+    U+00BB;
+}
+@font-face {
+  font-family: "Thmanyah Serif Display";
+  font-weight: 500 900;
+  font-display: swap;
+  src:
+    url("/fonts/thmanyah/serif-display-700.woff2") format("woff2"),
+    url("/fonts/thmanyah/serif-display-700.otf") format("opentype");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+00AB,
+    U+00BB;
+}
